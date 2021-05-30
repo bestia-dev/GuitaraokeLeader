@@ -2,7 +2,6 @@ package dev.bestia.guitaraokeserver;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +35,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.message, parent, false);
-            viewHolder.nameDateMsg = (TextView) convertView.findViewById(R.id.name_date_msg);
+            viewHolder.nameDateMsg = convertView.findViewById(R.id.name_date_msg);
             //result=convertView;
 
             convertView.setTag(viewHolder);
@@ -47,7 +46,8 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 
         @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
         String showDate = sdf.format(msg.timestamp);
-        viewHolder.nameDateMsg.setText(Html.fromHtml("<b>"+msg.username+"</b> <i>" + showDate+"</i> " +msg.data));
+
+        viewHolder.nameDateMsg.setText(Utils.fromHtml("<b>"+msg.username+"</b> <i>" + showDate+"</i> " +msg.data));
         // Return the completed view to render on screen
         return convertView;
     }
