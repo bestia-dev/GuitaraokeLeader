@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Client</title>
+    <base href="/">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+
+<div>Guitaraoke</div>
+<input type="text" id="user_name" value="user1" />
+<button onclick="connect_to_guitaraoke_server();">Connect to GuitaraokeServer</button>
+
+<div>message</div>
+<input type="text" id="input_message" value="message1" />
+<button onclick="send_message();">Send Message</button>
+
+</body>
+<script>
+//global variable
+var socket;
+var user_name;
+
+    function connect_to_guitaraoke_server(){
+        user_name = document.getElementById("user_name").value;
+        var url = window.location.href;
+        console.log(url);
+        //var ws_url = url.replace("http://","ws://").replace("8080","3000");
+		var ws_url = "ws://192.168.176.232:3000";
+         console.log(ws_url);
+        socket = new WebSocket(ws_url);
+        socket.onopen = function(e) {
+          console.log("[open] Connection established");
+          console.log("Sending to server");
+        };
+
+        socket.onmessage = function(event) {
+          console.log(`[message] Data received from server: ${event.data}`);
+        };
+
+        socket.onclose = function(event) {
+          if (event.wasClean) {
+            console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+          } else {
+            // e.g. server process killed or network down
+            // event.code is usually 1006 in this case
+            console.log('[close] Connection died');
+          }
+        };
+
+        socket.onerror = function(error) {
+          console.log(`[error] ${error.message}`);
+        };
+    }
+    function send_message(){
+        // the message must be json{String username, String timestamp, String data}
+        let data = document.getElementById("input_message").value;
+        var msg = JSON.stringify({ "username": user_name, "timestamp": Date.now () , "data":data });
+        socket.send(msg);
+    }
+</script>
+</html>
