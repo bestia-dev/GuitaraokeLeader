@@ -75,7 +75,7 @@ public class ChatActivity extends AppCompatActivity {
             this.webserver.closeAllConnections();
             this.webserver.stop();
             this.websocketserver.stop();
-        } catch (IOException | InterruptedException e)  {
+        } catch ( InterruptedException e)  {
             e.printStackTrace();
         }
         super.onDestroy();

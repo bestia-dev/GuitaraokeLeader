@@ -1,6 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('C:\\Users\\Luciano\\AndroidStudioProjects\\AndroidKeyStore.jks')
+            keyAlias 'key1'
+        }
+    }
     compileSdkVersion 30
     defaultConfig {
         applicationId "dev.bestia.guitaraokeserver"
@@ -9,6 +15,7 @@ android {
         versionCode 1
         versionName '1.1'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        archivesBaseName = "GuitaraokeServer"
     }
     buildTypes {
         release {
@@ -27,6 +34,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
-    implementation 'org.java-websocket:Java-WebSocket:1.5.1'
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'org.java-websocket:Java-WebSocket:1.5.2'
+    implementation 'com.google.code.gson:gson:2.8.7'
 }
