@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- classic header for a web page -->
+    <meta charset="utf-8">
+    <title>Guitaraoke Leader</title>
+    <meta http-equiv="Content-type" content="text/html" />
+    <meta name="Description" content="Guitaraoke Leader">
+    <meta name="author" content="https://github.com/LucianoBestia/guitaraoke_client">
+
+    <meta name="viewport" content="width = device-width,initial-scale = 1.0" />
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/guitaraoke_client.css">
+    <meta name="google" content="notranslate">
+</head>
+
+<body>
+    <div class="fixed_header" style="height: 7vh;width: var(--body_width)">
+        <div id="div_units_header" style="display: grid;width: var(--body_width);grid-template-columns: 100% ; grid-template-rows: 7vh;">
+            <div id="div_units_title">Guitaraoke Leader</div>
+        </div>
+    </div>
+    <div style="position: absolute;top:7vh;height: 93vh; ;width: var(--body_width);align-items: center; text-align: center; ">
+        <p></p>
+        <div id="div_start" style=" align-items: center; text-align: center;">
+            <!--read the videos directory index and show to click-->
+            <div onclick="send_song_name('Welcome_to_guitaraoke');">Welcome_to_guitaraoke</div>
+            <div onclick="send_song_name('sample1');">sample1</div>
+            <div onclick="send_song_name('sample2');">sample2</div>
+            <div>
+                <button id="button_bye" onclick="send_message('bye!');">Send Bye</button>
+            </div>
+        </div>
+        <div id="div_video" hidden=true>
+            <div>
+                <button id="back_to_list" onclick="send_message('pause!');">Back to list</button>
+            </div>
+            <div id="div_song_name">song_name</div>
+            <video id="myVideo" height="120" width="100%"><source type="video/mp4"></video>
+            <div>
+                <button id="send_play" onclick="send_message('play!');">Send play</button>
+            </div>
+            <div>
+                <button id="send_pause" onclick="send_message('pause!');">Send stop</button>
+            </div>
+            <div>
+                <button id="button_fullscreen" onclick="myVideo.requestFullscreen();" hidden=true>FullScreen</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // region: this is executed directly after html load
+        var myVideo = document.getElementById("myVideo");
+        myVideo.addEventListener('ended', my_video_ended);
+        //connect immediately to server
+        connect_to_guitaraoke_server()
+
+        // endregion: this is executed directly after html load
+
+        function connect_to_guitaraoke_server() {
+            user_name = getRandomInt(0, 1000000);
+            var url = window.location.href;
+            console.log(url);
+            //TODO: this url is fixed only for developing
+            var ws_url = "ws://192.168.104.232:3000";
+            //TODO: this url is needed in runtime
+            //var ws_url = url.replace("http://","ws://").replace("8080","3000");
+            console.log(ws_url);
+            socket = new WebSocket(ws_url);
+            socket.onopen = function(e) {
+                console.log("[open] Connection established");
+                console.log("Sending to server");
+            };
+
+            socket.onmessage = function(event) {
+                var msg = JSON.parse(event.data);
+                console.log(`[message] Data received from server: ${msg}`);
+                if (msg.data.startsWith("song: ")) {
+                    load_song(msg.data.substring(6));
+                    document.getElementById("div_start").hidden = true;
+                    document.getElementById("div_video").hidden = false;
+                    document.getElementById("back_to_list").hidden = false;
+                    document.getElementById("send_play").hidden = false;
+                    document.getElementById("send_pause").hidden = true;
+                } else if (msg.data == "play!") {
+                    myVideo.play();
+                    document.getElementById("div_start").hidden = true;
+                    document.getElementById("div_video").hidden = false;
+                    document.getElementById("send_play").hidden = true;
+                    document.getElementById("send_pause").hidden = false;
+                    document.getElementById("back_to_list").hidden = true;
+                    document.getElementById("button_fullscreen").hidden = false;
+                } else if (msg.data == "pause!") {
+                    myVideo.pause();
+                    my_video_ended();
+                    document.getElementById("div_start").hidden = false;
+                    document.getElementById("div_video").hidden = true;
+                    document.getElementById("button_fullscreen").hidden = true;
+                } else if (msg.data == "bye!") {
+                    window.close('', '_parent', '');;
+                }
+            };
+
+            socket.onclose = function(event) {
+                if (event.wasClean) {
+                    console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+                } else {
+                    // e.g. server process killed or network down
+                    // event.code is usually 1006 in this case
+                    console.log('[close] Connection died');
+                }
+            };
+
+            socket.onerror = function(error) {
+                console.log(`[error] ${error.message}`);
+            };
+        }
+
+        function send_song_name(song_name) {
+            send_message("song: " + song_name);
+        }
+
+        function send_message(data) {
+            // the message must be json{String username, String timestamp, String data}
+            var msg = JSON.stringify({
+                "username": user_name,
+                "timestamp": Date.now(),
+                "data": data
+            });
+            socket.send(msg);
+        }
+
+        function load_song(song_name) {
+            console.log("load_song");
+            div_song_name.innerText = song_name;
+            myVideo.src = "videos/" + song_name + " - guitaraoke.mp4";
+            myVideo.load();
+        }
+
+        function my_video_ended() {
+            console.log("my_video_ended");
+            if (document.fullscreenElement) {
+                document.exitFullscreen()
+                    .then(() => console.log("Document Exited from Full screen mode"))
+                    .catch((err) => console.error(err))
+            }
+        }
+
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+    </script>
+</body>
+
+</html>

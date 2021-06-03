@@ -1,0 +1,314 @@
+/* css variables */
+
+:root {
+    /* color palette */
+    /* use of variables: var(--color_tooltip_1); */
+    /* background color */
+    --b_color_html: #111111;
+    --b_color_body: #000000;
+    --b_color_title: #8BC24A;
+    --b_color_input_output: #FAFAFA;
+    --b_color_toolbar: #F1F7E9;
+    --b_color_cell: #F1F7E9;
+    --b_color_cell_commands: #DDEDC8;
+    --b_color_cell_disabled: whitesmoke;
+    /* front color */
+    --f_color_body: #eaec41;
+    --f_color_title: #eaec41;
+    --f_color_cell_disabled: whitesmoke;
+    /* border color*/
+    --brd_color_layout: #82AE4D;
+    /* the proportion of the app windows is around 16:9 portrait */
+    --body_width: min(calc(100vh*9.0/16.0), 100vw);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+
+/* disable double-tap for zooming */
+
+* {
+    touch-action: manipulation;
+}
+
+html {
+    background-color: var(--b_color_html);
+    font-family: sans-serif;
+    font-size: 15px;
+    color: var(--f_color_body);
+    /*margin auto means centered horizontally*/
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    border: 0;
+}
+
+body {
+    background-color: var(--b_color_body);
+    width: var(--body_width);
+    margin: 0;
+    padding: 0;
+    left: 0;
+    overscroll-behavior-y: none;
+}
+
+a {
+    cursor: pointer;
+}
+
+
+/* region: fixed header */
+
+.fixed_header,
+.fixed_footer {
+    position: fixed;
+    z-index: 10000;
+}
+
+.fixed_header {
+    top: 0;
+}
+
+.fixed_footer {
+    bottom: 0;
+}
+
+
+/* endregion: fixed header */
+
+
+/* using simple `css-grid` for the layout (display: grid) 
+the grid-template-columns and grid-template-rows are defined in the html*/
+
+
+/* region: page_main */
+
+#div_main_header {
+    line-height: 7vh;
+    background-color: var(--b_color_title);
+    color: var(--f_color_title);
+    font-size: 20px;
+}
+
+#div_main_title {
+    padding-left: 3%;
+}
+
+#div_reload_button {
+    cursor: pointer;
+    float: right;
+    padding-right: 5%;
+}
+
+#div_hamburger_button {
+    cursor: pointer;
+    float: right;
+    padding-right: 5%;
+}
+
+#div_input {
+    font-size: 30px;
+    line-height: 15vh;
+    background-color: var(--b_color_input_output);
+    color: var(--f_color_body);
+}
+
+#div_input_number {
+    padding-left: 3%;
+}
+
+#div_input_unit {
+    cursor: pointer;
+    float: right;
+    padding-right: 5%;
+}
+
+#div_midbar {
+    font-size: 15px;
+    background-color: var(--b_color_toolbar);
+    color: var(--f_color_body);
+    text-align: center;
+}
+
+#div_output {
+    font-size: 30px;
+    line-height: 15vh;
+    background-color: var(--b_color_input_output);
+    color: var(--f_color_body);
+}
+
+#div_output_number {
+    padding-left: 3%;
+}
+
+#div_output_unit {
+    cursor: pointer;
+    float: right;
+    padding-right: 5%;
+}
+
+#div_numeric_pad_layout {
+    border-bottom: 1px solid;
+}
+
+.div_cell {
+    cursor: pointer;
+    text-align: center;
+    line-height: 12vh;
+    background-color: var(--b_color_cell);
+    color: var(--f_color_body);
+    border-top: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--brd_color_layout);
+    font-size: 36px;
+}
+
+.cell_commands {
+    background-color: var(--b_color_cell_commands);
+    color: var(--f_color_body);
+}
+
+.cell_disabled {
+    cursor: auto;
+    pointer-events: none;
+    /* this is not the true property to make element disabled*/
+    background-color: var(--b_color_cell_disabled);
+    color: var(--f_color_cell_disabled);
+}
+
+
+/* region: modal window */
+
+.w3_modal {
+    z-index: 3;
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding-top: 20%;
+    width: var(--body_width);
+    height: 100vh;
+    overflow: auto;
+    /*opacity 70%*/
+    background-color: rgba(0, 0, 0, 0.7);
+    color: var(--f_color_body);
+}
+
+.w3_modal_content {
+    width: var(--body_width);
+    margin: auto;
+    background-color: #fff;
+    color: var(--f_color_body);
+    position: relative;
+    padding: 5%;
+    outline: 0;
+}
+
+
+/* endregion: modal window */
+
+.span_button {
+    cursor: pointer;
+    border: 1px solid;
+    background-color: var(--b_color_toolbar);
+    color: var(--f_color_body);
+    padding: 2%;
+}
+
+
+/* endregion: page_main */
+
+
+/* region: page_unit */
+
+#div_units_header {
+    line-height: 7vh;
+    background-color: var(--b_color_title);
+    color: var(--f_color_title);
+}
+
+#div_back {
+    font-size: 20px;
+    text-align: left;
+    padding-left: 10%;
+}
+
+#div_units_title {
+    font-size: 20px;
+    text-align: center;
+}
+
+#div_units_input_currency {
+    font-size: 20px;
+    text-align: right;
+    padding-right: 3%;
+}
+
+#div_list_layout {
+    font-size: 30px;
+    border-top: 1px solid;
+}
+
+
+/*the list has many rows, instead of id, here I use class*/
+
+.class_iso_code {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    padding: 3% 0 0 9%;
+    background-color: var(--b_color_input_output);
+    color: var(--f_color_body);
+    cursor: pointer;
+    border-bottom: 1px solid;
+}
+
+.class_currency_name {
+    text-align: center;
+    /* padding for central vertical alignment*/
+    padding: 5% 0 0 3%;
+    background-color: var(--b_color_input_output);
+    color: var(--f_color_body);
+    cursor: pointer;
+    font-size: 12px;
+    border-bottom: 1px solid;
+}
+
+.class_rate {
+    text-align: right;
+    /* padding for central vertical alignment*/
+    padding: 3% 5% 0 0;
+    background-color: var(--b_color_input_output);
+    color: var(--f_color_body);
+    font-size: 18px;
+    border-bottom: 1px solid;
+}
+
+
+/* endregion: page_unit */
+
+
+/* region: swipe */
+
+.swipe {
+    overflow: hidden;
+    visibility: hidden;
+    position: relative;
+}
+
+.swipe-wrap {
+    overflow: hidden;
+    position: relative;
+}
+
+.swipe-wrap>div {
+    float: left;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+
+/* endregion: swipe */
