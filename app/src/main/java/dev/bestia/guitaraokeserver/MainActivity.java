@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void printLine(String content) {
+    public void printLine(String content) {
         printMessage("Server", new Date(), content);
     }
 

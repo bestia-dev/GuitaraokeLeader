@@ -36,7 +36,7 @@ public class WebsocketServer extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        printLine("Message from client: " + message);
+        // printLine("Message from client: " + message);
         Gson gson = new Gson();
         Message msg = gson.fromJson(message, MessageReceiver.class).toMessage();
         printMessage(msg);

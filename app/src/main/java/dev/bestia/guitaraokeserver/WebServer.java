@@ -8,7 +8,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Date;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -31,33 +30,62 @@ public class WebServer extends NanoHTTPD {
      * @return the requested file path or 'index.html'.
      */
     private  String getFilePath(String uri) {
+        if (uri.startsWith("/css")) {
+            try {
+                String filename_from_uri = uri.substring(5);
+                boolean fileExists = Arrays.asList(this.assetManager.list("dist/css")).contains(filename_from_uri);
+                if (fileExists) {
+                    return "css/"+filename_from_uri;
+                }
+            }catch(IOException e) {
+                printLine(e.getMessage());
+            }
+        }
+        if (uri.startsWith("/videos")) {
+            try {
+                String filename_from_uri = uri.substring(8);
+                boolean fileExists = Arrays.asList(this.assetManager.list("dist/videos")).contains(filename_from_uri);
+                if (fileExists) {
+                    return "videos/"+filename_from_uri;
+                }
+            }catch(IOException e) {
+                printLine(e.getMessage());
+            }
+        }
         try {
             boolean fileExists = Arrays.asList(this.assetManager.list("dist")).contains(uri.substring(1));
             if (fileExists) {
                 return uri.substring(1);
             }
         }catch(IOException e) {
-            printLn(e.getMessage());
+            printLine(e.getMessage());
         }
         return "index.html";
     }
 
-    private static String getMimeType(String file) {
+    private String getMimeType(String file) {
         String ext = MimeTypeMap.getFileExtensionFromUrl(file);
-        String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
-        if (type == null) {
-            switch (ext) {
-                case "js":
-                    return "application/javascript";
-                case "woff2":
-                    return "font/woff2";
-                case "woff":
-                    return "font/woff";
-                case "ttf":
-                    return "font/ttf";
-            }
+        // the extension for mp4 didn't come correct, maybe because of space - special characters
+        // but otherwise it works just fine.
+        if (file.endsWith(".mp4")){
+            ext="mp4";
         }
-        return type;
+        switch (ext) {
+            case "css":
+                return "text/css";
+            case "js":
+                return "application/javascript";
+            case "woff2":
+                return "font/woff2";
+            case "woff":
+                return "font/woff";
+            case "ttf":
+                return "font/ttf";
+            case "mp4":
+                return "video/mp4";
+            default:
+                return MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
+        }
     }
 
     private static boolean binaryResponse(String mimeType) {
@@ -67,6 +95,7 @@ public class WebServer extends NanoHTTPD {
         switch (mimeType) {
             case "text/html":
             case "application/javascript":
+            case "text/css":
             case "":
                 return false;
         }
@@ -116,15 +145,15 @@ public class WebServer extends NanoHTTPD {
             }
             is.close();
             content = new String(buffer);
-            content = content.replace("old string", "new string");
+            // content = content.replace("old string", "new string");
         }catch(IOException e) {
-            printLn("IOException (at serve): " + e.getMessage());
+            printLine("IOException (at serve): " + e.getMessage());
             mimeType = "text/html";
             content = "<html><body><h1>IOException</h1>\n<p>" + e.getMessage() + "</p>\n<p>Serving " + session.getUri() + " !</p></body></html>\n";
         }
         return newFixedLengthResponse(Response.Status.OK, mimeType, content);
     }
-    private void printLn(String string){
-        this.main_activity.printMessage("server", new Date(), string);
+    private void printLine(String string){
+        this.main_activity.printLine(string);
     }
 }
