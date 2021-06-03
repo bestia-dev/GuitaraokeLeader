@@ -16,12 +16,12 @@ import fi.iki.elonen.NanoHTTPD;
 public class WebServer extends NanoHTTPD {
 
     private final AssetManager assetManager;
-    private final ServerActivity server_activity;
+    private final MainActivity main_activity;
 
-    public WebServer(int port, AssetManager assetManager,ServerActivity activity) {
+    public WebServer(int port, AssetManager assetManager,MainActivity activity) {
         super(port);
         this.assetManager = assetManager;
-        this.server_activity = activity;
+        this.main_activity = activity;
     }
 
     /**
@@ -125,6 +125,6 @@ public class WebServer extends NanoHTTPD {
         return newFixedLengthResponse(Response.Status.OK, mimeType, content);
     }
     private void printLn(String string){
-        this.server_activity.printMessage("server", new Date(), string);
+        this.main_activity.printMessage("server", new Date(), string);
     }
 }

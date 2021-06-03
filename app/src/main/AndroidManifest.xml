@@ -20,11 +20,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ServerActivity"
-            android:label="@string/title_activity_server"
-            android:theme="@style/AppTheme"
-            />
     </application>
 
 </manifest>

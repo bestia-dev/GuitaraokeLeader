@@ -12,21 +12,19 @@ import java.util.Set;
 public class WebsocketServer extends WebSocketServer {
 
     private final Set<WebSocket> connections;
-    private final ServerActivity server_activity;
+    private final MainActivity main_activity;
 
-    public WebsocketServer(int port, ServerActivity activity) {
+    public WebsocketServer(int port, MainActivity activity) {
         super(new InetSocketAddress(port));
         connections = new HashSet<>();
-        this.server_activity = activity;
-        printLine("WebsocketServer new");
+        this.main_activity = activity;
+        printLine("WebsocketServer on port "+port);
     }
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         connections.add(conn);
         Date date = new Date();
-        Message msg = new Message(conn.getRemoteSocketAddress().getAddress().getHostAddress() ,date,"onOpen");
-        printMessage(msg);
         printLine("New connection from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
     }
 
@@ -60,13 +58,13 @@ public class WebsocketServer extends WebSocketServer {
 
     @Override
     public void onStart() {
-        printLine("onStart");
+        //printLine("onStart");
     }
 
     private void printMessage(Message msg) {
-        this.server_activity.printMessage(msg.username,msg.timestamp,msg.data);
+        this.main_activity.printMessage(msg.username,msg.timestamp,msg.data);
     }
     private void printLine(String string){
-        this.server_activity.printMessage("server", new Date(), string);
+        this.main_activity.printMessage("server", new Date(), string);
     }
 }
