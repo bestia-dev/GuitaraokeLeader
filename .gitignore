@@ -10,3 +10,6 @@
 /build
 /captures
 .externalNativeBuild
+/app/release/output-metadata.json
+/app/release/GuitaraokeServer-release.apk
+/app/src/main/assets/dist/videos/

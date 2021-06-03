@@ -12,12 +12,13 @@ import java.util.Set;
 public class WebsocketServer extends WebSocketServer {
 
     private final Set<WebSocket> connections;
-    private final ChatActivity activity;
+    private final ServerActivity server_activity;
 
-    public WebsocketServer(int port, ChatActivity activity) {
+    public WebsocketServer(int port, ServerActivity activity) {
         super(new InetSocketAddress(port));
         connections = new HashSet<>();
-        this.activity = activity;
+        this.server_activity = activity;
+        printLine("WebsocketServer new");
     }
 
     @Override
@@ -25,22 +26,22 @@ public class WebsocketServer extends WebSocketServer {
         connections.add(conn);
         Date date = new Date();
         Message msg = new Message(conn.getRemoteSocketAddress().getAddress().getHostAddress() ,date,"onOpen");
-        addMessage(msg);
-        System.out.println("New connection from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+        printMessage(msg);
+        printLine("New connection from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+        printLine("Closed connection");
         connections.remove(conn);
-        System.out.println("Closed connection to " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        System.out.println("Message from client: " + message);
+        printLine("Message from client: " + message);
         Gson gson = new Gson();
         Message msg = gson.fromJson(message, MessageReceiver.class).toMessage();
-        addMessage(msg);
+        printMessage(msg);
         for (WebSocket sock : connections) {
             sock.send(message);
         }
@@ -50,18 +51,22 @@ public class WebsocketServer extends WebSocketServer {
     public void onError(WebSocket conn, Exception ex) {
         //ex.printStackTrace();
         if (conn != null) {
-            System.out.println("ERROR from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+            printLine("ERROR from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
             connections.remove(conn);
             // do some thing if required
         }
-        System.out.println("Websocket error: " + ex.getMessage());
+        printLine("Websocket error: " + ex.getMessage());
     }
 
     @Override
     public void onStart() {
+        printLine("onStart");
     }
 
-    private void addMessage(Message msg) {
-        this.activity.addMessage(msg);
+    private void printMessage(Message msg) {
+        this.server_activity.printMessage(msg.username,msg.timestamp,msg.data);
+    }
+    private void printLine(String string){
+        this.server_activity.printMessage("server", new Date(), string);
     }
 }

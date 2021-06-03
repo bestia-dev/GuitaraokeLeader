@@ -14,19 +14,17 @@
         android:theme="@style/AppTheme"
         android:allowBackup="false"
         >
-        <activity android:name=".MainActivity"
-
-            >
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".ChatActivity"
-            android:label="@string/title_activity_chat"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".ServerActivity"
+            android:label="@string/title_activity_server"
+            android:theme="@style/AppTheme"
+            />
     </application>
 
 </manifest>

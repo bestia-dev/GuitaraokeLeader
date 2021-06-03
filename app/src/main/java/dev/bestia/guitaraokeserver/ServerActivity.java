@@ -1,51 +1,62 @@
 package dev.bestia.guitaraokeserver;
 
+import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.ListView;
+import android.view.View;
 import android.widget.Toast;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ChatActivity extends AppCompatActivity {
+public class ServerActivity extends AppCompatActivity {
 
-    MessageAdapter adapter;
-    ListView list;
     String ip;
     WebServer webserver;
     WebsocketServer websocketserver;
     TextView HeaderIpPort;
+    TextView text_view_1;
+    ScrollView scroll_view_1;
+    Button button_stop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        setContentView(R.layout.activity_server);
         // Initialize variables (ListView)
-        list =  findViewById(R.id.messages_view);
-        adapter = new MessageAdapter(new ArrayList<>(), getApplicationContext());
-        list.setAdapter(adapter);
-
+        text_view_1 =(TextView)findViewById(R.id.text_view_1);
+        scroll_view_1 =(ScrollView)findViewById(R.id.scroll_view_1);
+        Button button_stop = (Button) findViewById(R.id.button_stop);
+        button_stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // stop both servers
+                finishAffinity();
+            }
+        });
 
         // Main function
-        serverMessage("Initializing server...");
+        printLine("Initializing server...");
         // Init server
         Utils utils = new Utils(getApplicationContext());
         ip = utils.getIP();
         if (ip == null) {
-            serverMessage("Error: Please connect to wifi.");
+            printLine("Error: Please connect to wifi.");
             return;
         }
         int WEB_SERVER_TCP_PORT = 8080;
-        webserver = new WebServer(WEB_SERVER_TCP_PORT, getAssets());
+        webserver = new WebServer(WEB_SERVER_TCP_PORT, getAssets(),this);
         int WEB_SOCKET_TCP_PORT = 3000;
         websocketserver = new WebsocketServer(WEB_SOCKET_TCP_PORT, this);
         try {
             webserver.start();
             websocketserver.start();
-            serverMessage("Listening on " + ip + ":"+ WEB_SERVER_TCP_PORT);
+            printLine("Listening on " + ip + ":"+ WEB_SERVER_TCP_PORT);
             HeaderIpPort = (TextView)findViewById(R.id.headerIpPort);
             Resources res = getResources();
             String text = String.format(res.getString(R.string.print_ip_address_and_port),ip, WEB_SERVER_TCP_PORT);
@@ -57,17 +68,17 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    public void addMessage(Message msg) {
-        final Message message = msg;
+    public void printMessage(String username, Date timestamp, String data) {
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+        String showDate = sdf.format(timestamp);
         runOnUiThread(() -> {
-            adapter.add(message);
-            adapter.notifyDataSetChanged();
-            list.setSelection(adapter.getCount()-1);
+            text_view_1.append(username + " " + showDate + " " + data + "\n");
+            scroll_view_1.fullScroll(ScrollView.FOCUS_DOWN);
         });
     }
 
-    private void serverMessage(String content) {
-        addMessage(new Message("Server", new Date(), content));
+    private void printLine(String content) {
+        printMessage("Server", new Date(), content);
     }
 
     public void onDestroy() {

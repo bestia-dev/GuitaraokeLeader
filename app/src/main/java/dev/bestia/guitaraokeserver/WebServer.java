@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Date;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -15,10 +16,12 @@ import fi.iki.elonen.NanoHTTPD;
 public class WebServer extends NanoHTTPD {
 
     private final AssetManager assetManager;
+    private final ServerActivity server_activity;
 
-    public WebServer(int port, AssetManager assetManager) {
+    public WebServer(int port, AssetManager assetManager,ServerActivity activity) {
         super(port);
         this.assetManager = assetManager;
+        this.server_activity = activity;
     }
 
     /**
@@ -34,7 +37,7 @@ public class WebServer extends NanoHTTPD {
                 return uri.substring(1);
             }
         }catch(IOException e) {
-            System.out.println(e.getMessage());
+            printLn(e.getMessage());
         }
         return "index.html";
     }
@@ -115,10 +118,13 @@ public class WebServer extends NanoHTTPD {
             content = new String(buffer);
             content = content.replace("old string", "new string");
         }catch(IOException e) {
-            System.out.println("IOException (at serve): " + e.getMessage());
+            printLn("IOException (at serve): " + e.getMessage());
             mimeType = "text/html";
             content = "<html><body><h1>IOException</h1>\n<p>" + e.getMessage() + "</p>\n<p>Serving " + session.getUri() + " !</p></body></html>\n";
         }
         return newFixedLengthResponse(Response.Status.OK, mimeType, content);
+    }
+    private void printLn(String string){
+        this.server_activity.printMessage("server", new Date(), string);
     }
 }

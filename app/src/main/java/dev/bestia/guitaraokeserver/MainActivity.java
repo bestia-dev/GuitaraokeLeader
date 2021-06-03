@@ -10,7 +10,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent myIntent = new Intent(getApplicationContext(), ChatActivity.class);
+        Intent myIntent = new Intent(getApplicationContext(), ServerActivity.class);
         startActivity(myIntent);
 
     }
