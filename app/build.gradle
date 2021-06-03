@@ -1,12 +1,6 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        debug {
-            storeFile file('C:\\Users\\Luciano\\AndroidStudioProjects\\AndroidKeyStore.jks')
-            keyAlias 'key1'
-        }
-    }
     compileSdkVersion 30
     defaultConfig {
         applicationId "dev.bestia.guitaraokeserver"
