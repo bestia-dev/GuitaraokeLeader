@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -48,7 +46,7 @@ public class WebServer extends NanoHTTPD {
         if (uri.startsWith("/css")) {
             try {
                 String filename_from_uri = uri.substring(5);
-                boolean fileExists = Arrays.asList(this.assetManager.list("dist/css")).contains(filename_from_uri);
+                boolean fileExists = Arrays.asList(this.assetManager.list("guitaraoke_client/css")).contains(filename_from_uri);
                 if (fileExists) {
                     return "css/"+filename_from_uri;
                 }
@@ -58,7 +56,7 @@ public class WebServer extends NanoHTTPD {
         }
 
         try {
-            boolean fileExists = Arrays.asList(this.assetManager.list("dist")).contains(uri.substring(1));
+            boolean fileExists = Arrays.asList(this.assetManager.list("guitaraoke_client")).contains(uri.substring(1));
             if (fileExists) {
                 return uri.substring(1);
             }
@@ -127,7 +125,7 @@ public class WebServer extends NanoHTTPD {
 
     @Override
     public Response serve(IHTTPSession session) {
-        // files are in assets/dist/
+        // files are in assets/guitaraoke_client/
         // except videos are in externalStorage. I will enable to manually download videos from urls.
         String filepath = getFilePath(session.getUri());
         String mimeType = getMimeType(filepath);
@@ -141,7 +139,7 @@ public class WebServer extends NanoHTTPD {
                 is = new FileInputStream(file);
             }
             else{
-                is = this.assetManager.open("dist/" + filepath);
+                is = this.assetManager.open("guitaraoke_client/" + filepath);
             }
             if (binaryResponse(mimeType)) {
                 return newFixedLengthResponse(Response.Status.OK, mimeType, is, -1);

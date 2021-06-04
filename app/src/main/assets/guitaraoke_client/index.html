@@ -30,6 +30,8 @@
             <div id="div_song_name">song_name</div>
             <video id="video_video" preload="auto" height="120" width="100%"><source type="video/mp4"></video>
             <div>
+                <p></p>
+                <p></p>
                 <div>Sometimes the playback of some devices is not in sync. You can try to change the playback speed to sync them.</div>
                 <p></p>
                 <button id="button_slower" onclick="video_video.playbackRate = video_video.playbackRate-0.005;document.getElementById('span_speed').innerText='--- speed: '+video_video.playbackRate.toFixed(3)+' ---';">Slower</button>
@@ -37,6 +39,7 @@
                 <button id="button_faster" onclick="video_video.playbackRate = video_video.playbackRate+0.005;document.getElementById('span_speed').innerText='--- speed: '+video_video.playbackRate.toFixed(3)+' ---';">Faster</button>
                 <p></p>
                 <div>Or you can simply turn down the volume if is terrible.</div>
+                <p></p>
                 <button id="button_volume_toggle" onclick="video_volume_toggle();">Mute sound</button>
                 <p></p>
             </div>
@@ -79,9 +82,9 @@
             var url = window.location.href;
             console.log(url);
             //TODO: this url is fixed only for developing
-            var ws_url = "ws://192.168.104.232:3000";
+            //var ws_url = "ws://192.168.104.232:3000";
             //TODO: this url is needed in runtime
-            //var ws_url = url.replace("http://","ws://").replace("8080","3000");
+            var ws_url = url.replace("http://","ws://").replace("8080","3000");
             console.log(ws_url);
             websocket = new WebSocket(ws_url);
             websocket.onopen = function(e) {

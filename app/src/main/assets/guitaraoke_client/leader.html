@@ -65,9 +65,9 @@
             var url = window.location.href;
             console.log(url);
             //TODO: this url is fixed only for developing
-            var ws_url = "ws://192.168.104.232:3000";
+            //var ws_url = "ws://192.168.104.232:3000";
             //TODO: this url is needed in runtime
-            //var ws_url = url.replace("http://","ws://").replace("8080","3000");
+            var ws_url = url.replace("http://","ws://").replace("8080","3000");
             console.log(ws_url);
             socket = new WebSocket(ws_url);
             socket.onopen = function(e) {

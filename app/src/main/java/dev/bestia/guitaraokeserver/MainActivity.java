@@ -15,7 +15,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -115,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void copyOnceAssetsVideosToExternalStorage() {
         // check if the folder exists in External storage
-        String asset_folder = "dist/videos";
+        String asset_folder = "guitaraoke_client/videos";
         File videos_folder = getExternalVideosFolder();
         if (videos_folder.listFiles().length == 0) {
             AssetManager assetManager = getAssets();
