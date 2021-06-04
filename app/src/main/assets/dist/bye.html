@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Guitaraoke Bye</title>
+    <meta http-equiv="Content-type" content="text/html" />
+    <meta name="Description" content="Guitaraoke Bye">
+    <meta name="author" content="https://github.com/LucianoBestia/guitaraoke_client">
+
+    <meta name="viewport" content="width = device-width,initial-scale = 1.0" />
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/guitaraoke_client.css">
+    <meta name="google" content="notranslate">
+</head>
+
+<body>
+    <div class="fixed_header" style="height: 7vh;width: var(--body_width)">
+        <div id="div_units_header" style="display: grid;width: var(--body_width);grid-template-columns: 100% ; grid-template-rows: 7vh;">
+            <div id="div_units_title">Guitaraoke Bye</div>
+        </div>
+    </div>
+    <div style="position: absolute;top:7vh;height: 93vh; ;width: var(--body_width);align-items: center; text-align: center; ">
+        <p></p>
+        <div>Thank you for using Guitaraoke.</div>
+
+        <div>
+            <div class="container0_content_not_grid ">
+                <p class="small">© Luciano Bestia 2021, MIT Licence</p>
+                <p class="small">Open source repository for this web app:
+                    <a class="c_link_1 break-all small" target="blank " href="https://github.com/LucianoBestia/GuitaraokeServer">
+                        GitHub
+                      </a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // region: this is executed directly after html load
+
+        // endregion: this is executed directly after html load
+
+        function download_song() {
+            console.log("download_song");
+            var song_url = document.getElementById("song_url").value;
+            var div_msg_for_user = document.getElementById("div_msg_for_user");
+            if (!song_url.endsWith(" - guitaraoke.mp4") && !song_url.endsWith("%20-%20guitaraoke.mp4") && !song_url.endsWith(" - guitaraoke.mp4?dl=1") && !song_url.endsWith("%20-%20guitaraoke.mp4?dl=1")) {
+                div_msg_for_user.innerText = "The song_url does not end with ' - guitaraoke.mp4' or ' - guitaraoke.mp4?dl=1' ";
+            } else if (!song_url.startsWith("http://") && !song_url.startsWith("https://")) {
+                div_msg_for_user.innerText = "The song_url does not start with 'http://' or 'https://'";
+            } else {
+                if (window.XMLHttpRequest) {
+                    http_request = new XMLHttpRequest();
+                    page_url = "download_song.html";
+
+                    var params = "song_url=" + encodeURIComponent(song_url);
+                    http_request.open("POST", page_url, true);
+
+                    //Send the proper header information along with the request
+                    http_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+                    http_request.onreadystatechange = function() { //Call a function when the state changes.
+                        if (http_request.readyState == 4 && http_request.status == 200) {
+                            alert(http_request.responseText);
+                        }
+                    }
+                    http_request.send(params);
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
