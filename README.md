@@ -93,6 +93,7 @@ For example `https://www.dropbox.com/s/hn0r9on24dxkhfh/4%20Non%20Blondes%20-%20W
 It will download in the background, slowly. Repeat this for the songs you like to have.  
 I will not make my videos generally public for now.
 Finally click on the button `Back to Guitaraoke Leader page`.  
+You can also manually copy the `mp4` files to the device folder: `/storage/emulated/0/Android/data/dev.bestia.guitaraokeserver/files/videos/`.
 
 ## Play-flow
 
