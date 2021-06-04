@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-    <!-- classic header for a web page -->
     <meta charset="utf-8">
     <title>Guitaraoke Follower</title>
     <meta http-equiv="Content-type" content="text/html" />
@@ -29,9 +28,23 @@
         </div>
         <div id="div_video" style=" align-items: center; text-align: center;" hidden=true>
             <div id="div_song_name">song_name</div>
-            <video id="video_video" height="120" width="100%"><source type="video/mp4"></video>
-            <button id="button_fullscreen" onclick="video_video.requestFullscreen();">FullScreen</button>
+            <video id="video_video" preload="auto" height="120" width="100%"><source type="video/mp4"></video>
+            <div>
+                <div>Sometimes the playback of some devices is not in sync. You can try to change the playback speed to sync them.</div>
+                <p></p>
+                <button id="button_slower" onclick="video_video.playbackRate = video_video.playbackRate-0.005;document.getElementById('span_speed').innerText='--- speed: '+video_video.playbackRate.toFixed(3)+' ---';">Slower</button>
+                <span id="span_speed">--- speed: 1.000 ---</span>
+                <button id="button_faster" onclick="video_video.playbackRate = video_video.playbackRate+0.005;document.getElementById('span_speed').innerText='--- speed: '+video_video.playbackRate.toFixed(3)+' ---';">Faster</button>
+                <p></p>
+                <div>Or you can simply turn down the volume if is terrible.</div>
+                <button id="button_volume_toggle" onclick="video_volume_toggle();">Mute sound</button>
+                <p></p>
+            </div>
 
+            <p></p>
+            <div>
+                <button id="button_fullscreen" onclick="video_video.requestFullscreen();">FullScreen</button>
+            </div>
         </div>
     </div>
     <script>
@@ -78,22 +91,18 @@
 
             websocket.onmessage = function(event) {
                 var msg = JSON.parse(event.data);
-                console.log(`[message] Data received from server: ${msg}`);
+                console.log(`[message] : ${msg.data}`);
                 if (msg.data.startsWith("song: ")) {
-                    load_song(msg.data.substring(6))
+                    load_song(msg.data.substring(6));
                 } else if (msg.data == "play!") {
                     video_video.play();
                     document.getElementById("button_fullscreen").hidden = false;
-                } else if (msg.data == "pause!") {
+                } else if (msg.data == "stop!") {
+                    exit_full_screen();
                     video_video.pause();
-                    document.getElementById("button_fullscreen").hidden = true;
                 } else if (msg.data == "bye!") {
-                    if (document.fullscreenElement) {
-                        document.exitFullscreen()
-                            .then(() => console.log("Document Exited from Full screen mode"))
-                            .catch((err) => console.error(err))
-                    }
-                    document.getElementById("button_fullscreen").hidden = true;
+                    exit_full_screen();
+                    open("bye.html");
                 }
             };
 
@@ -125,6 +134,24 @@
             div_song_name.innerText = song_name;
             video_video.src = "videos/" + song_name + " - guitaraoke.mp4";
             video_video.load();
+        }
+
+        function exit_full_screen() {
+            if (document.fullscreenElement) {
+                document.exitFullscreen()
+                    .then(() => console.log("Document Exited from Full screen mode"))
+                    .catch((err) => console.error(err))
+            }
+        }
+
+        function video_volume_toggle() {
+            if (video_video.volume == 0.0) {
+                video_video.volume = 1.0;
+                document.getElementById("button_volume_toggle").innerText = "Mute sound";
+            } else {
+                video_video.volume = 0.0;
+                document.getElementById("button_volume_toggle").innerText = "Unmute sound";
+            }
         }
 
         function getRandomInt(min, max) {

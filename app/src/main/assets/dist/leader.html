@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-    <!-- classic header for a web page -->
     <meta charset="utf-8">
     <title>Guitaraoke Leader</title>
     <meta http-equiv="Content-type" content="text/html" />
@@ -24,17 +23,19 @@
     <div style="position: absolute;top:7vh;height: 93vh; ;width: var(--body_width);align-items: center; text-align: center; ">
         <p></p>
         <div id="div_start" style=" align-items: center; text-align: center;">
-            <!--read the videos directory index and show to click-->
-            <div onclick="send_song_name('Welcome_to_guitaraoke');">Welcome_to_guitaraoke</div>
-            <div onclick="send_song_name('sample1');">sample1</div>
-            <div onclick="send_song_name('sample2');">sample2</div>
+            <!--list_of_files_in_folder_videos-->
+            <p></p>
             <div>
                 <button id="button_bye" onclick="send_message('bye!');">Send Bye</button>
             </div>
+            <p></p>
+            <a href="load_songs.html">
+                <button>Download new songs</button>
+            </a>
         </div>
         <div id="div_video" hidden=true>
             <div>
-                <button id="back_to_list" onclick="send_message('pause!');">Back to list</button>
+                <button id="back_to_list" onclick="send_message('stop!');">Back to list</button>
             </div>
             <div id="div_song_name">song_name</div>
             <video id="myVideo" height="120" width="100%"><source type="video/mp4"></video>
@@ -42,7 +43,8 @@
                 <button id="send_play" onclick="send_message('play!');">Send play</button>
             </div>
             <div>
-                <button id="send_pause" onclick="send_message('pause!');">Send stop</button>
+                <button id="send_pause" onclick="send_message('stop!');">Send stop</button>
+                <p></p>
             </div>
             <div>
                 <button id="button_fullscreen" onclick="myVideo.requestFullscreen();" hidden=true>FullScreen</button>
@@ -75,7 +77,7 @@
 
             socket.onmessage = function(event) {
                 var msg = JSON.parse(event.data);
-                console.log(`[message] Data received from server: ${msg}`);
+                console.log(`[message] : ${msg.data}`);
                 if (msg.data.startsWith("song: ")) {
                     load_song(msg.data.substring(6));
                     document.getElementById("div_start").hidden = true;
@@ -91,14 +93,14 @@
                     document.getElementById("send_pause").hidden = false;
                     document.getElementById("back_to_list").hidden = true;
                     document.getElementById("button_fullscreen").hidden = false;
-                } else if (msg.data == "pause!") {
+                } else if (msg.data == "stop!") {
                     myVideo.pause();
-                    my_video_ended();
+                    exit_full_screen();
                     document.getElementById("div_start").hidden = false;
                     document.getElementById("div_video").hidden = true;
                     document.getElementById("button_fullscreen").hidden = true;
                 } else if (msg.data == "bye!") {
-                    window.close('', '_parent', '');;
+                    open("bye.html");
                 }
             };
 
@@ -139,7 +141,11 @@
         }
 
         function my_video_ended() {
-            console.log("my_video_ended");
+            send_message('stop!');
+            exit_full_screen();
+        }
+
+        function exit_full_screen() {
             if (document.fullscreenElement) {
                 document.exitFullscreen()
                     .then(() => console.log("Document Exited from Full screen mode"))

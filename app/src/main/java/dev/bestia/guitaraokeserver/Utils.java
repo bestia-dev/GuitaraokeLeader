@@ -1,12 +1,12 @@
 package dev.bestia.guitaraokeserver;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
-import android.util.Log;
 
 import java.io.*;
 import java.net.*;
@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static android.content.Context.WIFI_SERVICE;
-import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class Utils {
 
@@ -138,7 +137,7 @@ public class Utils {
      * Get the IP of current Wi-Fi connection
      * @return IP as string
      */
-    public String getIP() {
+    public String getIP(MainActivity main_activity) {
         try {
             WifiManager wifiManager = (WifiManager) this.mContext.getSystemService(WIFI_SERVICE);
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
@@ -151,7 +150,7 @@ public class Utils {
             }
             return ip;
         } catch (Exception ex) {
-            Log.e(TAG, ex.getMessage());
+            main_activity.printLine(ex.getMessage());
             return null;
         }
     }
@@ -164,4 +163,48 @@ public class Utils {
             return Html.fromHtml(source);
         }
     }
+
+    public static void copyFile(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        while((read = in.read(buffer)) != -1){
+            out.write(buffer, 0, read);
+        }
+    }
+    /**
+    * HTML encode of UTF8 string i.e. symbols with code more than 127 aren't encoded
+    * Use Apache Commons Text StringEscapeUtils if it is possible
+    *
+    * <pre>
+    * escapeHtml("\tIt's time to hack & fun\r<script>alert(\"PWNED\")</script>")
+    *    .equals("&#9;It&#39;s time to hack &amp; fun&#13;&lt;script&gt;alert(&quot;PWNED&quot;)&lt;/script&gt;")
+    * </pre>
+    */
+    public static String escapeHtml(String rawHtml) {
+        int rawHtmlLength = rawHtml.length();
+        // add 30% for additional encodings
+        int capacity = (int) (rawHtmlLength * 1.3);
+        StringBuilder sb = new StringBuilder(capacity);
+        for (int i = 0; i < rawHtmlLength; i++) {
+            char ch = rawHtml.charAt(i);
+            if (ch == '<') {
+                sb.append("&lt;");
+            } else if (ch == '>') {
+                sb.append("&gt;");
+            } else if (ch == '"') {
+                sb.append("&quot;");
+            } else if (ch == '&') {
+                sb.append("&amp;");
+            } else if (ch < ' ' || ch == '\'') {
+                // non printable ascii symbols escaped as numeric entity
+                // single quote ' in html doesn't have &apos; so show it as numeric entity &#39;
+                sb.append("&#").append((int)ch).append(';');
+            } else {
+                // any non ASCII char i.e. upper than 127 is still UTF
+                sb.append(ch);
+            }
+        }
+        return sb.toString();
+    }
+
 }

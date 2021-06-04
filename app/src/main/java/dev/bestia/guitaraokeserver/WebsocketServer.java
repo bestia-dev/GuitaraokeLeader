@@ -14,11 +14,11 @@ public class WebsocketServer extends WebSocketServer {
     private final Set<WebSocket> connections;
     private final MainActivity main_activity;
 
-    public WebsocketServer(int port, MainActivity activity) {
+    public WebsocketServer( int port, MainActivity activity) {
         super(new InetSocketAddress(port));
         connections = new HashSet<>();
         this.main_activity = activity;
-        printLine("WebsocketServer on port "+port);
+        printLine("WebsocketServer on port: "+port);
     }
 
     @Override
@@ -30,13 +30,11 @@ public class WebsocketServer extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        printLine("Closed connection");
         connections.remove(conn);
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        // printLine("Message from client: " + message);
         Gson gson = new Gson();
         Message msg = gson.fromJson(message, MessageReceiver.class).toMessage();
         printMessage(msg);
