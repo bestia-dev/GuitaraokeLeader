@@ -76,7 +76,9 @@ The Guitaraoke `Leader` page `leader.html` list the video filesstored in the and
 
 ## Leader installs GuitaraokeServer app
 
-The `leader` installs the GuitaraokeServer on his smartphone. He downloads the signed APK from Github. The smartphone must have enabled `Security - Unknown Sources`. Read more here:  
+The `leader` installs the GuitaraokeServer on his smartphone.  
+He downloads the signed APK from Github : <https://github.com/LucianoBestia/GuitaraokeServer/releases>.  
+The smartphone must have enabled `Settings - Security - Unknown Sources`. Read more here:  
 <https://www.thegeeksclub.com/how-to-install-third-party-apk-on-android/>  
 He starts the app. The server is just a black screen with yellow debugging text. Nothing interesting going on here. It just must be opened because it serves the files to the browsers. When the tablet screen goes to sleep, the server stops working. Modify the settings to `Sleep after 30 minutes of inactivity`.  
 In the right corner there is the ip adress of the server. The `Leader` opens a browser (on the same device or on any device on the same local network) and types in the ip address of the server. Now the `Guitaraoke Follower page` should apear. We don't need that now.  
@@ -91,9 +93,9 @@ Click on the button `Download new songs`.
 Copy the url of the `xxx - guitaraoke.mp4` file and press `Start download`. 
 For example `https://www.dropbox.com/s/hn0r9on24dxkhfh/4%20Non%20Blondes%20-%20What%27s%20Up%20-%20guitaraoke.mp4?dl=1`  
 It will download in the background, slowly. Repeat this for the songs you like to have.  
-I will not make my videos generally public for now.
+My guitaraoke.mp4 files are listed here: <https://bestia.dev/guitaraoke/>.  
 Finally click on the button `Back to Guitaraoke Leader page`.  
-You can also manually copy the `mp4` files to the device folder: `/storage/emulated/0/Android/data/dev.bestia.guitaraokeserver/files/videos/`.
+You can also manually copy the `mp4` files to the device folder: `/storage/emulated/0/Android/data/dev.bestia.guitaraokeserver/files/videos/`.  
 
 ## Play-flow
 
