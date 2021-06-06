@@ -10,7 +10,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 
 import fi.iki.elonen.NanoHTTPD;
@@ -30,7 +32,7 @@ public class WebServer extends NanoHTTPD {
     }
 
     private  String getFilePath(String uri) {
-        // All files are in Assets, except videos are in ExternalStorage.
+        // All files are in Assets, except /videos are in ExternalStorage.
         if (uri.startsWith("/videos")) {
             String filename_from_uri = uri.substring(8);
             boolean fileExists = Arrays.asList(main_activity.getExternalVideosFolder().list()).contains(filename_from_uri);
@@ -54,7 +56,17 @@ public class WebServer extends NanoHTTPD {
                 printLine(e.getMessage());
             }
         }
-
+        if (uri.startsWith("/js")) {
+            try {
+                String filename_from_uri = uri.substring(4);
+                boolean fileExists = Arrays.asList(this.assetManager.list("guitaraoke_client/js")).contains(filename_from_uri);
+                if (fileExists) {
+                    return "js/"+filename_from_uri;
+                }
+            }catch(IOException e) {
+                printLine(e.getMessage());
+            }
+        }
         try {
             boolean fileExists = Arrays.asList(this.assetManager.list("guitaraoke_client")).contains(uri.substring(1));
             if (fileExists) {
@@ -82,7 +94,9 @@ public class WebServer extends NanoHTTPD {
             return "font/woff";
         } else if (file_path.endsWith(".ttf")){
             return "font/ttf";
-        }
+        } else if (file_path.endsWith(".ico")){
+        return "image/x-icon";
+    }
         return "";
     }
 
@@ -174,7 +188,10 @@ public class WebServer extends NanoHTTPD {
         }
         if (filepath.equals("download_song.html")) {
             download_song_html(session);
-
+            content = "downloading song";
+        }
+        if (filepath.equals("exact_time.html")) {
+            content = String.valueOf(System.currentTimeMillis());
         }
         return content;
     }

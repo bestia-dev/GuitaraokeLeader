@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GuitaraokeServer</string>
+    <string name="app_name">Guitaraoke</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="header_ip_port">header_ip_port</string>
     <string name="name_date_msg">name date msg</string>

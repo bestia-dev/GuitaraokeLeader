@@ -107,3 +107,14 @@ You can also manually copy the `mp4` files to the device folder: `/storage/emula
 6. The followers browser loads this song from the GuitaraokeServer. On the screen the follower can see the name of the song.  
 7. The leader clicks `Play` and it sends a msg to all connected followers to start playing he song.  
 8. The follower can adjust the speed of the playback if it is not in sync. Or he can simply `Mute sound` to avoid the disturbing delayed sound. When ready he clicks on `Fullscreen` and sings along.  
+
+## TODO
+
+One page has states. Separate UI differences in states.
+Call Rust from javascript
+Call Rust from java
+make a video tutorial
+leader page can create QRcode with IP.
+Playlist: songs and play order
+Download more songs. every url in a separate line.
+

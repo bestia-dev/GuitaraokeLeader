@@ -11,70 +11,82 @@
     <meta name="viewport" content="width = device-width,initial-scale = 1.0" />
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/guitaraoke_client.css">
+    <script src="js/common.js" ></script>
     <meta name="google" content="notranslate">
 </head>
 
 <body>
-    <div class="fixed_header" style="height: 7vh;width: var(--body_width)">
-        <div id="div_units_header" style="display: grid;width: var(--body_width);grid-template-columns: 100% ; grid-template-rows: 7vh;">
-            <div id="div_units_title">Guitaraoke Follower</div>
+    <div class="fixed_header" style="height: 8vh;width: var(--body_width)">
+        <div id="div_header" style="display: grid;width: var(--body_width);grid-template-columns: 100% ; grid-template-rows: 10vh;">
+            <div id="div_header_title">Guitaraoke Follower</div>
         </div>
     </div>
-    <div style="position: absolute;top:7vh;height: 93vh; ;width: var(--body_width);align-items: center; text-align: center; ">
-        <p></p>
-        <div id="div_start" style=" align-items: center; text-align: center;">
-            <button id="button_start" onclick="start_following();">Start guitaraoke</button>
-            <div id="div_waiting" hidden=true>Waiting for leader to select song and start playing...</div>
-        </div>
-        <div id="div_video" style=" align-items: center; text-align: center;" hidden=true>
-            <div id="div_song_name">song_name</div>
-            <video id="video_video" preload="auto" height="120" width="100%"><source type="video/mp4"></video>
-            <div>
-                <p></p>
-                <p></p>
-                <div>Sometimes the playback of some devices is not in sync. You can try to change the playback speed to sync them.</div>
-                <p></p>
-                <button id="button_slower" onclick="video_video.playbackRate = video_video.playbackRate-0.005;document.getElementById('span_speed').innerText='--- speed: '+video_video.playbackRate.toFixed(3)+' ---';">Slower</button>
-                <span id="span_speed">--- speed: 1.000 ---</span>
-                <button id="button_faster" onclick="video_video.playbackRate = video_video.playbackRate+0.005;document.getElementById('span_speed').innerText='--- speed: '+video_video.playbackRate.toFixed(3)+' ---';">Faster</button>
-                <p></p>
-                <div>Or you can simply turn down the volume if is terrible.</div>
-                <p></p>
-                <button id="button_volume_toggle" onclick="video_volume_toggle();">Mute sound</button>
-                <p></p>
-            </div>
 
+    <div style="position: absolute;top:10vh;height: 93vh; ;width: var(--body_width);align-items: center; text-align: center; ">
+        <p></p>
+        <div id=div_rotate style="color: red;">Please rotate the device to landscape mode!</div>
+        <div id="div_start" style=" align-items: center; text-align: center;">
+            <button id="button_start" onclick="state_change_from_start_to_waiting();">Start user interaction</button>
+            <div id="div_waiting" >
+                <p>Waiting for leader to select song and start playing...</p>                
+                <p></p>
+                <div>Some devices are slower to start playing a song. Adjust this delay in milliseconds (from 0 to 999):</div>
+                <input id="text_play_delay_ms" type="text" value="000" size="3" maxlength="3" oninput="text_play_delay_ms_on_input();" />
+                <p></p>
+                <p>Put your phone volume on maximum and change Settings - Display - Screen timeout to 10 minutes.</p>
+            </div>                       
+        </div>
+        <div id="div_play_video" style=" align-items: center; text-align: center;">
             <p></p>
-            <div>
-                <button id="button_fullscreen" onclick="video_video.requestFullscreen();">FullScreen</button>
-            </div>
+            <div id="div_song_name">song_name</div>      
+            <p><button id="button_fullscreen" onclick="video_video.requestFullscreen();">FullScreen</button></p>
+            <button id="button_slower" onclick="video_video.playbackRate = video_video.playbackRate-0.005;el('span_speed').innerText='--- speed: '+video_video.playbackRate.toFixed(3)+' ---';">Slower</button>
+            <span id="span_speed">--- speed: 1.000 ---</span>
+            <button id="button_faster" onclick="video_video.playbackRate = video_video.playbackRate+0.005;el('span_speed').innerText='--- speed: '+video_video.playbackRate.toFixed(3)+' ---';">Faster</button>                
+            <p><button id="button_muted_toggle" onclick="button_muted_toggle_on_click();">Mute sound</button></p>
+            <div>Sometimes the playback on some devices is not in sync. You can try to change the playback speed to sync them, like an old-school DJ on two vinyl records turntable.</div>
+            <div>Or you can simply mute the sound if it is terrible.</div>
+            <video id="video_video" preload="auto" height="1" width="100%"><source type="video/mp4"></video>
         </div>
     </div>
     <script>
         // region: this is executed directly after html load
-        // region: dynamic elements
+
+        // this web page can be in different states. A state defines which elements are hidden or visible.
+        const PageState = {
+        Start: 'Start',
+        Waiting: 'Waiting',
+        SongLoad: 'SongLoad',
+        SongPlay: 'SongPlay',
+        Bye: 'Bye'
+        };        
+        var page_state=PageState.Start;
+
+        // region: dynamic elements        
         var websocket;
-        var button_start = document.getElementById("button_start");
-        var div_waiting = document.getElementById("div_waiting");
-        var video_video = document.getElementById("video_video");
-        var div_start = document.getElementById("div_start");
-        var div_video = document.getElementById("div_video");
-        var div_song_name = document.getElementById("div_song_name");
-        // endregion: dynamic elements
+        var button_start = el("button_start");
+        var div_waiting = el("div_waiting");
+        var video_video = el("video_video");
+        var div_start = el("div_start");
+        var div_play_video = el("div_play_video");
+        var div_song_name = el("div_song_name");
+        var text_play_delay_ms = el("text_play_delay_ms");        
+        var button_fullscreen = el("button_fullscreen");               
+        // endregion: dynamic elements     
+
         // region: event listeners
-        //video_video.addEventListener('ended', my_video_ended);
-        window.onbeforeunload = function() {
-            console.log("window.onbeforeunload");
-            //websocket.onclose = function() {}; // disable onclose handler first
-            websocket.close();
-        };
-        window.onunload = function() {
-            console.log("window.onunload");
-            //websocket.onclose = function() {}; // disable onclose handler first
-            websocket.close();
-        };
+        window.onresize = function(){ warn_user_to_change_orientation(); };
         // endregion: event listeners
 
+        // from local storage
+        var play_delay_ms = window.localStorage.getItem('play_delay_ms'); 
+        if (!play_delay_ms){
+            play_delay_ms="000";
+        }
+        text_play_delay_ms.value = play_delay_ms;
+
+        warn_user_to_change_orientation();
+        state_change_to_start();
         // endregion: this is executed directly after html load
 
         function connect_to_guitaraoke_server() {
@@ -89,23 +101,20 @@
             websocket = new WebSocket(ws_url);
             websocket.onopen = function(e) {
                 console.log("[open] Connection established");
-                console.log("Sending to server");
             };
 
             websocket.onmessage = function(event) {
                 var msg = JSON.parse(event.data);
-                console.log(`[message] : ${msg.data}`);
+                //console.log(`[message] : ${msg.data}`);
                 if (msg.data.startsWith("song: ")) {
-                    load_song(msg.data.substring(6));
+                    var song_name = msg.data.substring(6);
+                    state_change_from_waiting_to_song_load(song_name);                   
                 } else if (msg.data == "play!") {
-                    video_video.play();
-                    document.getElementById("button_fullscreen").hidden = false;
+                    state_change_from_song_load_to_play();                      
                 } else if (msg.data == "stop!") {
-                    exit_full_screen();
-                    video_video.pause();
+                    state_change_from_play_to_waiting();                    
                 } else if (msg.data == "bye!") {
-                    exit_full_screen();
-                    open("bye.html");
+                    state_change_to_bye();
                 }
             };
 
@@ -124,44 +133,75 @@
             };
         }
 
-        function start_following() {
+        function state_change_to_start(){
+            page_state = PageState.Start;
+            div_start.hidden = false;
+            button_start.hidden = false;
+            div_waiting.hidden = true;
+            div_play_video.hidden = true;
+        }
+
+        function state_change_from_start_to_waiting(){
+            page_state = PageState.Waiting;
             connect_to_guitaraoke_server();
             button_start.hidden = true;
             div_waiting.hidden = false;
         }
 
-        function load_song(song_name) {
-            console.log("load_song");
+        function state_change_from_waiting_to_song_load(song_name){
+            page_state = PageState.SongLoad;
+            song_load(song_name);
             div_start.hidden = true;
-            div_video.hidden = false;
-            div_song_name.innerText = song_name;
-            video_video.src = "videos/" + song_name + " - guitaraoke.mp4";
-            video_video.load();
+            div_play_video.hidden = false;
         }
 
-        function exit_full_screen() {
-            if (document.fullscreenElement) {
-                document.exitFullscreen()
-                    .then(() => console.log("Document Exited from Full screen mode"))
-                    .catch((err) => console.error(err))
-            }
+        function state_change_from_song_load_to_play(){
+            var new_delay = 1000 - parseInt(play_delay_ms);
+            console.log("new_delay: "+new_delay);
+            setTimeout(function(){video_video.play();},new_delay);
+            button_fullscreen.hidden = false;
         }
 
-        function video_volume_toggle() {
-            if (video_video.volume == 0.0) {
-                video_video.volume = 1.0;
-                document.getElementById("button_volume_toggle").innerText = "Mute sound";
+        function state_change_from_play_to_waiting(){
+            exit_full_screen();
+            video_video.pause();
+            div_start.hidden = false;            
+            div_waiting.hidden = false;
+            div_play_video.hidden = true;
+        }
+
+        function state_change_to_bye(){
+            exit_full_screen();
+            open("bye.html");
+        }
+
+        function button_muted_toggle_on_click() {
+            if (video_video.muted == true) {
+                video_video.muted = false;
+                el("button_muted_toggle").innerText = "Mute sound";
             } else {
-                video_video.volume = 0.0;
-                document.getElementById("button_volume_toggle").innerText = "Unmute sound";
+                video_video.muted = true;
+                el("button_muted_toggle").innerText = "Unmute sound";
             }
         }
 
-        function getRandomInt(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min + 1)) + min;
+        function text_play_delay_ms_on_input(){
+            // allow only 3 numbers, remove non-numbers
+            var new_string = "";
+            for (let i = 0; i < text_play_delay_ms.value.length; i++) {
+                if (text_play_delay_ms.value[i]>="0" && text_play_delay_ms.value[i]<="9"){
+                    new_string += text_play_delay_ms.value[i];
+                }
+            }            
+            text_play_delay_ms.value = new_string;
+            if (text_play_delay_ms.value == ""){
+                play_delay_ms="000";
+            } else{
+                play_delay_ms = text_play_delay_ms.value;
+            }
+            window.localStorage.setItem('play_delay_ms',play_delay_ms);
         }
+
     </script>
 </body>
 

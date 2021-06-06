@@ -3,8 +3,10 @@ import android.annotation.SuppressLint;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -23,9 +25,10 @@ public class MainActivity extends AppCompatActivity {
     String ip;
     WebServer webserver;
     WebsocketServer websocketserver;
-    TextView HeaderIpPort;
     TextView text_view_1;
     ScrollView scroll_view_1;
+    int WEB_SERVER_TCP_PORT = 8080;
+    int WEB_SOCKET_TCP_PORT = 3000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
             finish();
             System.exit(0);
         });
+        TextView header_ip_port = findViewById(R.id.header_ip_port);
+        TextView header_title = findViewById(R.id.header_title);
+
 
         copyOnceAssetsVideosToExternalStorage();
         // Main function
@@ -60,19 +66,20 @@ public class MainActivity extends AppCompatActivity {
             printLine("Error: Please connect to wifi.");
             return;
         }
-        int WEB_SERVER_TCP_PORT = 8080;
         webserver = new WebServer(WEB_SERVER_TCP_PORT, getAssets(),this);
-        int WEB_SOCKET_TCP_PORT = 3000;
             websocketserver = new WebsocketServer(WEB_SOCKET_TCP_PORT, this);
             try {
                 webserver.start();
                 websocketserver.setReuseAddr(true);
                 websocketserver.start();
                 printLine("Listening on " + ip + ":"+ WEB_SERVER_TCP_PORT);
-                HeaderIpPort = findViewById(R.id.headerIpPort);
                 Resources res = getResources();
                 String text = String.format(res.getString(R.string.print_ip_address_and_port),ip, WEB_SERVER_TCP_PORT);
-                HeaderIpPort.setText( text);
+                header_ip_port.setText( text);
+                header_ip_port.setOnClickListener(view -> {openBrowserForLeader();});
+                header_title.setOnClickListener(view -> {openBrowserForLeader();});
+                // open browser for leader on start
+                openBrowserForLeader();
             }catch (IOException e) {
                 Toast.makeText(getApplicationContext(), "IOException: " +  e.getMessage(), Toast.LENGTH_LONG).show();
             }catch (Exception e) {
@@ -95,7 +102,10 @@ public class MainActivity extends AppCompatActivity {
         }
         printMessage("Server", new Date(), content);
     }
-
+    public void openBrowserForLeader(){
+        String url = "http://"+ip+":"+WEB_SERVER_TCP_PORT+"/leader.html";
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+    }
     public void onDestroy() {
         try {
             this.websocketserver.stop();

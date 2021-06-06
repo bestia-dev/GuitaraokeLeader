@@ -15,15 +15,16 @@
 </head>
 
 <body>
-    <div class="fixed_header" style="height: 7vh;width: var(--body_width)">
-        <div id="div_units_header" style="display: grid;width: var(--body_width);grid-template-columns: 100% ; grid-template-rows: 7vh;">
-            <div id="div_units_title">Guitaraoke Load Songs</div>
+    <div class="fixed_header" style="height: 8vh;width: var(--body_width)">
+        <div id="div_header" style="display: grid;width: var(--body_width);grid-template-columns: 100% ; grid-template-rows: 10vh;">
+            <div id="div_header_title">Guitaraoke Load Songs</div>
         </div>
     </div>
-    <div style="position: absolute;top:7vh;height: 93vh; ;width: var(--body_width);align-items: center; text-align: center; ">
+    <div style="position: absolute;top:10vh;height: 93vh; ;width: var(--body_width);align-items: center; text-align: center; ">
         <p></p>
-        <label for="song_url" style="display:block;">song url</label>
+        <label for="song_url" style="display:block;">copy-paste the song url:</label>
         <input id="song_url" type="text" style="display:block;width: 100%;" />
+        <p></p>
         <button onclick="download_song();">Start download</button>
         <p></p>
         <div id="div_msg_for_user" style="color: red;"></div>
@@ -62,7 +63,7 @@
 
                     http_request.onreadystatechange = function() { //Call a function when the state changes.
                         if (http_request.readyState == 4 && http_request.status == 200) {
-                            alert(http_request.responseText);
+                            console.log(http_request.responseText);
                         }
                     }
                     http_request.send(params);
