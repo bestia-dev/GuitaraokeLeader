@@ -52,8 +52,8 @@
                 div_msg_for_user.innerText = "The song_url does not start with 'http://' or 'https://'";
             } else {
                 if (window.XMLHttpRequest) {
-                    http_request = new XMLHttpRequest();
-                    page_url = "download_song.html";
+                    let http_request = new XMLHttpRequest();
+                    let page_url = "download_song.html";
 
                     var params = "song_url=" + encodeURIComponent(song_url);
                     http_request.open("POST", page_url, true);

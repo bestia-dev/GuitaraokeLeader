@@ -74,6 +74,11 @@ button {
     border-radius: 8px;
   }
 
+  button:disabled{
+    background-color: gray;
+    opacity: 0.5;
+  }
+
 /* region: fixed header */
 
 .fixed_header {

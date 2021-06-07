@@ -29,10 +29,7 @@
             <button id="button_start" onclick="state_change_from_start_to_waiting();">Start user interaction</button>
             <div id="div_waiting" >
                 <p>Waiting for leader to select song and start playing...</p>                
-                <p></p>
-                <div>Some devices are slower to start playing a song. Adjust this delay in milliseconds (from 0 to 999):</div>
-                <input id="text_play_delay_ms" type="text" value="000" size="3" maxlength="3" oninput="text_play_delay_ms_on_input();" />
-                <p></p>
+                <p></p>                
                 <p>Put your phone volume on maximum and change Settings - Display - Screen timeout to 10 minutes.</p>
             </div>                       
         </div>
@@ -40,16 +37,20 @@
             <p></p>
             <div id="div_song_name">song_name</div>      
             <p><button id="button_fullscreen" onclick="video_video.requestFullscreen();">FullScreen</button></p>
-            <button id="button_slower" onclick="video_video.playbackRate = video_video.playbackRate-0.005;el('span_speed').innerText='--- speed: '+video_video.playbackRate.toFixed(3)+' ---';">Slower</button>
+            <button id="button_slower" onclick="change_play_rate(-0.02);">Slower</button>
             <span id="span_speed">--- speed: 1.000 ---</span>
-            <button id="button_faster" onclick="video_video.playbackRate = video_video.playbackRate+0.005;el('span_speed').innerText='--- speed: '+video_video.playbackRate.toFixed(3)+' ---';">Faster</button>                
+            <button id="button_faster" onclick="change_play_rate(+0.02);">Faster</button>    
+            <!--
+            <p><button id="button_basic_auto_sync" onclick="button_basic_auto_sync_on_click();">Basic Auto-Sync</button></p>
+            -->
             <p><button id="button_muted_toggle" onclick="button_muted_toggle_on_click();">Mute sound</button></p>
-            <div>Sometimes the playback on some devices is not in sync. You can try to change the playback speed to sync them, like an old-school DJ on two vinyl records turntable.</div>
-            <div>Or you can simply mute the sound if it is terrible.</div>
-            <video id="video_video" preload="auto" height="1" width="100%"><source type="video/mp4"></video>
+            <div>Sometimes the playback on some devices is not in sync. The app will try with a basic auto-sync. If after some seconds the sound is still not in sync, you can try to change the playback speed manually, like an old-school DJ on two vinyl records turntables.</div>
+            <div>Or you can simply mute the sound, if it is terrible.</div>
+            <video id="video_video" preload="auto" height="1" width="100%"><source type="video/mp4"></video>         
         </div>
     </div>
     <script>
+        "use strict";
         // region: this is executed directly after html load
 
         // this web page can be in different states. A state defines which elements are hidden or visible.
@@ -62,41 +63,37 @@
         };        
         var page_state=PageState.Start;
 
-        // region: dynamic elements        
-        var websocket;
+        // region: dynamic elements     
+        var websocket;   
+        var user_name;
         var button_start = el("button_start");
         var div_waiting = el("div_waiting");
         var video_video = el("video_video");
         var div_start = el("div_start");
         var div_play_video = el("div_play_video");
-        var div_song_name = el("div_song_name");
-        var text_play_delay_ms = el("text_play_delay_ms");        
-        var button_fullscreen = el("button_fullscreen");               
+        var div_song_name = el("div_song_name");      
+        var button_fullscreen = el("button_fullscreen");   
+        var sync_request_interval;      
+
         // endregion: dynamic elements     
 
         // region: event listeners
         window.onresize = function(){ warn_user_to_change_orientation(); };
         // endregion: event listeners
 
-        // from local storage
-        var play_delay_ms = window.localStorage.getItem('play_delay_ms'); 
-        if (!play_delay_ms){
-            play_delay_ms="000";
-        }
-        text_play_delay_ms.value = play_delay_ms;
-
         warn_user_to_change_orientation();
+        start_sync_clock_with_server();
         state_change_to_start();
         // endregion: this is executed directly after html load
 
         function connect_to_guitaraoke_server() {
             user_name = getRandomInt(0, 1000000);
-            var url = window.location.href;
+            let url = window.location.href;
             console.log(url);
             //TODO: this url is fixed only for developing
-            //var ws_url = "ws://192.168.104.232:3000";
+            //let ws_url = "ws://192.168.104.232:3000";
             //TODO: this url is needed in runtime
-            var ws_url = url.replace("http://","ws://").replace("8080","3000");
+            let ws_url = url.replace("http://","ws://").replace("8080","3000");
             console.log(ws_url);
             websocket = new WebSocket(ws_url);
             websocket.onopen = function(e) {
@@ -104,10 +101,10 @@
             };
 
             websocket.onmessage = function(event) {
-                var msg = JSON.parse(event.data);
+                let msg = JSON.parse(event.data);
                 //console.log(`[message] : ${msg.data}`);
                 if (msg.data.startsWith("song: ")) {
-                    var song_name = msg.data.substring(6);
+                    let song_name = msg.data.substring(6);
                     state_change_from_waiting_to_song_load(song_name);                   
                 } else if (msg.data == "play!") {
                     state_change_from_song_load_to_play();                      
@@ -115,6 +112,15 @@
                     state_change_from_play_to_waiting();                    
                 } else if (msg.data == "bye!") {
                     state_change_to_bye();
+                } else if (msg.data.startsWith("sync_reply:")) {                    
+                    let splited = msg.data.split(" ");
+                    // username, only for me
+                    if(splited[1] == user_name){
+                        // leader currentTime in milliseconds
+                        let leader_current_millis = parseInt( splited[2]);
+                        let leader_sync_clock_with_correction = parseInt( splited[3]);
+                        sync_reply(leader_current_millis, leader_sync_clock_with_correction);                                                    
+                    }
                 }
             };
 
@@ -131,6 +137,58 @@
             websocket.onerror = function(error) {
                 console.log(`[error] ${error.message}`);
             };
+        }
+
+        function sync_reply(leader_current_millis, leader_sync_clock_with_correction){
+            let follower_current_millis = video_video.currentTime*1000;
+            //console.log(leader_current_millis + "\n" + follower_current_millis);
+            let follower_sync_clock_with_correction = Date.now()+sync_clock_correction;
+            //console.log(leader_sync_clock_with_correction + "\n" + follower_sync_clock_with_correction );
+            let leader_current_millis_corrected = leader_current_millis + (follower_sync_clock_with_correction - parseInt(leader_sync_clock_with_correction));
+            let play_diff_millis = parseInt(leader_current_millis_corrected) - follower_current_millis;
+            // console.log(play_diff_millis);  
+            // for now it looks that around -80 is the best sync
+            if(play_diff_millis < -120){
+                change_play_rate(-0.02);
+                setTimeout(function(){reset_play_rate();},1000);
+            } else if (play_diff_millis > -40){
+                change_play_rate(+0.02);
+                setTimeout(function(){reset_play_rate();},1000);
+            }  else  {
+                // stop auto-sync when is ok
+                clear_sync_interval();                
+            }       
+        }        
+
+        function button_basic_auto_sync_on_click(){
+            // el("button_basic_auto_sync").disabled =true;
+            el("button_slower").disabled =true;
+            el("button_faster").disabled =true;
+            sync_request_interval = setInterval(function(){send_sync_request();},2000);
+        }
+
+        function send_sync_request(){
+            send_message("sync_request!");
+        }
+
+        function clear_sync_interval(){
+            // console.log("clearInterval(sync_request_interval)");
+            //el("button_basic_auto_sync").disabled =false;
+            el("button_slower").disabled =false;
+            el("button_faster").disabled =false;
+            clearInterval(sync_request_interval);
+        }
+
+        function change_play_rate(how_much){
+            video_video.playbackRate = video_video.playbackRate + how_much;
+            // console.log(video_video.playbackRate);
+            el('span_speed').innerText='--- speed: '+video_video.playbackRate.toFixed(3)+' ---';
+        }
+
+        function reset_play_rate(){
+            video_video.playbackRate = 1;
+            // console.log(video_video.playbackRate);
+            el('span_speed').innerText='--- speed: '+video_video.playbackRate.toFixed(3)+' ---';
         }
 
         function state_change_to_start(){
@@ -156,15 +214,17 @@
         }
 
         function state_change_from_song_load_to_play(){
-            var new_delay = 1000 - parseInt(play_delay_ms);
-            console.log("new_delay: "+new_delay);
-            setTimeout(function(){video_video.play();},new_delay);
+            video_video.play();
             button_fullscreen.hidden = false;
+            // force basic auto-sync after 1 second
+            setTimeout(function(){button_basic_auto_sync_on_click();},1000);
         }
 
         function state_change_from_play_to_waiting(){
             exit_full_screen();
             video_video.pause();
+            // stop auto-sync when is ok
+            clear_sync_interval();
             div_start.hidden = false;            
             div_waiting.hidden = false;
             div_play_video.hidden = true;
@@ -183,24 +243,7 @@
                 video_video.muted = true;
                 el("button_muted_toggle").innerText = "Unmute sound";
             }
-        }
-
-        function text_play_delay_ms_on_input(){
-            // allow only 3 numbers, remove non-numbers
-            var new_string = "";
-            for (let i = 0; i < text_play_delay_ms.value.length; i++) {
-                if (text_play_delay_ms.value[i]>="0" && text_play_delay_ms.value[i]<="9"){
-                    new_string += text_play_delay_ms.value[i];
-                }
-            }            
-            text_play_delay_ms.value = new_string;
-            if (text_play_delay_ms.value == ""){
-                play_delay_ms="000";
-            } else{
-                play_delay_ms = text_play_delay_ms.value;
-            }
-            window.localStorage.setItem('play_delay_ms',play_delay_ms);
-        }
+        }      
 
     </script>
 </body>

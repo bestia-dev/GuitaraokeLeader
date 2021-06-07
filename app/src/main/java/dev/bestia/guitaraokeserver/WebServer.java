@@ -24,6 +24,7 @@ public class WebServer extends NanoHTTPD {
 
     private final AssetManager assetManager;
     private final MainActivity main_activity;
+    long sync_clock_received_timestamp;
 
     public WebServer(int port, AssetManager assetManager,MainActivity activity) {
         super(port);
@@ -139,6 +140,7 @@ public class WebServer extends NanoHTTPD {
 
     @Override
     public Response serve(IHTTPSession session) {
+        sync_clock_received_timestamp = System.currentTimeMillis();
         // files are in assets/guitaraoke_client/
         // except videos are in externalStorage. I will enable to manually download videos from urls.
         String filepath = getFilePath(session.getUri());
@@ -190,8 +192,8 @@ public class WebServer extends NanoHTTPD {
             download_song_html(session);
             content = "downloading song";
         }
-        if (filepath.equals("exact_time.html")) {
-            content = String.valueOf(System.currentTimeMillis());
+        if (filepath.equals("sync_clock.html")) {
+            content =String.valueOf(sync_clock_received_timestamp)+" "+String.valueOf(System.currentTimeMillis());
         }
         return content;
     }
