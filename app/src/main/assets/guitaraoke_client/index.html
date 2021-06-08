@@ -26,7 +26,7 @@
         <p></p>
         <div id=div_rotate style="color: red;">Please rotate the device to landscape mode!</div>
         <div id="div_start" style=" align-items: center; text-align: center;">
-            <button id="button_start" onclick="state_change_from_start_to_waiting();">Start user interaction</button>
+            <button id="button_start" onclick="state_transition_from_start_to_waiting();">Start user interaction</button>
             <div id="div_waiting" >
                 <p>Waiting for leader to select song and start playing...</p>                
                 <p></p>                
@@ -37,9 +37,9 @@
             <p></p>
             <div id="div_song_name">song_name</div>      
             <p><button id="button_fullscreen" onclick="video_video.requestFullscreen();">FullScreen</button></p>
-            <button id="button_slower" onclick="change_play_rate(-0.02);">Slower</button>
+            <button id="button_slower" onclick="modify_play_rate(-0.02);">Slower</button>
             <span id="span_speed">--- speed: 1.000 ---</span>
-            <button id="button_faster" onclick="change_play_rate(+0.02);">Faster</button>    
+            <button id="button_faster" onclick="modify_play_rate(+0.02);">Faster</button>    
             <!--
             <p><button id="button_basic_auto_sync" onclick="button_basic_auto_sync_on_click();">Basic Auto-Sync</button></p>
             -->
@@ -83,7 +83,7 @@
 
         warn_user_to_change_orientation();
         start_sync_clock_with_server();
-        state_change_to_start();
+        state_transition_to_start();
         // endregion: this is executed directly after html load
 
         function connect_to_guitaraoke_server() {
@@ -105,13 +105,13 @@
                 //console.log(`[message] : ${msg.data}`);
                 if (msg.data.startsWith("song: ")) {
                     let song_name = msg.data.substring(6);
-                    state_change_from_waiting_to_song_load(song_name);                   
+                    state_transition_from_waiting_to_song_load(song_name);                   
                 } else if (msg.data == "play!") {
-                    state_change_from_song_load_to_play();                      
+                    state_transition_from_song_load_to_play();                      
                 } else if (msg.data == "stop!") {
-                    state_change_from_play_to_waiting();                    
+                    state_transition_from_play_to_waiting();                    
                 } else if (msg.data == "bye!") {
-                    state_change_to_bye();
+                    state_transition_to_bye();
                 } else if (msg.data.startsWith("sync_reply:")) {                    
                     let splited = msg.data.split(" ");
                     // username, only for me
@@ -149,10 +149,10 @@
             // console.log(play_diff_millis);  
             // for now it looks that around -80 is the best sync
             if(play_diff_millis < -120){
-                change_play_rate(-0.02);
+                modify_play_rate(-0.02);
                 setTimeout(function(){reset_play_rate();},1000);
             } else if (play_diff_millis > -40){
-                change_play_rate(+0.02);
+                modify_play_rate(+0.02);
                 setTimeout(function(){reset_play_rate();},1000);
             }  else  {
                 // stop auto-sync when is ok
@@ -179,7 +179,7 @@
             clearInterval(sync_request_interval);
         }
 
-        function change_play_rate(how_much){
+        function modify_play_rate(how_much){
             video_video.playbackRate = video_video.playbackRate + how_much;
             // console.log(video_video.playbackRate);
             el('span_speed').innerText='--- speed: '+video_video.playbackRate.toFixed(3)+' ---';
@@ -191,7 +191,8 @@
             el('span_speed').innerText='--- speed: '+video_video.playbackRate.toFixed(3)+' ---';
         }
 
-        function state_change_to_start(){
+        // region: state UI transormation
+        function state_ui_start(){
             page_state = PageState.Start;
             div_start.hidden = false;
             button_start.hidden = false;
@@ -199,41 +200,66 @@
             div_play_video.hidden = true;
         }
 
-        function state_change_from_start_to_waiting(){
+        function state_ui_waiting(){
             page_state = PageState.Waiting;
-            connect_to_guitaraoke_server();
+            div_start.hidden = false;
             button_start.hidden = true;
-            div_waiting.hidden = false;
+            div_waiting.hidden = false;                                    
+            div_play_video.hidden = true;
         }
 
-        function state_change_from_waiting_to_song_load(song_name){
+        function state_ui_song_load(){
             page_state = PageState.SongLoad;
-            song_load(song_name);
             div_start.hidden = true;
             div_play_video.hidden = false;
         }
 
-        function state_change_from_song_load_to_play(){
-            video_video.play();
+        function state_ui_play(){
+            page_state = PageState.SongPlay;
             button_fullscreen.hidden = false;
+        }
+
+        function state_ui_bye(){
+            page_state = PageState.Bye;
+        }
+        // endregion: state UI transormation
+
+        // region: state transition
+        function state_transition_to_start(){
+            state_ui_start();
+        }
+
+        function state_transition_from_start_to_waiting(){
+            state_ui_waiting();
+            connect_to_guitaraoke_server();            
+        }
+
+        function state_transition_from_waiting_to_song_load(song_name){
+            state_ui_song_load();            
+            song_load(song_name);
+        }
+
+        function state_transition_from_song_load_to_play(){
+            state_ui_play();
+            video_video.play();            
             // force basic auto-sync after 1 second
             setTimeout(function(){button_basic_auto_sync_on_click();},1000);
         }
 
-        function state_change_from_play_to_waiting(){
+        function state_transition_from_play_to_waiting(){
+            state_ui_waiting();
             exit_full_screen();
             video_video.pause();
             // stop auto-sync when is ok
-            clear_sync_interval();
-            div_start.hidden = false;            
-            div_waiting.hidden = false;
-            div_play_video.hidden = true;
+            clear_sync_interval();           
         }
 
-        function state_change_to_bye(){
+        function state_transition_to_bye(){
+            state_ui_bye();
             exit_full_screen();
             open("bye.html");
         }
+        // endregion: state transition
 
         function button_muted_toggle_on_click() {
             if (video_video.muted == true) {

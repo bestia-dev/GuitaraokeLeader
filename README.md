@@ -110,11 +110,6 @@ You can also manually copy the `mp4` files to the device folder: `/storage/emula
 
 ## TODO
 
-One page has states. Separate UI differences in states.
-Call Rust from javascript
-Call Rust from java
 make a video tutorial
 leader page can create QRcode with IP.
 Playlist: songs and play order
-Download more songs. every url in a separate line.
-

@@ -84,7 +84,7 @@ var websocket;
         warn_user_to_change_orientation();
         start_sync_clock_with_server();
 
-        state_change_to_song_list();        
+        state_transition_to_song_list();        
         //connect immediately to server
         connect_to_guitaraoke_server()
         // endregion: this is executed directly after html load
@@ -108,13 +108,13 @@ var websocket;
                 //console.log(`[message] : ${msg.data}`);
                 if (msg.data.startsWith("song: ")) {
                     let song_name = msg.data.substring(6);
-                    state_change_from_song_list_to_song_load(song_name);
+                    state_transition_from_song_list_to_song_load(song_name);
                 } else if (msg.data == "play!") {
-                    state_change_from_song_load_to_song_play();                    
+                    state_transition_from_song_load_to_song_play();                    
                 } else if (msg.data == "stop!") {
-                    state_change_from_song_play_to_song_list();                    
+                    state_transition_from_song_play_to_song_list();                    
                 } else if (msg.data == "bye!") {
-                    state_change_to_bye();
+                    state_transition_to_bye();
                 } else if (msg.data == "sync_request!") {
                     let leader_sync_clock_with_correction = Date.now()+sync_clock_correction;
                     send_message("sync_reply: "+msg.username+" "+(video_video.currentTime*1000).toString()+" "+ leader_sync_clock_with_correction);                    
@@ -135,16 +135,17 @@ var websocket;
                 console.log(`[error] ${error.message}`);
             };
         }
-// region: state change
-        function state_change_to_song_list(){
+
+        // region: state UI transormation
+        function state_ui_song_list(){
             page_state = PageState.SongList;
             el("div_start").hidden = false;
-            el("div_play_video").hidden = true;               
+            el("div_play_video").hidden = true; 
+            el("button_fullscreen").hidden = true;
         }
 
-        function state_change_from_song_list_to_song_load(song_name){
+        function state_ui_song_load(){
             page_state = PageState.SongLoad;
-            song_load(song_name);                    
             el("div_start").hidden = true;
             el("div_play_video").hidden = false;
             el("back_to_list").hidden = false;
@@ -152,31 +153,49 @@ var websocket;
             el("send_pause").hidden = true;
         }
 
-        function state_change_from_song_load_to_song_play(){
+        function state_ui_song_play(){
             page_state = PageState.SongPlay;
-            video_video.play();
             el("div_start").hidden = true;
             el("div_play_video").hidden = false;
             el("send_play").hidden = true;
             el("send_pause").hidden = false;
             el("back_to_list").hidden = true;
-            el("button_fullscreen").hidden = false;
+            el("button_fullscreen").hidden = false;  
         }
 
-        function state_change_from_song_play_to_song_list(){
+        function state_ui_bye(){
+            page_state = PageState.Bye;
+        }
+        // endregion: state UI transormation
+
+        // region: state transition
+        function state_transition_to_song_list(){
+            state_ui_song_list()                          
+        }
+
+        function state_transition_from_song_list_to_song_load(song_name){
+            state_ui_song_load();
+            song_load(song_name);                    
+        }
+
+        function state_transition_from_song_load_to_song_play(){
+            state_ui_song_play();            
+            video_video.play();
+        }
+
+        function state_transition_from_song_play_to_song_list(){
+            state_ui_song_list();
             video_video.pause();
-            exit_full_screen();
-            el("div_start").hidden = false;
-            el("div_play_video").hidden = true;
-            el("button_fullscreen").hidden = true;
+            exit_full_screen();            
         }
 
-        function state_change_to_bye(){
+        function state_transition_to_bye(){
+            state_ui_bye();
             exit_full_screen();
             open("bye.html");
         }
         
-// endregion: state change
+        // endregion: state transition
 
         function send_song_name(song_name) {
             send_message("song: " + song_name);
