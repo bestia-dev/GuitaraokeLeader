@@ -18,9 +18,10 @@ function el(element_id){
 
 function warn_user_to_change_orientation(){
     if (window.screen.orientation.type.startsWith("portrait")){
-        document.getElementById("div_rotate").hidden=false;
+        document.getElementById("div_warning_to_user").innerText ="Please rotate the device to landscape mode!";
+        document.getElementById("div_warning_to_user").hidden=false;
     }else{
-        document.getElementById("div_rotate").hidden=true;
+        document.getElementById("div_warning_to_user").hidden=true;
     }
 }
 

@@ -24,7 +24,7 @@
 
     <div style="position: absolute;top:10vh;height: 93vh; ;width: var(--body_width);align-items: center; text-align: center; ">
         <p></p>
-        <div id="div_rotate" style="color: red;">Please rotate the device to landscape mode!</div>
+        <div id="div_warning_to_user" style="color: red;">Please rotate the device to landscape mode!</div>
         <div id="div_start" style=" align-items: center; text-align: center;">
             <!--list_of_files_in_folder_videos-->
             <p></p>
@@ -109,7 +109,8 @@ var websocket;
                 if (msg.data.startsWith("song: ")) {
                     let song_name = msg.data.substring(6);
                     state_transition_from_song_list_to_song_load(song_name);
-                } else if (msg.data == "play!") {
+                } else if (msg.data == "play!") {                    
+                    document.getElementById("div_warning_to_user").hidden=true;
                     state_transition_from_song_load_to_song_play();                    
                 } else if (msg.data == "stop!") {
                     state_transition_from_song_play_to_song_list();                    
@@ -118,7 +119,14 @@ var websocket;
                 } else if (msg.data == "sync_request!") {
                     let leader_sync_clock_with_correction = Date.now()+sync_clock_correction;
                     send_message("sync_reply: "+msg.username+" "+(video_video.currentTime*1000).toString()+" "+ leader_sync_clock_with_correction);                    
-                }                
+                } else if (msg.data.startsWith("sync_reply:")) {       
+                    // check: there must only 1 leader in the network
+                    if (msg.username != user_name){
+                        document.getElementById("div_warning_to_user").innerText ="Error: Only 1 Leader is allowed in the network !";
+                        document.getElementById("div_warning_to_user").hidden=false;
+                        send_message('stop!');
+                    }                                 
+                }   
             };
 
             websocket.onclose = function(event) {

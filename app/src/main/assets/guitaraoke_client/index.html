@@ -24,7 +24,7 @@
 
     <div style="position: absolute;top:10vh;height: 93vh; ;width: var(--body_width);align-items: center; text-align: center; ">
         <p></p>
-        <div id=div_rotate style="color: red;">Please rotate the device to landscape mode!</div>
+        <div id=div_warning_to_user style="color: red;">Please rotate the device to landscape mode!</div>
         <div id="div_start" style=" align-items: center; text-align: center;">
             <button id="button_start" onclick="state_transition_from_start_to_waiting();">Start user interaction</button>
             <div id="div_waiting" >
@@ -40,9 +40,6 @@
             <button id="button_slower" onclick="modify_play_rate(-0.02);">Slower</button>
             <span id="span_speed">--- speed: 1.000 ---</span>
             <button id="button_faster" onclick="modify_play_rate(+0.02);">Faster</button>    
-            <!--
-            <p><button id="button_basic_auto_sync" onclick="button_basic_auto_sync_on_click();">Basic Auto-Sync</button></p>
-            -->
             <p><button id="button_muted_toggle" onclick="button_muted_toggle_on_click();">Mute sound</button></p>
             <div>Sometimes the playback on some devices is not in sync. The app will try with a basic auto-sync. If after some seconds the sound is still not in sync, you can try to change the playback speed manually, like an old-school DJ on two vinyl records turntables.</div>
             <div>Or you can simply mute the sound, if it is terrible.</div>
@@ -73,7 +70,7 @@
         var div_play_video = el("div_play_video");
         var div_song_name = el("div_song_name");      
         var button_fullscreen = el("button_fullscreen");   
-        var sync_request_interval;      
+        var sync_request_interval;
 
         // endregion: dynamic elements     
 
@@ -141,12 +138,9 @@
 
         function sync_reply(leader_current_millis, leader_sync_clock_with_correction){
             let follower_current_millis = video_video.currentTime*1000;
-            //console.log(leader_current_millis + "\n" + follower_current_millis);
             let follower_sync_clock_with_correction = Date.now()+sync_clock_correction;
-            //console.log(leader_sync_clock_with_correction + "\n" + follower_sync_clock_with_correction );
             let leader_current_millis_corrected = leader_current_millis + (follower_sync_clock_with_correction - parseInt(leader_sync_clock_with_correction));
             let play_diff_millis = parseInt(leader_current_millis_corrected) - follower_current_millis;
-            // console.log(play_diff_millis);  
             // for now it looks that around -80 is the best sync
             if(play_diff_millis < -120){
                 modify_play_rate(-0.02);
@@ -160,35 +154,45 @@
             }       
         }        
 
-        function button_basic_auto_sync_on_click(){
-            // el("button_basic_auto_sync").disabled =true;
-            el("button_slower").disabled =true;
-            el("button_faster").disabled =true;
+        function basic_auto_sync(){        
+            // run now and after interval
+            send_sync_request();   
             sync_request_interval = setInterval(function(){send_sync_request();},2000);
+            el("button_slower").disabled = true;
+            el("button_faster").disabled = true; 
         }
 
         function send_sync_request(){
+            console.log("send_sync_request");
             send_message("sync_request!");
         }
 
         function clear_sync_interval(){
-            // console.log("clearInterval(sync_request_interval)");
-            //el("button_basic_auto_sync").disabled =false;
-            el("button_slower").disabled =false;
-            el("button_faster").disabled =false;
+            el("button_slower").disabled = false;
+            el("button_faster").disabled = false;
             clearInterval(sync_request_interval);
         }
 
         function modify_play_rate(how_much){
+            console.log("modify_play_rate");
             video_video.playbackRate = video_video.playbackRate + how_much;
-            // console.log(video_video.playbackRate);
-            el('span_speed').innerText='--- speed: '+video_video.playbackRate.toFixed(3)+' ---';
+            let rate_caption = "speed";
+            // if exists this object
+            if (sync_request_interval){
+                rate_caption = "auto-sync";
+            }
+            el('span_speed').innerText='--- ' + rate_caption + ': '+video_video.playbackRate.toFixed(3)+' ---';
         }
 
         function reset_play_rate(){
+            console.log("reset_play_rate");
             video_video.playbackRate = 1;
-            // console.log(video_video.playbackRate);
-            el('span_speed').innerText='--- speed: '+video_video.playbackRate.toFixed(3)+' ---';
+            let rate_caption = "speed";
+            // if exists this object
+            if (sync_request_interval){
+                rate_caption = "auto-sync";
+            }
+            el('span_speed').innerText='--- ' + rate_caption + ': '+video_video.playbackRate.toFixed(3)+' ---';
         }
 
         // region: state UI transormation
@@ -243,7 +247,7 @@
             state_ui_play();
             video_video.play();            
             // force basic auto-sync after 1 second
-            setTimeout(function(){button_basic_auto_sync_on_click();},1000);
+            setTimeout(function(){basic_auto_sync();},1000);
         }
 
         function state_transition_from_play_to_waiting(){
