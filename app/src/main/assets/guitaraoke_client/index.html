@@ -61,8 +61,8 @@
         var page_state=PageState.Start;
 
         // region: dynamic elements     
-        var websocket;   
-        var user_name;
+        globalThis.websocket;   
+        globalThis.user_name;
         var button_start = el("button_start");
         var div_waiting = el("div_waiting");
         var video_video = el("video_video");
@@ -84,7 +84,7 @@
         // endregion: this is executed directly after html load
 
         function connect_to_guitaraoke_server() {
-            user_name = getRandomInt(0, 1000000);
+            globalThis.user_name = getRandomInt(0, 1000000);
             let url = window.location.href;
             console.log(url);
             //TODO: this url is fixed only for developing
@@ -92,12 +92,12 @@
             //TODO: this url is needed in runtime
             let ws_url = url.replace("http://","ws://").replace("8080","3000");
             console.log(ws_url);
-            websocket = new WebSocket(ws_url);
-            websocket.onopen = function(e) {
+            globalThis.websocket = new WebSocket(ws_url);
+            globalThis.websocket.onopen = function(e) {
                 console.log("[open] Connection established");
             };
 
-            websocket.onmessage = function(event) {
+            globalThis.websocket.onmessage = function(event) {
                 let msg = JSON.parse(event.data);
                 //console.log(`[message] : ${msg.data}`);
                 if (msg.data.startsWith("song: ")) {
@@ -112,7 +112,7 @@
                 } else if (msg.data.startsWith("sync_reply:")) {                    
                     let splited = msg.data.split(" ");
                     // username, only for me
-                    if(splited[1] == user_name){
+                    if(splited[1] == globalThis.user_name){
                         // leader currentTime in milliseconds
                         let leader_current_millis = parseInt( splited[2]);
                         let leader_sync_clock_with_correction = parseInt( splited[3]);
@@ -121,7 +121,7 @@
                 }
             };
 
-            websocket.onclose = function(event) {
+            globalThis.websocket.onclose = function(event) {
                 if (event.wasClean) {
                     console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
                 } else {
@@ -131,7 +131,7 @@
                 }
             };
 
-            websocket.onerror = function(error) {
+            globalThis.websocket.onerror = function(error) {
                 console.log(`[error] ${error.message}`);
             };
         }
@@ -261,7 +261,7 @@
         function state_transition_to_bye(){
             state_ui_bye();
             exit_full_screen();
-            open("bye.html");
+            window.location ="bye.html";
         }
         // endregion: state transition
 

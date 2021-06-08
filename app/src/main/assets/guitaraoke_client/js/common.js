@@ -40,11 +40,11 @@ function getRandomInt(min, max) {
 function send_message(data) {
     // the message must be json{String username, String timestamp, String data}
     var msg = JSON.stringify({
-        "username": user_name,
+        "username": globalThis.user_name,
         "timestamp": Date.now(),
         "data": data
     });
-    websocket.send(msg);
+    globalThis.websocket.send(msg);
 }
 
 function exit_full_screen() {

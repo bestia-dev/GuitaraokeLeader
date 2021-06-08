@@ -1,16 +1,20 @@
 # Guitaraoke
 
+***Play guitar and sing with your friends***  
+***On any smartphone read the lyrics and chords in sync with the song***  
+
 I never liked karaoke. A single "performer" in front of a non-interested crowd.  
 But I like to play guitar and optionally sing along. And I found a buddy guitarist and we can play and sing together.  
 I even found some more friends that like to sing along (mostly when drunk).  
 And now we have a problem. Nobody remembers the lyrics and the chords.  
 I am a programmer and every problem looks like it has a software solutions.  
 Enter `Guitaraoke`: it is like karaoke but with added guitar chords.  
-The are 2 roles in this game. The `Leader` will lead the way for the `followers`.  
+The are 2 roles in this game. The `Leader` will lead the way for many `followers`.  
 
 ## guitaraoke videos
 
 First I created the videos. In the video editor `ShotCut` for Win10, I put together the audio of the song and copied the lyrics and chords I found on the internet. I tried to show the lyrics and chords a little bit earlier so we can prepare to sing-along and play-along guitar. It is great that I can now modify the chords and the lyrics if I like it different.  
+TODO: I will make a tutorial how to create Guitaraoke mp4 files. It is easy.  
 
 ## only mobile
 
@@ -29,7 +33,7 @@ My forth idea was to use webrtc for peer-to-peer communication. But it must have
 
 My final solution is to make a Web+WebSocket server for Android. Exactly what I wanted to avoid. Eh, ironic.  
 I don't plan to publish it on Google Play, but I will create an APK for die-hard fans of Guitaraoke.  
-The client will be a simple html/css/javascript project for any browser.
+The client will be a simple html/css/javascript project for any browser. No installation whatsoever.
 
 ## Based on WebSocketChat
 
@@ -39,7 +43,7 @@ It uses [NanoHttpd](https://github.com/NanoHttpd/nanohttpd) for the Webserver, a
 It has a very simple layout and it's pretty easy to use.
 I will simplify it as much as possible. The server will be pretty stupid. It will just serve files and broadcast messages to all attached clients.  
 The server has no knowledge at all what is going on.  
-That is useful for more than just Guitaraoke. Maybe I will use the same concept for other projects of mine.
+This is useful for more than just for Guitaraoke. Maybe I will use the same concept for other projects of mine.
 For debugging purposes I will print on the server app messages and debugging info.  
 
 ## Android Studio
@@ -51,15 +55,14 @@ I use an old Lenovo tablet for my server: Android 6.0 (API level 23).
 
 ## Local network
 
-This server will work only on a local network like 192.168.x.y. My local network (wi-fi) is the hotspot from my smartphone. I have my Lenovo Win10+WSL2 notebook and a lenovo tablet connected.  
-It is possible to open the html file on one ip address and use the WebSocket on another ip address. This makes developing the html app faster: there is no need to publish the server to my android device only because the html has changed. But in the release version both server will be on the same ip address.  
-Just to mention a strange behavior when the hotspot smartphone has no mobile-internet connection, it cannot see the local network. All other connected devices work just fine with the local network wi-fi.  
+This server will work only on a local network like `192.168.x.y`. My personal local network wi-fi uses hotspot from my smartphone. But it couls be any wi-fi hotspot. I have my Lenovo Win10+WSL2 notebook and a lenovo tablet connected to my wifi local network.  
+Just to mention a curious behavior when the smartphones hotspot has no mobile-internet connection, it cannot see the local network. All other connected devices work just fine with the local network wi-fi.  
 
 ## Guitaraoke Client
 
 The client project is inside the server project in  `GuitaraokeServer\app\src\main\assets\guitaraoke_client\`.  
 I can use VisualStudioCode to edit this, because I like it more than the android studio for html/css/javascript.  
-The `assets` folder is distributed with the server installation.  
+This `assets` folder is distributed with the server installation.  
 
 ## icons online
 
@@ -71,45 +74,44 @@ I created the android icons with this online service:
 Files that are distributed with the server are called assets. They are read-only and accessible with the the object AssetManager.  
 I want the video files to be downloadable. The `Leader` can download any  
 `xxx - guitaraoke.mp4`  
-file from the internet. It will be saved in the ExternalStorage. I used the DownLoadManager object for that.  
-The Guitaraoke `Leader` page `leader.html` list the video filesstored in the android device ExternalStorage.  
+file from the internet. It will be saved in the ExternalStorage. I used the DownLoadManager object for that.    
 
 ## Leader installs GuitaraokeServer app
 
-The `leader` installs the GuitaraokeServer on his smartphone.  
+Only the `leader` needs to install the GuitaraokeServer on his smartphone.  
 He downloads the signed APK from Github : <https://github.com/LucianoBestia/GuitaraokeServer/releases>.  
 The smartphone must have enabled `Settings - Security - Unknown Sources`. Read more here:  
 <https://www.thegeeksclub.com/how-to-install-third-party-apk-on-android/>  
-He starts the app. The server is just a black screen with yellow debugging text. Nothing interesting going on here. It just must be opened because it serves the files to the browsers. When the tablet screen goes to sleep, the server stops working. Modify the settings to `Sleep after 30 minutes of inactivity`.  
-In the right corner there is the ip adress of the server. The `Leader` opens a browser (on the same device or on any device on the same local network) and types in the ip address of the server. Now the `Guitaraoke Follower page` should apear. We don't need that now.  
-
-## The Leader page
-
-In the address-bar append `/leader.html` and press `Enter`. It should look like this: `http://192.168.104.232:8080/leader.html`. Now we see the Leader page. There are already some sample videos we can click and play, but that is not fun.  
+He starts the app. The server is just a black screen with yellow debugging text. Nothing interesting going on here. It just must be opened because it serves the files to the browsers. When the tablet screen goes to sleep, the server stops working. Modify the settings to `Sleep after 10 minutes of inactivity`.  
+On start the app opens the browser on the `Leader page`. If you accidentally close the browser, just restart the app. It will open again on the right page.  
 
 ## The Download songs page
 
+I put only some sample songs in the app installation. But they are no fun.  
+My guitaraoke.mp4 files are listed here: <https://bestia.dev/guitaraoke/>. I hope eventually to see more Guitaraoke files from other people. That will be so much fun.  
 Click on the button `Download new songs`.  
-Copy the url of the `xxx - guitaraoke.mp4` file and press `Start download`. 
+Copy the url of the `xxx - guitaraoke.mp4` file and press `Start download`.  
 For example `https://www.dropbox.com/s/hn0r9on24dxkhfh/4%20Non%20Blondes%20-%20What%27s%20Up%20-%20guitaraoke.mp4?dl=1`  
-It will download in the background, slowly. Repeat this for the songs you like to have.  
-My guitaraoke.mp4 files are listed here: <https://bestia.dev/guitaraoke/>.  
+It will download in the background, slowly, but surely.  
+If you want to download multiple songs at once, copy the song urls one per line. On my `Guitaraoke song page` you can just copy+paste more lines at once.  
 Finally click on the button `Back to Guitaraoke Leader page`.  
-You can also manually copy the `mp4` files to the device folder: `/storage/emulated/0/Android/data/dev.bestia.guitaraokeserver/files/videos/`.  
+The songs are saved in the device folder: `/storage/emulated/0/Android/data/dev.bestia.guitaraokeserver/files/videos/`.  
 
-## Play-flow
+## Easy Play-flow instructions
 
-1. All the smartphones must be connected to the same local wifi network. Because the connection will be fast without interruptions.  
-2. The leader opens the GuitaraokeServer android app. It shows the ip address and port that everybody must use.  
-3. The leader opens the browser with the server local ip address and the `/leader.html` page : `Guitaraoke Leader`.  
-4. The followers open the browser on the server ip address. It will open the index.html, because it is the default page: `Guitaraoke follower`. Then click on `Start guitaraoke` because javascript need a user `interaction` with the page. Nothing else to do for the follower.  
-5. The leader clicks on the song name. It broadcasts a msg to all connected followers with the name of the song.  
-6. The followers browser loads this song from the GuitaraokeServer. On the screen the follower can see the name of the song.  
-7. The leader clicks `Play` and it sends a msg to all connected followers to start playing he song.  
-8. The follower can adjust the speed of the playback if it is not in sync. Or he can simply `Mute sound` to avoid the disturbing delayed sound. When ready he clicks on `Fullscreen` and sings along.  
+1. Only the leader must install the android APK on his phone.  
+2. Connect all the smartphones from the leader and followers to the same local wifi network.  
+3. The leader opens the GuitaraokeServer app. It will automatically open his browser on the `Leader page`.
+4. The leader shows the `Follower page` url (address) to the followers. hey can scan the QR code or just type the numbers. It is short and easy.  
+5. Followers must click on `Start user interaction` because javascript need a user `interaction` with the page. Nothing else to do for the follower.  
+6. The leader clicks on the song name. It broadcasts a msg to all connected followers. They can all see the name of the song.
+7. The leader clicks `Play`. It sends a msg to all connected followers to start playing he song.  
+8. The follower page will try some basic auto-sync. If the sound is not perfectly in sync, the follower can adjust the speed of the playback. Or he can simply `Mute sound` to avoid the disturbing delayed sound.  
+9. Finally click on `Fullscreen` to see the lyrics and chords and play/sings along.  
 
 ## TODO
 
-make a video tutorial
-leader page can create QRcode with IP.
-Playlist: songs and play order
+ES2020 and modules
+leader page can create QRcode with Follower page  
+make a video tutorial  
+Playlist: songs and play order  
