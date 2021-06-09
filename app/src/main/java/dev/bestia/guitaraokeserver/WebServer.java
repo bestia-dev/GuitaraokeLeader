@@ -141,41 +141,50 @@ public class WebServer extends NanoHTTPD {
     @Override
     public Response serve(IHTTPSession session) {
         sync_clock_received_timestamp = System.currentTimeMillis();
-        // files are in assets/guitaraoke_client/
-        // except videos are in externalStorage. I will enable to manually download videos from urls.
-        String filepath = getFilePath(session.getUri());
-        String mimeType = getMimeType(filepath);
         String content;
-        byte[] buffer;
-        InputStream is;
-        try {
-            if (filepath.startsWith("videos/")){
-                String path = main_activity.getExternalFilesDir("").getPath()+"/"+filepath;
-                File file = new File(path);
-                is = new FileInputStream(file);
-            }
-            else{
-                is = this.assetManager.open("guitaraoke_client/" + filepath);
-            }
-            if (binaryResponse(mimeType)) {
-                return newFixedLengthResponse(Response.Status.OK, mimeType, is, -1);
-            }
-            int size = is.available();
-            buffer = new byte[size];
-            int len = is.read(buffer);
-            if (len==-1){
-                printLine("len = -1");
-            }
-            is.close();
-            content = new String(buffer);
+        String mimeType="text/html";
+        // some dynamic content must be fast. It does not need to check files.
+        if (session.getUri().equals("/sync_clock.html")) {
+            content = String.valueOf(sync_clock_received_timestamp) + " " + String.valueOf(System.currentTimeMillis());
+        }else if (session.getUri().equals("/download_song.html")) {
+            download_song_html(session);
+            content = "downloading song";
+        } else {
+            // files are in assets/guitaraoke_client/
+            // except videos are in externalStorage. I will enable to manually download videos from urls.
+            String filepath = getFilePath(session.getUri());
+            mimeType = getMimeType(filepath);
 
-            // modify static files with dynamic content
-            content = dynamic_content(filepath,content, session);
+            byte[] buffer;
+            InputStream is;
+            try {
+                if (filepath.startsWith("videos/")) {
+                    String path = main_activity.getExternalFilesDir("").getPath() + "/" + filepath;
+                    File file = new File(path);
+                    is = new FileInputStream(file);
+                } else {
+                    is = this.assetManager.open("guitaraoke_client/" + filepath);
+                }
+                if (binaryResponse(mimeType)) {
+                    return newFixedLengthResponse(Response.Status.OK, mimeType, is, -1);
+                }
+                int size = is.available();
+                buffer = new byte[size];
+                int len = is.read(buffer);
+                if (len == -1) {
+                    printLine("len = -1");
+                }
+                is.close();
+                content = new String(buffer);
 
-        }catch(IOException e) {
-            printLine("IOException (at serve): " + e.getMessage());
-            mimeType = "text/html";
-            content = "<html><body><h1>IOException</h1>\n<p>" + e.getMessage() + "</p>\n<p>Serving " + session.getUri() + " !</p></body></html>\n";
+                // modify static files with dynamic content
+                content = dynamic_content(filepath, content, session);
+
+            } catch (IOException e) {
+                printLine("IOException (at serve): " + e.getMessage());
+                mimeType = "text/html";
+                content = "<html><body><h1>IOException</h1>\n<p>" + e.getMessage() + "</p>\n<p>Serving " + session.getUri() + " !</p></body></html>\n";
+            }
         }
         return newFixedLengthResponse(Response.Status.OK, mimeType, content);
     }
@@ -187,13 +196,6 @@ public class WebServer extends NanoHTTPD {
         if (filepath.equals("leader.html")) {
             String new_html = leader_html_list_of_songs();
             content = content.replace("<!--list_of_files_in_folder_videos-->", new_html);
-        }
-        if (filepath.equals("download_song.html")) {
-            download_song_html(session);
-            content = "downloading song";
-        }
-        if (filepath.equals("sync_clock.html")) {
-            content =String.valueOf(sync_clock_received_timestamp)+" "+String.valueOf(System.currentTimeMillis());
         }
         return content;
     }

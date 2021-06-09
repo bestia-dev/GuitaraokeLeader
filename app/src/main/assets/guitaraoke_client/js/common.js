@@ -2,6 +2,7 @@
 
 // region: module scope variables      
 let sync_clock_interval;
+let sync_clock_counter = 0;
 // endregion: module scope variables
 
 // region: global variables
@@ -14,6 +15,10 @@ let sync_clock_interval;
 // shortcut for document.getElementById
 export function el(element_id) {
     return document.getElementById(element_id);
+}
+
+export function debug_write(msg) {
+    el("div_debug").innerText = el("div_debug").innerText + "\n" + msg;
 }
 
 export function connect_to_guitaraoke_server() {
@@ -86,13 +91,11 @@ export function exit_full_screen() {
 }
 
 export function start_sync_clock_with_server() {
-    let sync_clock_interval = setInterval(request_sync_clock, 1000);
+    sync_clock_interval = setInterval(request_sync_clock, 1000);
 }
 
 function request_sync_clock() {
-    let sync_clock_counter = 0;
     let sync_clock_min_ping_one_way = 1000;
-
     // stop interval after 5 times
     if (sync_clock_counter > 5) {
         clearInterval(sync_clock_interval);
@@ -112,15 +115,16 @@ function request_sync_clock() {
                     let splitted = http_request.responseText.split(" ");
                     let sync_clock_received_request = parseInt(splitted[0]);
                     let sync_clock_sent_response = parseInt(splitted[1]);
+                    //debug_write(sync_clock_received_response - globalThis.sync_clock_sent_request);
                     // the fastest "ping"
-                    if (sync_clock_min_ping_one_way > ((sync_clock_received_response - globalThis.sync_clock_sent_request) - (sync_clock_sent_response - sync_clock_received_request)) / 2) {
-                        sync_clock_min_ping_one_way = ((sync_clock_received_response - globalThis.sync_clock_sent_request) - (sync_clock_sent_response - sync_clock_received_request)) / 2;
+                    let new_ping = ((sync_clock_received_response - globalThis.sync_clock_sent_request) - (sync_clock_sent_response - sync_clock_received_request)) / 2;
+                    if (sync_clock_min_ping_one_way > new_ping) {
+                        sync_clock_min_ping_one_way = new_ping;
 
                         let sync_clock_diff_1 = sync_clock_received_request - (globalThis.sync_clock_sent_request + sync_clock_min_ping_one_way);
                         let sync_clock_diff_2 = sync_clock_received_response - (sync_clock_sent_response + sync_clock_min_ping_one_way);
                         globalThis.sync_clock_correction = (sync_clock_diff_1 - sync_clock_diff_2) / 2;
-                        //console.log(sync_clock_min_ping_one_way+"\n"+sync_clock_diff_1+"\n"+sync_clock_diff_2+"\n"+globalThis.sync_clock_correction);
-                        //console.log(globalThis.sync_clock_sent_request+"\n"+sync_clock_received_request+"\n"+sync_clock_received_response+"\n"+sync_clock_received_response);
+                        //debug_write(sync_clock_min_ping_one_way + "\n" + sync_clock_diff_1 + "\n" + sync_clock_diff_2 + "\n" + globalThis.sync_clock_correction);
                     }
                 }
             }

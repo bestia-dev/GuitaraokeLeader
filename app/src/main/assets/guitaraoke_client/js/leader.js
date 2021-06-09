@@ -28,9 +28,8 @@ let video_video = cm.el("video_video");
 // region: global variables
 // globalThis.websocket
 // globalThis.user_name
-// globalThis.sync_clock_correction
+globalThis.sync_clock_correction = 0;
 // endregion: global variables
-
 
 export function start_script() {
     console.log("start_script");

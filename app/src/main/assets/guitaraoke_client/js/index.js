@@ -30,13 +30,14 @@ let div_start = cm.el("div_start");
 let div_play_video = cm.el("div_play_video");
 let div_song_name = cm.el("div_song_name");
 let button_fullscreen = cm.el("button_fullscreen");
+let is_auto_sync = false;
 let sync_video_request_interval;
 // endregion: module scope variables
 
 // region: global variables
 // globalThis.websocket
 // globalThis.user_name
-// globalThis.sync_clock_correction
+globalThis.sync_clock_correction = 0;
 // endregion: global variables
 
 export function start_script() {
@@ -88,24 +89,45 @@ function connect_to_guitaraoke_server() {
 function sync_video_reply(leader_sync_current_millis, leader_sync_clock_with_correction) {
     let follower_current_millis = video_video.currentTime * 1000;
     let follower_sync_clock_with_correction = Date.now() + globalThis.sync_clock_correction;
-    let leader_sync_current_millis_corrected = leader_sync_current_millis + (follower_sync_clock_with_correction - parseInt(leader_sync_clock_with_correction));
-    let play_diff_millis = parseInt(leader_sync_current_millis_corrected) - follower_current_millis;
-    cm.el("div_debug").innerText = play_diff_millis;
-    let best_sync_on_ms = +40;
-    if (play_diff_millis < best_sync_on_ms - 20) {
-        modify_play_rate(-0.02);
-        setTimeout(function() { reset_play_rate(); }, 1000);
-    } else if (play_diff_millis > best_sync_on_ms + 20) {
-        modify_play_rate(+0.02);
-        setTimeout(function() { reset_play_rate(); }, 1000);
-    } else {
-        // stop auto-sync when is ok
-        clear_sync_video_interval();
+    let leader_sync_current_millis_corrected = leader_sync_current_millis + (follower_sync_clock_with_correction - leader_sync_clock_with_correction);
+    //cm.debug_write("currentTime leader, leader_corrected, follower: \n" + leader_sync_current_millis + " " + leader_sync_current_millis_corrected + " " + follower_current_millis);
+    let play_diff_millis = leader_sync_current_millis_corrected - follower_current_millis;
+    //cm.debug_write("diff: " + play_diff_millis);
+    if (is_auto_sync == true) {
+        let best_sync_on_ms = 0;
+        // bigger the difference, bigger the rate
+        if (play_diff_millis < best_sync_on_ms - 300) {
+            modify_play_rate(-0.2);
+            setTimeout(function() { reset_play_rate(); }, 1000);
+        } else if (play_diff_millis < best_sync_on_ms - 100) {
+            modify_play_rate(-0.08);
+            setTimeout(function() { reset_play_rate(); }, 1000);
+        } else if (play_diff_millis < best_sync_on_ms - 20) {
+            modify_play_rate(-0.02);
+            setTimeout(function() { reset_play_rate(); }, 1000);
+        } else if (play_diff_millis > best_sync_on_ms + 300) {
+            modify_play_rate(+0.2);
+            setTimeout(function() { reset_play_rate(); }, 1000);
+        } else if (play_diff_millis > best_sync_on_ms + 100) {
+            modify_play_rate(+0.08);
+            setTimeout(function() { reset_play_rate(); }, 1000);
+        } else if (play_diff_millis > best_sync_on_ms + 20) {
+            modify_play_rate(+0.02);
+            setTimeout(function() { reset_play_rate(); }, 1000);
+        } else {
+            // stop auto-sync when is ok
+            is_auto_sync = false;
+            //cm.el("button_slower").disabled = false;
+            //cm.el("button_faster").disabled = false;
+            clear_sync_video_interval();
+            //cm.debug_write("is_auto_sync = false");
+        }
     }
 }
 
 function basic_auto_sync() {
     // run now and after interval
+    is_auto_sync = true;
     sync_video_request_interval = setInterval(function() { send_sync_video_request(); }, 2000);
     cm.el("button_slower").disabled = true;
     cm.el("button_faster").disabled = true;
@@ -147,7 +169,7 @@ function state_ui_start() {
     button_start.hidden = false;
     div_waiting.hidden = true;
     div_play_video.hidden = true;
-    cm.el("div_debug").hidden = true;
+    //cm.el("div_debug").hidden = true;
 }
 
 function state_ui_waiting() {
@@ -167,7 +189,7 @@ function state_ui_song_load() {
 function state_ui_play() {
     page_state = PageState.SongPlay;
     button_fullscreen.hidden = false;
-    cm.el("div_debug").hidden = false;
+    //cm.el("div_debug").hidden = false;
 }
 
 function state_ui_bye() {
