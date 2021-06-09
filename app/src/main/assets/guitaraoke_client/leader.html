@@ -2,23 +2,18 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8"/>
+    <meta charset="utf-8" />
     <title>Guitaraoke Leader</title>
     <meta http-equiv="Content-type" content="text/html" />
-    <meta name="Description" content="Guitaraoke Leader"/>
-    <meta name="author" content="https://github.com/LucianoBestia/guitaraoke_client"/>
+    <meta name="Description" content="Guitaraoke Leader" />
+    <meta name="author" content="https://github.com/LucianoBestia/guitaraoke_client" />
 
     <meta name="viewport" content="width = device-width,initial-scale = 1.0" />
-    <link rel="stylesheet" href="css/normalize.css"/>
-    <link rel="stylesheet" href="css/guitaraoke_client.css"/>
-    <script src="js/common.js" ></script>
-    <meta name="google" content="notranslate"/>
-    <!-- ES2020 import wasm code compiled from rust with wasm-bindgen 
-    The code is defered and run after the html is loaded -->
-    <script type="module" >
-        import * as j from './js/leader.js';
-        j.start_script();
-    </script>   
+    <link rel="stylesheet" href="css/normalize.css" />
+    <link rel="stylesheet" href="css/guitaraoke_client.css" />
+    <meta name="google" content="notranslate" />
+    <!-- ES2020 import. The code is deferred and run after the html is loaded -->
+    <script type="module">import * as j from './js/leader.js';j.start_script();</script>
 </head>
 
 <body>
@@ -39,30 +34,30 @@
             </a>
             <p></p>
             <div>
-                <button id="button_bye" >Bye</button>
+                <button id="button_bye">Bye</button>
             </div>
-           
+
         </div>
-        <div id="div_play_video" >
+        <div id="div_play_video">
             <div>
-                <button id="back_to_list" >Back to song list</button>
+                <button id="back_to_list">Back to song list</button>
             </div>
             <p></p>
-            <div id="div_song_name">song_name</div>  
-            <p></p>          
+            <div id="div_song_name">song_name</div>
+            <p></p>
             <div>
-                <button id="send_play" >Play</button>
+                <button id="send_play">Play</button>
             </div>
             <div>
-                <button id="send_pause" >Stop</button>
+                <button id="send_pause">Stop</button>
                 <p></p>
             </div>
             <div>
-                <button id="button_fullscreen" >FullScreen</button>
+                <button id="button_fullscreen">FullScreen</button>
                 <video id="video_video" height="1" width="100%"><source type="video/mp4"></video>
-            </div>            
+            </div>
         </div>
-    </div>        
+    </div>
 </body>
 
 </html>

@@ -22,8 +22,8 @@
     </div>
     <div style="position: absolute;top:10vh;height: 93vh; ;width: var(--body_width);align-items: center; text-align: center; ">
         <p></p>
-        <label for="songs_urls" style="display:block;">copy-paste the songs urls (one url per line):</label>        
-        <textarea id="songs_urls" rows="5"style="display:block;width: 100%;" ></textarea>
+        <label for="songs_urls" style="display:block;">copy-paste the songs urls (one url per line):</label>
+        <textarea id="songs_urls" rows="5" style="display:block;width: 100%;"></textarea>
         <p></p>
         <button onclick="download_song();">Start download</button>
         <p></p>
@@ -44,28 +44,28 @@
 
         function download_song() {
             console.log("download_song");
-            var songs_urls = document.getElementById("songs_urls").value;
-            var div_msg_for_user = document.getElementById("div_msg_for_user");
+            let songs_urls = document.getElementById("songs_urls").value;
+            let div_msg_for_user = document.getElementById("div_msg_for_user");
             // there can be more songs delimited with \n "ne line"
-            // the android download manaegr will take care to download multiple songs one by one
-            let splited = songs_urls.split("\n");
-            let text_for_div_msg_for_user="";
-            for(var i = 0; i < splited.length; i++) { 
-                let song_url = splited[i];
-                let splited_song_name = song_url.split("/");
-                let song_name = splited_song_name[splited_song_name.length-1];
+            // the android download manager will take care to download multiple songs one by one
+            let splitted = songs_urls.split("\n");
+            let text_for_div_msg_for_user = "";
+            for (let i = 0; i < splitted.length; i++) {
+                let song_url = splitted[i];
+                let splitted_song_name = song_url.split("/");
+                let song_name = splitted_song_name[splitted_song_name.length - 1];
                 song_name = decodeURI(song_name);
 
                 if (!song_url.endsWith(" - guitaraoke.mp4") && !song_url.endsWith("%20-%20guitaraoke.mp4") && !song_url.endsWith(" - guitaraoke.mp4?dl=1") && !song_url.endsWith("%20-%20guitaraoke.mp4?dl=1")) {
-                    text_for_div_msg_for_user.append += "The song_url does not end with ' - guitaraoke.mp4' or ' - guitaraoke.mp4?dl=1' :"+"\n"+song_name+"\n\n";
+                    text_for_div_msg_for_user.append += "The song_url does not end with ' - guitaraoke.mp4' or ' - guitaraoke.mp4?dl=1' :" + "\n" + song_name + "\n\n";
                 } else if (!song_url.startsWith("http://") && !song_url.startsWith("https://")) {
-                    div_msg_for_user.innerText = "The song_url does not start with 'http://' or 'https://' : "+"\n"+song_name+"\n\n";
+                    div_msg_for_user.innerText = "The song_url does not start with 'http://' or 'https://' : " + "\n" + song_name + "\n\n";
                 } else {
                     if (window.XMLHttpRequest) {
                         let http_request = new XMLHttpRequest();
                         let page_url = "download_song.html";
 
-                        var params = "song_url=" + encodeURIComponent(song_url);
+                        let params = "song_url=" + encodeURIComponent(song_url);
                         http_request.open("POST", page_url, true);
 
                         //Send the proper header information along with the request

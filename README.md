@@ -55,7 +55,7 @@ I use an old Lenovo tablet for my server: Android 6.0 (API level 23).
 
 ## Local network
 
-This server will work only on a local network like `192.168.x.y`. My personal local network wi-fi uses hotspot from my smartphone. But it couls be any wi-fi hotspot. I have my Lenovo Win10+WSL2 notebook and a lenovo tablet connected to my wifi local network.  
+This server will work only on a local network like `192.168.x.y`. My personal local network wi-fi uses hotspot from my smartphone. But it could be any wi-fi hotspot. I have my Lenovo Win10+WSL2 notebook and a lenovo tablet connected to my wifi local network.  
 Just to mention a curious behavior when the smartphones hotspot has no mobile-internet connection, it cannot see the local network. All other connected devices work just fine with the local network wi-fi.  
 
 ## Guitaraoke Client
@@ -74,7 +74,7 @@ I created the android icons with this online service:
 Files that are distributed with the server are called assets. They are read-only and accessible with the the object AssetManager.  
 I want the video files to be downloadable. The `Leader` can download any  
 `xxx - guitaraoke.mp4`  
-file from the internet. It will be saved in the ExternalStorage. I used the DownLoadManager object for that.    
+file from the internet. It will be saved in the ExternalStorage. I used the DownLoadManager object for that.  
 
 ## Leader installs GuitaraokeServer app
 
@@ -108,6 +108,50 @@ The songs are saved in the device folder: `/storage/emulated/0/Android/data/dev.
 7. The leader clicks `Play`. It sends a msg to all connected followers to start playing he song.  
 8. The follower page will try some basic auto-sync. If the sound is not perfectly in sync, the follower can adjust the speed of the playback. Or he can simply `Mute sound` to avoid the disturbing delayed sound.  
 9. Finally click on `Fullscreen` to see the lyrics and chords and play/sings along.  
+
+## Javascript ES2020
+
+Javascript is a terrible language and I don't like it and I don't use it unless I have to. This project is easy to write in javascript. But wait, it is called ECMA script now? It deserves a terrible name like this. Somebody calls it `modern javascript`. It is in version ES2020. This version is supported by all modern browsers. Still terrible and now even super confusing. All the code you find around on the internet is for an unknown version. Fantastic. So you cannot recognize `bad or good habits`. And there is absolutely no help for the developer from the interpreter/JIT. Bad, bad language.  
+Maybe `modules` in 2020 will make it better. Eh, just a tiny bit.  
+Separate files for `js` and `html`, that makes sense.  
+Inline event handlers are easy to use, but not recommended in `modern javascript`, so I must use `addEventListener()`.  
+`let` is better that `var`.  
+`globalThis` is better than `var` or `window`.  
+If a variable is not declared, I get an error in runtime. Before you must write `use strict`, for modern  modules it is implicit. Good, better than before (silent declaration leading to incorrect execution), but still not enough for developer comfort.  
+`<script type="module" >import * as j from './js/index.js';j.start_script();</script>` is better than other ways to import or include scripts. Having an alias for the module exported functions is very precise: `j.send_msg();`.  
+I think I will eventually start to use Typescript instead of javascript for projects of any size, even the smallest one.  
+
+## state and state_transition
+
+It is much easier to think about a page with the concept of `states`.  
+One page can be in different clearly defined `states`. One state defines slightly different user interface, some elements are hidden, others are visible. There is a limited number of states, this is what makes it easy to grasp and understand.  
+The transition from one state to the other defines the actions to be done.  
+
+## sync playback
+
+It is difficult to make the same video on different devices to play in sync. This is my take.  
+
+### internal clock correction
+
+First I wanted to have the same exact time on all devices. I am surprised how much the devices internal clock can differ. How can they sync anything on the internet or use the GPS? I was sure the device sync the time with some atomic clock on the network. But it looks it is so much more complicated than I though. I cannot use any internet atomic clock because we will sing and play in the mountains without any internet connection.  
+Ok, I need to do some rudimentary clock correction. The GuitaraokeServer will be our clock of reference for all other devices. Every follower requests the time from the web server. I tried with websockets but it was wildly inaccurate. The follower requests 5 times in interval of 1 second and calculates the average. There are 4 points in time to remember:  
+a. sent request  
+b. received request  
+c. sent response  
+d. received response  
+We can calculate the average time that the packets travel between the client and server:  
+`((d-a)-(c-b))/2`  
+We than choose the fastest of repetitions as reference.  
+Then we calculate the difference of device clocks in milliseconds. This becomes the `globalThis.sync_clock_correction`. We cannot change the internal clock of the device (for security reasons). We will just correct it for our calculations.  
+
+### video sync
+
+I tried to set the `currentTime` property of the `video` element, but it didn't work. I decided than to change the playback speed. It is called `video.playbackRate`.  
+I put buttons on the screen for faster and slower `playbackRate`. But manually adjusting is tedious.  
+My basic auto-sync works like this:  
+When the video starts to play the `follower` sends a websocket msg to the `leader` for sync_video. The `leader` response contains the `video.currentTime` and the `corrected system clock in milliseconds`. The follower calculates his corrected clock and compares to the clock of the server. There is always some differences because of the network latency. Add this difference to the received video.currentTime. If the local video.currentTime is much bigger than slow down the video for one second. If the server video is behind, than speed up the local video for one second. After 2 seconds from the request the follower sends another request. It uses playbackRate to speed up or slow the video until the difference is small enough. Then the `setInterval` for sync requests is stopped.  
+This way we achieved very similar `video.currentTime`. But sometimes it is not perfect. And users must do the fine adjustment manually.  
+If all this is too much for the follower, he can just mute the sound. The only mandatory sound comes from the Leader.  
 
 ## TODO
 
