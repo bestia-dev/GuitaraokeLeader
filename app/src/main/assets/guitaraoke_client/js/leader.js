@@ -40,7 +40,7 @@ export function start_script() {
     cm.el("button_bye").addEventListener("click", () => { cm.send_message('bye!'); });
     cm.el("back_to_list").addEventListener("click", () => { cm.send_message('stop!'); });
     cm.el("send_play").addEventListener("click", () => { cm.send_message('play!'); });
-    cm.el("send_pause").addEventListener("click", () => { cm.send_message('stop!'); });
+    cm.el("send_stop").addEventListener("click", () => { cm.send_message('stop!'); });
     cm.el("button_fullscreen").addEventListener("click", () => { video_video.requestFullscreen(); });
 
     for (let x of document.getElementsByClassName("class_song_name")) {
@@ -107,7 +107,7 @@ function state_ui_song_load() {
     cm.el("div_play_video").hidden = false;
     cm.el("back_to_list").hidden = false;
     cm.el("send_play").hidden = false;
-    cm.el("send_pause").hidden = true;
+    cm.el("send_stop").hidden = true;
 }
 
 function state_ui_song_play() {
@@ -115,7 +115,7 @@ function state_ui_song_play() {
     cm.el("div_start").hidden = true;
     cm.el("div_play_video").hidden = false;
     cm.el("send_play").hidden = true;
-    cm.el("send_pause").hidden = false;
+    cm.el("send_stop").hidden = false;
     cm.el("back_to_list").hidden = true;
     cm.el("button_fullscreen").hidden = false;
 }

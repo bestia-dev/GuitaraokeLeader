@@ -90,11 +90,12 @@ function sync_video_reply(leader_sync_current_millis, leader_sync_clock_with_cor
     let follower_sync_clock_with_correction = Date.now() + globalThis.sync_clock_correction;
     let leader_sync_current_millis_corrected = leader_sync_current_millis + (follower_sync_clock_with_correction - parseInt(leader_sync_clock_with_correction));
     let play_diff_millis = parseInt(leader_sync_current_millis_corrected) - follower_current_millis;
-    console.log(play_diff_millis);
-    if (play_diff_millis < -20) {
+    cm.el("div_debug").innerText = play_diff_millis;
+    let best_sync_on_ms = +40;
+    if (play_diff_millis < best_sync_on_ms - 20) {
         modify_play_rate(-0.02);
         setTimeout(function() { reset_play_rate(); }, 1000);
-    } else if (play_diff_millis > 20) {
+    } else if (play_diff_millis > best_sync_on_ms + 20) {
         modify_play_rate(+0.02);
         setTimeout(function() { reset_play_rate(); }, 1000);
     } else {
@@ -146,6 +147,7 @@ function state_ui_start() {
     button_start.hidden = false;
     div_waiting.hidden = true;
     div_play_video.hidden = true;
+    cm.el("div_debug").hidden = true;
 }
 
 function state_ui_waiting() {
@@ -165,6 +167,7 @@ function state_ui_song_load() {
 function state_ui_play() {
     page_state = PageState.SongPlay;
     button_fullscreen.hidden = false;
+    cm.el("div_debug").hidden = false;
 }
 
 function state_ui_bye() {
