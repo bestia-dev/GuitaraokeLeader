@@ -55,8 +55,7 @@ I use an old Lenovo tablet for my server: Android 6.0 (API level 23).
 
 ## Local network
 
-This server will work only on a local network like `192.168.x.y`. My personal local network wi-fi uses hotspot from my smartphone. But it could be any wi-fi hotspot. I have my Lenovo Win10+WSL2 notebook and a lenovo tablet connected to my wifi local network.  
-Just to mention a curious behavior when the smartphones hotspot has no mobile-internet connection, it cannot see the local network. All other connected devices work just fine with the local network wi-fi. Today I got an error "wifi" is not enabled on the smartphone with the hotspot, so I cannot use the server. But it works just fine as a follower.
+This server will work only on a local network like `192.168.x.y`. My personal local network wi-fi uses hotspot from my smartphone. But it could be any wi-fi hotspot. I have my Lenovo Win10+WSL2 notebook and a lenovo tablet connected to my wifi local network for testing.  
 
 ## Guitaraoke Client
 
@@ -66,7 +65,7 @@ This `assets` folder is distributed with the server installation.
 
 ## icons
 
-Right click on `app - src - main - res` and open `New - Image Asset`. This opens the `Asset Studio` where the icons are edited and exported into different files.  
+In Android Studio right click on `app - src - main - res` and open `New - Image Asset`. This opens the `Asset Studio` where the icons are edited and exported into different files.  
 
 ## android assets and ExternalStorage
 
@@ -75,14 +74,16 @@ I want the video files to be downloadable. The `Leader` can download any
 `xxx - guitaraoke.mp4`  
 file from the internet. It will be saved in the ExternalStorage. I used the DownLoadManager object for that.  
 
-## Leader installs GuitaraokeServer app
+## Leader installs the GuitaraokeServer app
 
 Only the `leader` needs to install the GuitaraokeServer on his smartphone.  
-He downloads the signed APK from Github : <https://github.com/LucianoBestia/GuitaraokeServer/releases>.  
+He downloads the latest signed APK from Github : <https://github.com/LucianoBestia/GuitaraokeServer/releases>.  
 The smartphone must have enabled `Settings - Security - Unknown Sources`. Read more here:  
 <https://www.thegeeksclub.com/how-to-install-third-party-apk-on-android/>  
-He starts the app. The server is just a black screen with yellow debugging text. Nothing interesting going on here. It just must be opened because it serves the files to the browsers. When the tablet screen goes to sleep, the server stops working. Modify the settings to `Sleep after 10 minutes of inactivity`.  
-On start the app opens the browser on the `Leader page`. If you accidentally close the browser, just restart the app. It will open again on the right page.  
+  
+SECURITY: This app does not need any special permissions from your Android OS. It cannot read/write everywhere on the local disk, it does not have access to any important pieces of information (contacts, photos, documents, passwords, private keys, keyboard,...). The app cannot access these functions without explicit permission from the OS and you. This means this app is safe to install and use.
+  
+When the Leader starts the app it starts simultaneously a web server, a websocket server and a browser inside the app with WebView.  
 
 ## The Download songs page
 
@@ -92,21 +93,21 @@ Click on the button `Download new songs`.
 Copy the url of the `xxx - guitaraoke.mp4` file and press `Start download`.  
 For example `https://www.dropbox.com/s/hn0r9on24dxkhfh/4%20Non%20Blondes%20-%20What%27s%20Up%20-%20guitaraoke.mp4?dl=1`  
 It will download in the background, slowly, but surely.  
-If you want to download multiple songs at once, copy the song urls one per line. On my `Guitaraoke song page` you can just copy+paste more lines at once.  
+If you want to download multiple songs at once, copy more song's urls one per line. On my `Guitaraoke song page` you can just copy+paste more lines at once.  
 Finally click on the button `Back to Guitaraoke Leader page`.  
 The songs are saved in the device folder: `/storage/emulated/0/Android/data/dev.bestia.guitaraokeserver/files/videos/`.  
 
-## Easy Play-flow instructions
+## Easy instructions
 
 1. Only the leader must install the android APK on his phone.  
-2. Connect all the smartphones from the leader and followers to the same local wifi network.  
-3. The leader opens the GuitaraokeServer app. It will automatically open his browser on the `Leader page`.
-4. The leader shows the `Follower page` url (address) to the followers. hey can scan the QR code or just type the numbers. It is short and easy.  
+2. Connect all the smartphones from the leader and followers to the same local wifi network. The smartphone hotspot is also ok.  
+3. The leader opens the GuitaraokeServer app.  
+4. The leader shows the `Follower page` url (address) to the followers. They can scan the QR code or just type the numbers. It is short and easy.  
 5. Followers must click on `Start user interaction` because javascript need a user `interaction` with the page. Nothing else to do for the follower.  
 6. The leader clicks on the song name. It broadcasts a msg to all connected followers. They can all see the name of the song.
 7. The leader clicks `Play`. It sends a msg to all connected followers to start playing he song.  
-8. The follower page will try some basic auto-sync. If the sound is not perfectly in sync, the follower can adjust the speed of the playback. Or he can simply `Mute sound` to avoid the disturbing delayed sound.  
-9. Finally click on `Fullscreen` to see the lyrics and chords and play/sings along.  
+8. The follower page is muted because the sound can be out-of-sync. If the follower wants, he can unmute it and sync the sound manually.  
+9. Finally click on `Fullscreen lyrics` to see the lyrics and chords in full screen.  
 
 ## Javascript ES2020
 
@@ -157,14 +158,17 @@ If all this is too much for the follower, he can just mute the sound. The only m
 I give up. Perfectly sync video playback on many devices is not possible. The sound is the problem, we can hear the smallest out-of-sync. The solution is simple. Mute the sound by default. If some followers really want to play a DJ, they can unmute it.  
 The functionality of my app is intact. Followers need to read the lyrics. The sound will come from the Leader. Probably he will use a loud bluetooth speaker connected to his phone. Done! Full capitulation :-(  
 
+## WebView
+
+Having separate app for the server and open Chrome for the Leader page didn't work out, because the server went to sleep because there was no user interaction. I added a WebView in the app and now the Leader page is inside the app. The server text for debugging is now accessible with the button `show server`.  
+
 ## TODO
 
-why web server stops abruptly? Maybe some timeout?
 leader page can create QRcode with Follower page  
 make a video tutorial  
 Playlist: songs and play order  
 
 songs not working:
-you really got medevojko mala
-WebSocket is already in CLOSING or CLOSED state.
+you really got me
+devojko mala
 
