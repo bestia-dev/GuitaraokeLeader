@@ -64,10 +64,9 @@ The client project is inside the server project in  `GuitaraokeServer\app\src\ma
 I can use VisualStudioCode to edit this, because I like it more than the android studio for html/css/javascript.  
 This `assets` folder is distributed with the server installation.  
 
-## icons online
+## icons
 
-I created the android icons with this online service:  
-<https://romannurik.github.io/AndroidAssetStudio/icons-launcher.html#foreground.type=clipart&foreground.clipart=android&foreground.space.trim=1&foreground.space.pad=0.25&foreColor=rgba(96%2C%20125%2C%20139%2C%200)&backColor=rgb(68%2C%20138%2C%20255)&crop=0&backgroundShape=square&effects=none&name=ic_launcher>
+Right click on `app - src - main - res` and open `New - Image Asset`. This opens the `Asset Studio` where the icons are edited and exported into different files.  
 
 ## android assets and ExternalStorage
 
@@ -158,14 +157,14 @@ If all this is too much for the follower, he can just mute the sound. The only m
 I give up. Perfectly sync video playback on many devices is not possible. The sound is the problem, we can hear the smallest out-of-sync. The solution is simple. Mute the sound by default. If some followers really want to play a DJ, they can unmute it.  
 The functionality of my app is intact. Followers need to read the lyrics. The sound will come from the Leader. Probably he will use a loud bluetooth speaker connected to his phone. Done! Full capitulation :-(  
 
-
-
-
 ## TODO
 
-no icon on android?
 why web server stops abruptly? Maybe some timeout?
-
 leader page can create QRcode with Follower page  
 make a video tutorial  
 Playlist: songs and play order  
+
+songs not working:
+you really got medevojko mala
+WebSocket is already in CLOSING or CLOSED state.
+
