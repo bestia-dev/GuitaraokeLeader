@@ -56,7 +56,7 @@ I use an old Lenovo tablet for my server: Android 6.0 (API level 23).
 ## Local network
 
 This server will work only on a local network like `192.168.x.y`. My personal local network wi-fi uses hotspot from my smartphone. But it could be any wi-fi hotspot. I have my Lenovo Win10+WSL2 notebook and a lenovo tablet connected to my wifi local network.  
-Just to mention a curious behavior when the smartphones hotspot has no mobile-internet connection, it cannot see the local network. All other connected devices work just fine with the local network wi-fi.  
+Just to mention a curious behavior when the smartphones hotspot has no mobile-internet connection, it cannot see the local network. All other connected devices work just fine with the local network wi-fi. Today I got an error "wifi" is not enabled on the smartphone with the hotspot, so I cannot use the server. But it works just fine as a follower.
 
 ## Guitaraoke Client
 
@@ -153,9 +153,19 @@ When the video starts to play the `follower` sends a websocket msg to the `leade
 This way we achieved very similar `video.currentTime`. But sometimes it is not perfect. And users must do the fine adjustment manually.  
 If all this is too much for the follower, he can just mute the sound. The only mandatory sound comes from the Leader.  
 
+### capitulation
+
+I give up. Perfectly sync video playback on many devices is not possible. The sound is the problem, we can hear the smallest out-of-sync. The solution is simple. Mute the sound by default. If some followers really want to play a DJ, they can unmute it.  
+The functionality of my app is intact. Followers need to read the lyrics. The sound will come from the Leader. Probably he will use a loud bluetooth speaker connected to his phone. Done! Full capitulation :-(  
+
+
+
+
 ## TODO
 
-ES2020 and modules
+no icon on android?
+why web server stops abruptly? Maybe some timeout?
+
 leader page can create QRcode with Follower page  
 make a video tutorial  
 Playlist: songs and play order  

@@ -37,16 +37,14 @@
         <div id="div_play_video" style=" align-items: center; text-align: center;">
             <p></p>
             <div id="div_song_name">song_name</div>
-            <p><button id="button_fullscreen">FullScreen</button></p>
+            <p><button id="button_fullscreen">FullScreen lyrics</button></p>
+            <p><button id="button_muted_toggle">Unmute sound</button></p>
             <button id="button_slower">Slower</button>
             <span id="span_speed">--- speed: 1.000 ---</span>
             <button id="button_faster">Faster</button>
-            <p><button id="button_muted_toggle">Mute sound</button></p>
-            <div>Sometimes the playback on some devices is not in sync. The app will try with a basic auto-sync. If after some seconds the sound is still not in sync, you can try to change the playback speed manually, like an old-school DJ on two vinyl records
-                turntables.
+            <div>If you want, you can unmute the sound. But the sound can be disturbingly out-of-sync. You can try to change the playback speed manually, like an old-school DJ on two vinyl records turntables until you achieve perfect audio sync.
             </div>
-            <div>Or you can simply mute the sound, if it is terrible.</div>
-            <video id="video_video" preload="auto" height="1" width="100%"><source type="video/mp4"></video>
+            <video id="video_video" preload="auto" height="0" width="100%"><source type="video/mp4"></video>
         </div>
         <div id=div_debug style="color: rgb(165, 61, 61);"></div>
     </div>

@@ -184,6 +184,7 @@ function state_ui_song_load() {
     page_state = PageState.SongLoad;
     div_start.hidden = true;
     div_play_video.hidden = false;
+    mute_sound();
 }
 
 function state_ui_play() {
@@ -239,7 +240,11 @@ function button_muted_toggle_on_click() {
         video_video.muted = false;
         cm.el("button_muted_toggle").innerText = "Mute sound";
     } else {
-        video_video.muted = true;
-        cm.el("button_muted_toggle").innerText = "Unmute sound";
+        mute_sound();
     }
+}
+
+function mute_sound() {
+    video_video.muted = true;
+    cm.el("button_muted_toggle").innerText = "Unmute sound";
 }
