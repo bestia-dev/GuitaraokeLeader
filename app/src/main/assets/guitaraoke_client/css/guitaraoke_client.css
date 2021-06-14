@@ -18,7 +18,9 @@
     box-sizing: border-box;
 }
 
+
 /* disable double-tap for zooming or pull-down for reload or pinch for zooming */
+
 * {
     touch-action: manipulation;
 }
@@ -27,7 +29,7 @@
     font-family: "Roboto";
     /* fonts are inside the css folder */
     src: url("Roboto-Medium.woff2") format("woff2")
-  }
+}
 
 html {
     background-color: var(--b_color_html);
@@ -52,7 +54,9 @@ body {
     line-height: 1.8;
 }
 
-/* no specail color for links */
+
+/* no special color for links */
+
 a:link,
 a:visited,
 a:hover,
@@ -66,18 +70,19 @@ button {
     background-color: var(--b_color_title);
     border: none;
     color: var(--f_color_title);
-    padding: 15px 32px;
+    padding: 10px 24px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 20px;
     border-radius: 8px;
-  }
+}
 
-  button:disabled{
+button:disabled {
     background-color: gray;
     opacity: 0.5;
-  }
+}
+
 
 /* region: fixed header */
 
@@ -98,7 +103,9 @@ button {
     text-align: center;
 }
 
+
 /* endregion: fixed header */
+
 
 /* using simple `css-grid` for the layout (display: grid) 
 the grid-template-columns and grid-template-rows are defined in the html*/

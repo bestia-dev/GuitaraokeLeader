@@ -106,7 +106,7 @@ The songs are saved in the device folder: `/storage/emulated/0/Android/data/dev.
 5. Followers must click on `Start user interaction` because javascript need a user `interaction` with the page. Nothing else to do for the follower.  
 6. The leader clicks on the song name. It broadcasts a msg to all connected followers. They can all see the name of the song.
 7. The leader clicks `Play`. It sends a msg to all connected followers to start playing he song.  
-8. The follower page is muted because the sound can be out-of-sync. If the follower wants, he can unmute it and sync the sound manually.  
+8. The follower page is muted because the sound can be disturbingly out-of-sync.  
 9. Finally click on `Fullscreen lyrics` to see the lyrics and chords in full screen.  
 
 ## Javascript ES2020
@@ -155,8 +155,8 @@ If all this is too much for the follower, he can just mute the sound. The only m
 
 ### capitulation
 
-I give up. Perfectly sync video playback on many devices is not possible. The sound is the problem, we can hear the smallest out-of-sync. The solution is simple. Mute the sound by default. If some followers really want to play a DJ, they can unmute it.  
-The functionality of my app is intact. Followers need to read the lyrics. The sound will come from the Leader. Probably he will use a loud bluetooth speaker connected to his phone. Done! Full capitulation :-(  
+I give up. Perfectly sync video playback on many devices is not possible. The sound is the problem, we can hear the smallest out-of-sync. The solution is simple. Mute the sound by default. 
+The Followers need only to see the lyrics. The sound will come only from the Leader. Probably he will use a loud bluetooth speaker connected to his phone. Done! Full capitulation :-(  
 
 ## WebView
 
@@ -164,9 +164,22 @@ Having separate app for the server and open Chrome for the Leader page didn't wo
 
 ## TODO
 
+https://bestia.dev/guitaraoke/ is the starting point.
+Explain step by step how to use it
+
+follower can reconnect automatically if it looses websocket connection. Or he joins later.
+iPhone does not obey full screen
+
+Add song should be easier
+public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+    //Do something with this URL (like queue a download)
+}
+
+
 leader page can create QRcode with Follower page  
 make a video tutorial  
 Playlist: songs and play order  
+Show how many followers
 
 songs not working:
 you really got me

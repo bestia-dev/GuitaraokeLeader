@@ -4,6 +4,8 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.net.Uri;
+import android.util.Log;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -49,6 +51,7 @@ public class WebServer extends NanoHTTPD {
         if (uri.startsWith("/css")) {
             try {
                 String filename_from_uri = uri.substring(5);
+                Log.i("","fileExists: "+filename_from_uri);
                 boolean fileExists = Arrays.asList(this.assetManager.list("guitaraoke_client/css")).contains(filename_from_uri);
                 if (fileExists) {
                     return "css/"+filename_from_uri;
@@ -97,6 +100,10 @@ public class WebServer extends NanoHTTPD {
             return "font/ttf";
         } else if (file_path.endsWith(".ico")){
         return "image/x-icon";
+        } else if (file_path.endsWith(".jpg")){
+            return "image/jpeg";
+        } else if (file_path.endsWith(".png")){
+            return "image/png";
     }
         return "";
     }

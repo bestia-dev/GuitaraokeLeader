@@ -9,9 +9,11 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -27,6 +29,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 
@@ -45,18 +48,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         TextView button_stop_server =  findViewById(R.id.button_stop);
         button_stop_server.setOnClickListener(view -> {
-            // stop web server and exit app
-            try {
-                websocketserver.stop();
-            } catch (InterruptedException e) {
-                printLine("InterruptedException");
-                e.printStackTrace();
-            }
-            webserver.closeAllConnections();
-            webserver.stop();
-            finishAffinity();
-            finish();
-            System.exit(0);
+            //send bye
+            websocketserver.broadcast_msg_from_server("bye!");
+            // delay finish to allow  followers to open the bye page
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // finish will call onDestroy
+                    finish();
+                }
+            }, 2000);
         });
         TextView button_show_server =  findViewById(R.id.button_show);
         button_show_server.setOnClickListener(view -> {
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         TextView header_title = findViewById(R.id.header_title);
 
 
-        copyOnceAssetsVideosToExternalStorage();
+        copyOnceWelcomeVideoToExternalStorage();
         // Main function
         printLine("Initializing server...");
         // Init server
@@ -98,16 +100,26 @@ public class MainActivity extends AppCompatActivity {
                 Resources res = getResources();
                 String text = String.format(res.getString(R.string.print_ip_address_and_port),ip, WEB_SERVER_TCP_PORT);
                 header_ip_port.setText( text);
-                // open browser for leader inside a webview to avoid app sleep
+
+                // WebView: open browser for leader inside a webview to avoid app sleep
                 WebView web_view_1 =  findViewById(R.id.web_view_1);
                 LinearLayout linearLayout =  findViewById(R.id.linearLayout);
                 RelativeLayout contentLayout =  findViewById(R.id.contentLayout);
                 // fullscreen is a long story in android web view
                 web_view_1.setWebChromeClient(new FullScreenClient(linearLayout, contentLayout));
+                // without this, any change in url opens the browser.
+                web_view_1.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                        view.loadUrl(url);
+                        return false;
+                    }
+                });
+
                 WebSettings web_view_settings = web_view_1.getSettings();
                 web_view_settings.setJavaScriptEnabled(true);
-
                 web_view_1.loadUrl(ip+":"+  WEB_SERVER_TCP_PORT + "/leader.html");
+
             }catch (IOException e) {
                 Toast.makeText(getApplicationContext(), "IOException: " +  e.getMessage(), Toast.LENGTH_LONG).show();
             }catch (Exception e) {
@@ -169,47 +181,48 @@ public class MainActivity extends AppCompatActivity {
         return getExternalFilesDir("videos");
     }
 
-    public void copyOnceAssetsVideosToExternalStorage() {
-        // check if the folder exists in External storage
-        String asset_folder = "guitaraoke_client/videos";
+    public void copyOnceWelcomeVideoToExternalStorage() {
+        // check if the file exists in External storage
         File videos_folder = getExternalVideosFolder();
-        File[] video_files = videos_folder.listFiles();
-            if (video_files != null && video_files.length == 0) {
-                AssetManager assetManager = getAssets();
-                String[] files = null;
-                try {
-                    files = assetManager.list(asset_folder);
-                } catch (IOException e) {
-                    printLine("Failed to get asset file list." + e.toString());
-                }
-                if (files != null) for (String filename : files) {
-                    InputStream in = null;
-                    OutputStream out = null;
+        File welcome_external_file = new File(videos_folder, "Welcome_to_guitaraoke - guitaraoke.mp4");
+        if (welcome_external_file.exists()) {
+            printLine("welcome_external_file.exists()");
+            printLine(welcome_external_file.getAbsolutePath());
+        }
+        if (!welcome_external_file.exists()) {
+            printLine("!welcome_external_file.exists()");
+            String welcome_asset = "guitaraoke_client/videos/Welcome_to_guitaraoke - guitaraoke.mp4";
+            AssetManager assetManager = getAssets();
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                printLine("before open asset");
+                in = assetManager.open(welcome_asset);
+                printLine("after open asset");
+                File outFile = welcome_external_file;
+                outFile.setReadable(true);
+                out = new FileOutputStream(outFile);
+                Utils.copyFile(in, out);
+                printLine("after copyFile");
+            } catch (IOException e) {
+                printLine("Failed to copy asset file: " + welcome_asset + " " + e.toString());
+            } finally {
+                if (in != null) {
                     try {
-                        in = assetManager.open(asset_folder + filename);
-                        File outFile = new File(videos_folder, filename);
-                        out = new FileOutputStream(outFile);
-                        Utils.copyFile(in, out);
+                        in.close();
                     } catch (IOException e) {
-                        printLine("Failed to copy asset file: " + filename + " " + e.toString());
-                    } finally {
-                        if (in != null) {
-                            try {
-                                in.close();
-                            } catch (IOException e) {
-                                // NOOP
-                            }
-                        }
-                        if (out != null) {
-                            try {
-                                out.close();
-                            } catch (IOException e) {
-                                // NOOP
-                            }
-                        }
+                        // NOOP
+                    }
+                }
+                if (out != null) {
+                    try {
+                        out.close();
+                    } catch (IOException e) {
+                        // NOOP
                     }
                 }
             }
         }
+    }
 }
 

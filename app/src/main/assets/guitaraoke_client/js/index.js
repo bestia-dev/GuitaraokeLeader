@@ -2,58 +2,30 @@
 
 import * as cm from "./common.js"
 
-// ES2020 import the wasm code compiled from rust with wasm-bindgen
-// define an alias for calling functions in this module, example: `* as qr`
-////import init, * as qr from '../pkg/qrcode53bytes_lib_for_javascript.js';
-// default function init() is called without the alias
-//await init();
-
-// call to a function in the wasm module using the alias
-//let qr_svg = qr.svg_qrcode("123");
-//cm.cm.el("div_qrcode").innerHTML = qr_svg;
-
 // region: module scope variables
 // this web page can be in different states. A state defines which elements are hidden or visible.
 const PageState = {
     Start: 'Start',
     Waiting: 'Waiting',
-    SongLoad: 'SongLoad',
     SongPlay: 'SongPlay',
+    ConnectionLost: 'ConnectionLost',
     Bye: 'Bye'
 };
 
 let page_state = PageState.Start;
-let button_start = cm.el("button_start");
-let div_waiting = cm.el("div_waiting");
 let video_video = cm.el("video_video");
-let div_start = cm.el("div_start");
-let div_play_video = cm.el("div_play_video");
-let div_song_name = cm.el("div_song_name");
-let button_fullscreen = cm.el("button_fullscreen");
-let is_auto_sync = false;
-let sync_video_request_interval;
 // endregion: module scope variables
 
 // region: global variables
 // globalThis.websocket
 // globalThis.user_name
-globalThis.sync_clock_correction = 0;
 // endregion: global variables
 
 export function start_script() {
-
-
-    // region: event listeners
-    window.onresize = function() { cm.warn_user_to_change_orientation(); };
-    cm.el("button_start").addEventListener("click", () => { state_transition_from_start_to_waiting(); });
-    cm.el("button_fullscreen").addEventListener("click", () => { video_video.requestFullscreen(); });
-    cm.el("button_slower").addEventListener("click", () => { modify_play_rate(-0.02); });
-    cm.el("button_faster").addEventListener("click", () => { modify_play_rate(+0.02); });
-    cm.el("button_muted_toggle").addEventListener("click", () => { button_muted_toggle_on_click(); });
+    // region: event listeners    
+    cm.el("button_reload").addEventListener("click", () => { state_transition_to_start(); });
     // endregion: event listeners
 
-    cm.warn_user_to_change_orientation();
-    cm.start_sync_clock_with_server();
     state_transition_to_start();
 }
 
@@ -72,179 +44,108 @@ function connect_to_guitaraoke_server() {
             state_transition_from_play_to_waiting();
         } else if (msg.data == "bye!") {
             state_transition_to_bye();
-        } else if (msg.data.startsWith("sync_video_reply:")) {
-            let splitted = msg.data.split(" ");
-            // username, only for me
-            let user_name = splitted[1];
-            if (user_name == globalThis.user_name) {
-                // leader currentTime in milliseconds
-                let leader_sync_current_millis = parseInt(splitted[2]);
-                let leader_sync_clock_with_correction = parseInt(splitted[3]);
-                sync_video_reply(leader_sync_current_millis, leader_sync_clock_with_correction);
-            }
         }
     };
-}
 
-function sync_video_reply(leader_sync_current_millis, leader_sync_clock_with_correction) {
-    let follower_current_millis = video_video.currentTime * 1000;
-    let follower_sync_clock_with_correction = Date.now() + globalThis.sync_clock_correction;
-    let leader_sync_current_millis_corrected = leader_sync_current_millis + (follower_sync_clock_with_correction - leader_sync_clock_with_correction);
-    //cm.debug_write("currentTime leader, leader_corrected, follower: \n" + leader_sync_current_millis + " " + leader_sync_current_millis_corrected + " " + follower_current_millis);
-    let play_diff_millis = leader_sync_current_millis_corrected - follower_current_millis;
-    //cm.debug_write("diff: " + play_diff_millis);
-    if (is_auto_sync == true) {
-        let best_sync_on_ms = 0;
-        // bigger the difference, bigger the rate
-        if (play_diff_millis < best_sync_on_ms - 300) {
-            modify_play_rate(-0.2);
-            setTimeout(function() { reset_play_rate(); }, 1000);
-        } else if (play_diff_millis < best_sync_on_ms - 100) {
-            modify_play_rate(-0.08);
-            setTimeout(function() { reset_play_rate(); }, 1000);
-        } else if (play_diff_millis < best_sync_on_ms - 20) {
-            modify_play_rate(-0.02);
-            setTimeout(function() { reset_play_rate(); }, 1000);
-        } else if (play_diff_millis > best_sync_on_ms + 300) {
-            modify_play_rate(+0.2);
-            setTimeout(function() { reset_play_rate(); }, 1000);
-        } else if (play_diff_millis > best_sync_on_ms + 100) {
-            modify_play_rate(+0.08);
-            setTimeout(function() { reset_play_rate(); }, 1000);
-        } else if (play_diff_millis > best_sync_on_ms + 20) {
-            modify_play_rate(+0.02);
-            setTimeout(function() { reset_play_rate(); }, 1000);
+    globalThis.websocket.onclose = function(event) {
+        if (event.wasClean) {
+            console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
         } else {
-            // stop auto-sync when is ok
-            is_auto_sync = false;
-            //cm.el("button_slower").disabled = false;
-            //cm.el("button_faster").disabled = false;
-            clear_sync_video_interval();
-            //cm.debug_write("is_auto_sync = false");
+            // e.g. server process killed or network down
+            // event.code is usually 1006 in this case
+            console.log('[close] Connection died');
         }
-    }
-}
-
-function basic_auto_sync() {
-    // run now and after interval
-    is_auto_sync = true;
-    sync_video_request_interval = setInterval(function() { send_sync_video_request(); }, 2000);
-    cm.el("button_slower").disabled = true;
-    cm.el("button_faster").disabled = true;
-}
-
-function send_sync_video_request() {
-    cm.send_message("sync_video_request!");
-}
-
-function clear_sync_video_interval() {
-    cm.el("button_slower").disabled = false;
-    cm.el("button_faster").disabled = false;
-    clearInterval(sync_video_request_interval);
-}
-
-function modify_play_rate(how_much) {
-    video_video.playbackRate = video_video.playbackRate + how_much;
-    set_rate_inner_text();
-}
-
-function reset_play_rate() {
-    video_video.playbackRate = 1;
-    set_rate_inner_text();
-}
-
-function set_rate_inner_text() {
-    let rate_caption = "speed";
-    // if exists this object
-    if (sync_video_request_interval) {
-        rate_caption = "auto-sync";
-    }
-    cm.el('span_speed').innerText = '--- ' + rate_caption + ': ' + video_video.playbackRate.toFixed(3) + ' ---';
+        state_ui_connection_lost();
+    };
 }
 
 // region: state UI transformation
 function state_ui_start() {
     page_state = PageState.Start;
-    div_start.hidden = false;
-    button_start.hidden = false;
-    div_waiting.hidden = true;
-    div_play_video.hidden = true;
+    cm.el("div_follower").hidden = false;
+    cm.el("div_connection_lost").hidden = true;
+    cm.el("div_bye").hidden = true;
     //cm.el("div_debug").hidden = true;
 }
 
 function state_ui_waiting() {
     page_state = PageState.Waiting;
-    div_start.hidden = false;
-    button_start.hidden = true;
-    div_waiting.hidden = false;
-    div_play_video.hidden = true;
+    cm.el("div_follower").hidden = false;
+    cm.el("div_connection_lost").hidden = true;
+    cm.el("div_bye").hidden = true;
 }
 
 function state_ui_song_load() {
     page_state = PageState.SongLoad;
-    div_start.hidden = true;
-    div_play_video.hidden = false;
-    mute_sound();
+    cm.el("div_follower").hidden = false;
+    cm.el("div_connection_lost").hidden = true;
+    cm.el("div_bye").hidden = true;
+    video_video.muted = true;
 }
 
 function state_ui_play() {
     page_state = PageState.SongPlay;
-    button_fullscreen.hidden = false;
+    cm.el("div_follower").hidden = false;
+    cm.el("div_connection_lost").hidden = true;
+    cm.el("div_bye").hidden = true;
     //cm.el("div_debug").hidden = false;
+}
+
+function state_ui_connection_lost() {
+    page_state = PageState.ConnectionLost;
+    cm.el("div_follower").hidden = true;
+    cm.el("div_connection_lost").hidden = false;
+    cm.el("div_bye").hidden = true;
 }
 
 function state_ui_bye() {
     page_state = PageState.Bye;
+    cm.el("div_follower").hidden = true;
+    cm.el("div_connection_lost").hidden = true;
+    cm.el("div_bye").hidden = false;
 }
 // endregion: state UI transformation
 
 // region: state transition
 function state_transition_to_start() {
     state_ui_start();
+    connect_to_guitaraoke_server();
 }
 
 function state_transition_from_start_to_waiting() {
     state_ui_waiting();
-    connect_to_guitaraoke_server();
+    // video fullScreen iPhone/Safari is always different
+    if (video_video.requestFullscreen) {
+        video_video.requestFullscreen();
+    } else if (video_video.webkitEnterFullScreen) {
+        video_video.webkitEnterFullScreen();
+    } else if (video_video.mozRequestFullScreen) {
+        video_video.mozRequestFullScreen();
+    }
 }
 
 function state_transition_from_waiting_to_song_load(song_name) {
     state_ui_song_load();
+    console.log("song_load: " + song_name);
     cm.song_load(song_name);
 }
 
 function state_transition_from_song_load_to_play() {
     state_ui_play();
+    console.log("play");
     video_video.play();
-    // force basic auto-sync after 1 second
-    setTimeout(function() { basic_auto_sync(); }, 1000);
 }
 
 function state_transition_from_play_to_waiting() {
     state_ui_waiting();
-    cm.exit_full_screen();
+    //cm.exit_full_screen();
     video_video.pause();
-    // stop auto-sync when is ok
-    clear_sync_video_interval();
+    video_video.src = "videos/Welcome_to_guitaraoke - guitaraoke.mp4";
+    video_video.load();
 }
 
 function state_transition_to_bye() {
     state_ui_bye();
     cm.exit_full_screen();
-    window.location = "bye.html";
 }
 // endregion: state transition
-
-function button_muted_toggle_on_click() {
-    if (video_video.muted == true) {
-        video_video.muted = false;
-        cm.el("button_muted_toggle").innerText = "Mute sound";
-    } else {
-        mute_sound();
-    }
-}
-
-function mute_sound() {
-    video_video.muted = true;
-    cm.el("button_muted_toggle").innerText = "Unmute sound";
-}

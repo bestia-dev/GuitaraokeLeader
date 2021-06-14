@@ -26,11 +26,15 @@ public class WebsocketServer extends WebSocketServer {
         connections.add(conn);
         Date date = new Date();
         printLine("New connection from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+        // broadcast new connection, only the Leader will use this
+        broadcast_msg_from_server("connections: "+connections.size());
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         connections.remove(conn);
+        // broadcast new connection, only the Leader will use this
+        broadcast_msg_from_server("connections: "+connections.size());
     }
 
     @Override
@@ -57,6 +61,13 @@ public class WebsocketServer extends WebSocketServer {
     @Override
     public void onStart() {
         //printLine("onStart");
+    }
+
+    public void broadcast_msg_from_server(String str_msg){
+        String msg = new Message("server", new Date(),str_msg).toString();
+        for (WebSocket sock : connections) {
+            sock.send(msg);
+        }
     }
 
     private void printMessage(Message msg) {

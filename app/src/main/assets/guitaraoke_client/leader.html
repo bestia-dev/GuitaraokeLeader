@@ -17,41 +17,21 @@
 </head>
 
 <body>
-    <div style="position: absolute; width: var(--body_width);align-items: center; text-align: center; ">
-        <p></p>
-        <div id="div_warning_to_user" style="color: red;">Please rotate the device to landscape mode!</div>
+    <div class="fixed_header" style="height: 20vh;width: var(--body_width)">
+        Followers: <span id="followers">0</span>
+        <button id="button_download_song">Download new songs</button>
+        <button id="button_back_to_list">Back to song list</button>
+        <button id="button_send_play">Play</button>
+        <button id="button_fullscreen">FullScreen lyrics</button>
+        <button id="button_send_stop">Stop</button>
+    </div>
+    <div style="position: absolute; top:20vh; width: var(--body_width);align-items: center; text-align: center; ">
         <div id="div_start" style=" align-items: center; text-align: center;">
             <!--list_of_files_in_folder_videos-->
-            <p></p>
-            <a href="load_songs.html">
-                <button>Download new songs</button>
-            </a>
-            <p></p>
-            <div>
-                <button id="button_bye">Bye</button>
-            </div>
-
         </div>
         <div id="div_play_video">
             <div>
-                <button id="back_to_list">Back to song list</button>
-            </div>
-            <p></p>
-            <div id="div_song_name">song_name</div>
-            <p></p>
-            <div>
-                <button id="send_play">Play</button>
-            </div>
-            <div>
-                <button id="button_fullscreen">FullScreen lyrics</button>
-                <p></p>
-            </div>
-            <div>
-                <button id="send_stop">Stop</button>
-                <p></p>
-            </div>
-            <div>
-                <video id="video_video" height="0" width="100%"><source type="video/mp4"></video>
+                <video id="video_video" poster="Poster.jpg" height="90%" width="100%"><source type="video/mp4"></video>
             </div>
         </div>
         <div id=div_debug style="color: rgb(165, 61, 61);"></div>

@@ -17,36 +17,28 @@
 </head>
 
 <body>
-    <div class="fixed_header" style="height: 8vh;width: var(--body_width)">
-        <div id="div_header" style="display: grid;width: var(--body_width);grid-template-columns: 100% ; grid-template-rows: 10vh;">
-            <div id="div_header_title">Guitaraoke Follower</div>
-        </div>
-    </div>
-
-    <div style="position: absolute;top:10vh;height: 93vh; ;width: var(--body_width);align-items: center; text-align: center; ">
-        <p></p>
-        <div id=div_warning_to_user style="color: red;">Please rotate the device to landscape mode!</div>
-        <div id="div_start" style=" align-items: center; text-align: center;">
-            <button id="button_start">Start user interaction</button>
-            <div id="div_waiting">
-                <p>Waiting for leader to select song and start playing...</p>
-                <p></p>
-                <p>Put your phone volume on maximum and change Settings - Display - Screen timeout to 10 minutes.</p>
-            </div>
-        </div>
-        <div id="div_play_video" style=" align-items: center; text-align: center;">
-            <p></p>
-            <div id="div_song_name">song_name</div>
-            <p><button id="button_fullscreen">FullScreen lyrics</button></p>
-            <p><button id="button_muted_toggle">Unmute sound</button></p>
-            <button id="button_slower">Slower</button>
-            <span id="span_speed">--- speed: 1.000 ---</span>
-            <button id="button_faster">Faster</button>
-            <div>If you want, you can unmute the sound. But the sound can be disturbingly out-of-sync. You can try to change the playback speed manually, like an old-school DJ on two vinyl records turntables until you achieve perfect audio sync.
-            </div>
-            <video id="video_video" preload="auto" height="0" width="100%"><source type="video/mp4"></video>
+    <div id="div_follower">
+        <div style=" align-items: center; text-align: center;">
+            <video id="video_video" preload="auto" poster="Poster.jpg" height="100%" width="100%" controls><source type="video/mp4" src="/videos/Welcome_to_guitaraoke - guitaraoke.mp4" ></video>
         </div>
         <div id=div_debug style="color: rgb(165, 61, 61);"></div>
+    </div>
+    <div id="div_connection_lost" style="align-items: center; text-align: center; ">
+        <div>Connection to the Guitaraoke Server is lost.</div>
+        <p>
+            <button id="button_reload">ReConnect</button>
+        </p>
+    </div>
+    <div id="div_bye" style="align-items: center; text-align: center; ">
+        <div>Thank you for using Guitaraoke.</div>
+        <div>
+            <p class="small">© Luciano Bestia 2021, MIT Licence</p>
+            <p class="small">Open source repository on
+                <a class="small" style="color: rgb(255, 208, 0);" target="blank " href="https://github.com/LucianoBestia/GuitaraokeServer">
+                        GitHub
+                      </a>
+            </p>
+        </div>
     </div>
 </body>
 

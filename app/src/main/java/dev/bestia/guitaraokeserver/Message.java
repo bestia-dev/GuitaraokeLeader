@@ -14,6 +14,11 @@ public class Message {
         this.timestamp = timestamp;
         this.data = data;
     }
+    public String toString(){
+        Gson gson = new Gson();
+        String msg = gson.toJson(this);
+        return msg;
+    }
 }
 
 /**
