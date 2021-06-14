@@ -1,21 +1,14 @@
 package dev.bestia.guitaraokeserver;
 
-import android.app.DownloadManager;
-import android.content.Context;
 import android.content.res.AssetManager;
-import android.net.Uri;
 import android.util.Log;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -153,9 +146,6 @@ public class WebServer extends NanoHTTPD {
         // some dynamic content must be fast. It does not need to check files.
         if (session.getUri().equals("/sync_clock.html")) {
             content = String.valueOf(sync_clock_received_timestamp) + " " + String.valueOf(System.currentTimeMillis());
-        }else if (session.getUri().equals("/download_song.html")) {
-            download_song_html(session);
-            content = "downloading song";
         } else {
             // files are in assets/guitaraoke_client/
             // except videos are in externalStorage. I will enable to manually download videos from urls.
@@ -213,32 +203,6 @@ public class WebServer extends NanoHTTPD {
             new_html.append("<div class='class_song_name'>"+ Utils.escapeHtml(song_name)+"</div>\n");
         }
         return new_html.toString();
-    }
-    private void download_song_html(IHTTPSession session){
-        //for Post parameters
-        try {
-            session.parseBody(new HashMap<String, String>());
-        } catch (IOException | ResponseException e) {
-            printLine("error in parseBody: "+e.toString());
-        }
-        final String song_url = session.getParameters().get("song_url").get(0);
-        try {
-            DownloadManager download_manager = (DownloadManager) main_activity.getSystemService  (Context.DOWNLOAD_SERVICE);
-            Uri uri = Uri.parse(song_url);
-            DownloadManager.Request request = new DownloadManager.Request(uri);
-            String file_name = uri.getLastPathSegment();
-            printLine("file_name: " + file_name);
-            File old_file = new File(main_activity.getExternalVideosFolder() + "/"+ file_name);
-            if(old_file.exists()){
-                old_file.delete();
-            }
-            request.setDestinationInExternalFilesDir(main_activity,"videos",file_name);
-            download_manager.enqueue(request);
-
-        }
-        catch (Exception e) {
-            printLine("error in download_song_html: " + e.getMessage());
-        }
     }
     // endregion: processing dynamic content
 }

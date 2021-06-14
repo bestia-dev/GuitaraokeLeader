@@ -90,22 +90,28 @@ button:disabled {
     position: fixed;
     z-index: 10000;
     top: 0;
+    padding: 3px 15px;
+    background-color: #282828;
+    width: 100%;
 }
 
-#div_header {
-    line-height: 10vh;
-    background-color: var(--b_color_title);
-    color: var(--f_color_title);
-}
-
-#div_header_title {
-    font-size: 25px;
-    text-align: center;
+.fixed_header .dummy_for_fixed_header {
+    /* the fixed position is out of the document flow. To not overlap the next element I need a dummy with the same height.*/
+    height: 10vh;
 }
 
 
 /* endregion: fixed header */
 
+.debug_text {
+    color: rgb(165, 61, 61);
+}
 
-/* using simple `css-grid` for the layout (display: grid) 
-the grid-template-columns and grid-template-rows are defined in the html*/
+.center {
+    align-items: center;
+    text-align: center;
+}
+
+.link {
+    color: rgb(255, 208, 0);
+}

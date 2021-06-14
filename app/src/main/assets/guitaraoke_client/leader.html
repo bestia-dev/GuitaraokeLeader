@@ -17,7 +17,7 @@
 </head>
 
 <body>
-    <div class="fixed_header" style="padding: 3px 15px; height: 20vh;background-color: #282828; width: 100%;">
+    <div class="fixed_header">
         Followers: <span id="followers">0</span>
         <button id="button_download_song">Download new songs</button>
         <button id="button_back_to_list">Back to song list</button>
@@ -25,16 +25,15 @@
         <button id="button_fullscreen">FullScreen lyrics</button>
         <button id="button_send_stop">Stop</button>
     </div>
-    <div style="position: absolute; top:20vh; width: var(--body_width);align-items: center; text-align: center; ">
-        <div id="div_start" style=" align-items: center; text-align: center;">
+    <div class="dummy_for_fixed_header">.</div>
+    <div>
+        <div id="div_start" class="center">
             <!--list_of_files_in_folder_videos-->
         </div>
         <div id="div_play_video">
-            <div>
-                <video id="video_video" poster="Poster.jpg" height="90%" width="100%"><source type="video/mp4"></video>
-            </div>
+            <video id="video_video" poster="Poster.jpg" height="90%" width="100%"><source type="video/mp4"></video>
         </div>
-        <div id=div_debug style="color: rgb(165, 61, 61);"></div>
+        <div id="div_debug" class="debug_text"></div>
     </div>
 </body>
 

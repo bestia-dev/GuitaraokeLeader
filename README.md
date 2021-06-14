@@ -9,12 +9,12 @@ I even found some more friends that like to sing along (mostly when drunk).
 And now we have a problem. Nobody remembers the lyrics and the chords.  
 I am a programmer and every problem looks like it has a software solutions.  
 Enter `Guitaraoke`: it is like karaoke but with added guitar chords.  
-The are 2 roles in this game. The `Leader` will lead the way for many `followers`.  
+The are 2 roles in this game. The `Leader` will lead the way for many `Followers`.  
 
 ## guitaraoke videos
 
-First I created the videos. In the video editor `ShotCut` for Win10, I put together the audio of the song and copied the lyrics and chords I found on the internet. I tried to show the lyrics and chords a little bit earlier so we can prepare to sing-along and play-along guitar. It is great that I can now modify the chords and the lyrics if I like it different.  
-TODO: I will make a tutorial how to create Guitaraoke mp4 files. It is easy.  
+First I created the videos. In the video editor `ShotCut` for Win10, I put together the audio of the song and copied the lyrics and chords I found on the internet. I try to show the lyrics and chords a little bit earlier so we can prepare to sing-along and play-along guitar. It is great that I can now modify the chords and the lyrics if I like it different.  
+TODO: I will make a video tutorial how to create Guitaraoke mp4 files. It is easy.  
 
 ## only mobile
 
@@ -31,7 +31,7 @@ My forth idea was to use webrtc for peer-to-peer communication. But it must have
 
 ## GuitaraokeServer
 
-My final solution is to make a Web+WebSocket server for Android. Exactly what I wanted to avoid. Eh, ironic.  
+My final solution is to make a Web + WebSocket server for Android. Exactly what I wanted to avoid. Eh, ironic.  
 I don't plan to publish it on Google Play, but I will create an APK for die-hard fans of Guitaraoke.  
 The client will be a simple html/css/javascript project for any browser. No installation whatsoever.
 
@@ -41,8 +41,7 @@ The basics I got from <https://github.com/JCAguilera/WebSocketChat>
 It crates a web server on the port 8080 and a WebSocket server on port 3000.
 It uses [NanoHttpd](https://github.com/NanoHttpd/nanohttpd) for the Webserver, and [Java-WebSocket](https://github.com/TooTallNate/Java-WebSocket) for the WebSocket Server.
 It has a very simple layout and it's pretty easy to use.
-I will simplify it as much as possible. The server will be pretty stupid. It will just serve files and broadcast messages to all attached clients.  
-The server has no knowledge at all what is going on.  
+I will simplify it as much as possible. The server will be pretty stupid. It will just serve files and broadcast messages to all attached clients. The server has no knowledge at all what is going on.  
 This is useful for more than just for Guitaraoke. Maybe I will use the same concept for other projects of mine.
 For debugging purposes I will print on the server app messages and debugging info.  
 
@@ -51,11 +50,11 @@ For debugging purposes I will print on the server app messages and debugging inf
 There is no escape to use Android Studio for Android development. I use it on Win10.  
 I attached my Lenovo tablet over USB. On the tablet in `Settings`-`About tablet` I clicked 7 times on the `Build number`. That enables the `Developer options`. Then in `Developer Options` I enabled `Stay awake` and `USB debugging`. I needed to try with different USB cables to make it work.  
 Finally it shows in Android Studio in the Toolbar in `Running devices` before the `Run` button.  
-I use an old Lenovo tablet for my server: Android 6.0 (API level 23).  
+I use an old Lenovo tablet with Android 6.0 (API level 23) and a Samsung A50 Android 11.0 (API level 30).  
 
 ## Local network
 
-This server will work only on a local network like `192.168.x.y`. My personal local network wi-fi uses hotspot from my smartphone. But it could be any wi-fi hotspot. I have my Lenovo Win10+WSL2 notebook and a lenovo tablet connected to my wifi local network for testing.  
+This server will work only on a local network like `192.168.x.y`. My personal local network wi-fi uses hotspot from my smartphone. But it could be any wi-fi hotspot. I have my Lenovo Win10 + WSL2 notebook and a lenovo tablet connected to my wifi local network for testing.  
 
 ## Guitaraoke Client
 
@@ -69,14 +68,17 @@ In Android Studio right click on `app - src - main - res` and open `New - Image 
 
 ## android assets and ExternalStorage
 
-Files that are distributed with the server are called assets. They are read-only and accessible with the the object AssetManager.  
+Files that are distributed with the server are called assets. They are read-only and accessible with the object AssetManager.  
 I want the video files to be downloadable. The `Leader` can download any  
 `xxx - guitaraoke.mp4`  
 file from the internet. It will be saved in the ExternalStorage. I used the DownLoadManager object for that.  
+This is still a "private" storage only for this app and it does not need any special permission.  
 
 ## Leader installs the GuitaraokeServer app
 
-Only the `leader` needs to install the GuitaraokeServer on his smartphone.  
+Only the `Leader` needs to install the GuitaraokeServer on his smartphone.  
+The super short instructions are here: <https://bestia.dev/guitaraoke>.  
+The instruction goes like this:  
 He downloads the latest signed APK from Github : <https://github.com/LucianoBestia/GuitaraokeServer/releases>.  
 The smartphone must have enabled `Settings - Security - Unknown Sources`. Read more here:  
 <https://www.thegeeksclub.com/how-to-install-third-party-apk-on-android/>  
@@ -87,7 +89,7 @@ When the Leader starts the app it starts simultaneously a web server, a websocke
 
 ## The Download songs page
 
-I put only some sample songs in the app installation. But they are no fun.  
+After the installation there is only one video file available: `Welcome - guitaraoke.mp4`.  Other songs videos need to be downloaded.  
 My guitaraoke.mp4 files are listed here: <https://bestia.dev/guitaraoke/>. I hope eventually to see more Guitaraoke files from other people. That will be so much fun.  
 Click on the button `Download new songs`.  
 Copy the url of the `xxx - guitaraoke.mp4` file and press `Start download`.  
@@ -100,14 +102,14 @@ The songs are saved in the device folder: `/storage/emulated/0/Android/data/dev.
 ## Easy instructions
 
 1. Only the leader must install the android APK on his phone.  
-2. Connect all the smartphones from the leader and followers to the same local wifi network. The smartphone hotspot is also ok.  
+2. Connect all the smartphones from the leader and followers to the same local wifi network. A smartphone hotspot is also ok.  
 3. The leader opens the GuitaraokeServer app.  
 4. The leader shows the `Follower page` url (address) to the followers. They can scan the QR code or just type the numbers. It is short and easy.  
-5. Followers must click on `Start user interaction` because javascript need a user `interaction` with the page. Nothing else to do for the follower.  
-6. The leader clicks on the song name. It broadcasts a msg to all connected followers. They can all see the name of the song.
+5. Followers must click on `Full screen` because javascript needs a user gesture. Nothing else to do for the follower.  
+6. The leader clicks on the song name. It broadcasts a msg to all connected followers to load the song.
 7. The leader clicks `Play`. It sends a msg to all connected followers to start playing he song.  
 8. The follower page is muted because the sound can be disturbingly out-of-sync.  
-9. Finally click on `Fullscreen lyrics` to see the lyrics and chords in full screen.  
+9. Finally the Leader clicks on `Fullscreen lyrics` to see the lyrics and chords in full screen.  
 
 ## Javascript ES2020
 
@@ -155,31 +157,26 @@ If all this is too much for the follower, he can just mute the sound. The only m
 
 ### capitulation
 
-I give up. Perfectly sync video playback on many devices is not possible. The sound is the problem, we can hear the smallest out-of-sync. The solution is simple. Mute the sound by default. 
+I give up. Perfectly sync video playback on many devices is not possible. The sound is the problem, we can hear the smallest out-of-sync. The solution is simple. Mute the sound by default.  
 The Followers need only to see the lyrics. The sound will come only from the Leader. Probably he will use a loud bluetooth speaker connected to his phone. Done! Full capitulation :-(  
 
 ## WebView
 
-Having separate app for the server and open Chrome for the Leader page didn't work out, because the server went to sleep because there was no user interaction. I added a WebView in the app and now the Leader page is inside the app. The server text for debugging is now accessible with the button `show server`.  
+Having separate app for the server and open Chrome for the Leader page didn't work out, because the server went to sleep when there was no user interaction. I added a WebView in the app and now the Leader page is inside the app. The server text for debugging is now accessible with the button `show server`.  
 
 ## TODO
 
 https://bestia.dev/guitaraoke/ is the starting point.
 Explain step by step how to use it
 
-follower can reconnect automatically if it looses websocket connection. Or he joins later.
-iPhone does not obey full screen
-
 Add song should be easier
 public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
     //Do something with this URL (like queue a download)
 }
 
-
 leader page can create QRcode with Follower page  
 make a video tutorial  
 Playlist: songs and play order  
-Show how many followers
 
 songs not working:
 you really got me
