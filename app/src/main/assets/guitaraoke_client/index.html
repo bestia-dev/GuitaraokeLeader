@@ -18,25 +18,27 @@
 
 <body>
     <div id="div_follower">
+        <div class="fixed_header" style="padding: 3px 15px;background-color: #282828; width:100%">Welcome to Guitaraoke! Click
+            <button id="button_full_screen">Full screen</button> and enjoy!
+        </div>
         <div style=" align-items: center; text-align: center;">
-            <video id="video_video" preload="auto" poster="Poster.jpg" height="100%" width="100%" controls><source type="video/mp4" src="/videos/Welcome_to_guitaraoke - guitaraoke.mp4" ></video>
+            <video id="video_video" preload="auto" poster="Poster.jpg" height="100%" width="100%"><source type="video/mp4" src="/videos/Welcome - guitaraoke.mp4" ></video>
+            <map name="video_map">
+                <area id="video_area_fullscreen" shape="rect" coords="0,0,100,100">                
+              </map>
         </div>
         <div id=div_debug style="color: rgb(165, 61, 61);"></div>
     </div>
     <div id="div_connection_lost" style="align-items: center; text-align: center; ">
         <div>Connection to the Guitaraoke Server is lost.</div>
         <p>
-            <button id="button_reload">ReConnect</button>
+            <button id="button_reload">Connect to Guitaraoke server</button>
         </p>
-    </div>
-    <div id="div_bye" style="align-items: center; text-align: center; ">
         <div>Thank you for using Guitaraoke.</div>
         <div>
             <p class="small">© Luciano Bestia 2021, MIT Licence</p>
             <p class="small">Open source repository on
-                <a class="small" style="color: rgb(255, 208, 0);" target="blank " href="https://github.com/LucianoBestia/GuitaraokeServer">
-                        GitHub
-                      </a>
+                <a class="small" style="color: rgb(255, 208, 0);" target="blank " href="https://github.com/LucianoBestia/GuitaraokeServer">GitHub</a>
             </p>
         </div>
     </div>

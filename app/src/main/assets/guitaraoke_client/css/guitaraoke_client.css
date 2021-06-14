@@ -70,7 +70,7 @@ button {
     background-color: var(--b_color_title);
     border: none;
     color: var(--f_color_title);
-    padding: 10px 24px;
+    padding: 5px 12px;
     text-align: center;
     text-decoration: none;
     display: inline-block;

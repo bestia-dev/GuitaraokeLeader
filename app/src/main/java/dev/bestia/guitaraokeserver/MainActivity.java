@@ -48,17 +48,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         TextView button_stop_server =  findViewById(R.id.button_stop);
         button_stop_server.setOnClickListener(view -> {
-            //send bye
-            websocketserver.broadcast_msg_from_server("bye!");
-            // delay finish to allow  followers to open the bye page
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    // finish will call onDestroy
-                    finish();
-                }
-            }, 2000);
+            // finish will call onDestroy
+            finish();
         });
         TextView button_show_server =  findViewById(R.id.button_show);
         button_show_server.setOnClickListener(view -> {
@@ -184,14 +175,14 @@ public class MainActivity extends AppCompatActivity {
     public void copyOnceWelcomeVideoToExternalStorage() {
         // check if the file exists in External storage
         File videos_folder = getExternalVideosFolder();
-        File welcome_external_file = new File(videos_folder, "Welcome_to_guitaraoke - guitaraoke.mp4");
+        File welcome_external_file = new File(videos_folder, "Welcome - guitaraoke.mp4");
         if (welcome_external_file.exists()) {
             printLine("welcome_external_file.exists()");
             printLine(welcome_external_file.getAbsolutePath());
         }
         if (!welcome_external_file.exists()) {
             printLine("!welcome_external_file.exists()");
-            String welcome_asset = "guitaraoke_client/videos/Welcome_to_guitaraoke - guitaraoke.mp4";
+            String welcome_asset = "guitaraoke_client/videos/Welcome - guitaraoke.mp4";
             AssetManager assetManager = getAssets();
             InputStream in = null;
             OutputStream out = null;
