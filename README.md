@@ -160,12 +160,11 @@ The Followers need only to see the lyrics. The sound will come only from the Lea
 
 ## WebView
 
-Having separate app for the server and open Chrome for the Leader page didn't work out, because the server went to sleep when there was no user interaction. I added a WebView in the app and now the Leader page is inside the app. The server text for debugging is now accessible with the button `show server`.  
+Having separate app for the server and open Chrome for the Leader page didn't work out, because the server went to sleep when there was no user interaction. I added a WebView in the app and now the Leader page is inside the app. The server text for debugging is now accessible with the button `Show log`.  
 
 ## TODO
 
-1. name Guitaraoke is too broad. `Guitaraoke Leader` for Android sounds good.
-    guitaraoke_client -> guitaraoke_web_app, guitaraoke_client.css -> guitaraoke.css
+1. name Guitaraoke is too broad. `Guitaraoke Leader` for Android sounds good.    
     mp4 does not need to finish in ` - guitaraoke`
 2. better colors, fonts, visuals
 3. leader page can create QR-code with Follower page

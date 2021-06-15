@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
             // finish will call onDestroy where is stop servers
             finish();
         });
-        TextView button_show_server =  findViewById(R.id.button_show);
-        button_show_server.setOnClickListener(view -> {
+        TextView button_show_log =  findViewById(R.id.button_show);
+        button_show_log.setOnClickListener(view -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             // size of dialog 90% of screen
             int width = (int)(getResources().getDisplayMetrics().widthPixels*0.90);
@@ -211,7 +211,8 @@ public class MainActivity extends AppCompatActivity {
         File videos_folder = getExternalVideosFolder();
         File welcome_external_file = new File(videos_folder, "Welcome to Guitaraoke Leader.mp4");
         if (!welcome_external_file.exists()) {
-            String welcome_asset = "guitaraoke_client/videos/Welcome to Guitaraoke Leader.mp4";
+            Log.w("w","!welcome_external_file.exists()");
+            String welcome_asset = "guitaraokewebapp/videos/Welcome to Guitaraoke Leader.mp4";
             AssetManager assetManager = getAssets();
             InputStream in = null;
             OutputStream out = null;

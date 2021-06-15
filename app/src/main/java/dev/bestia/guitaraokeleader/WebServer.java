@@ -143,45 +143,40 @@ public class WebServer extends NanoHTTPD {
         sync_clock_received_timestamp = System.currentTimeMillis();
         String content;
         String mimeType="text/html";
-        // some dynamic content must be fast. It does not need to check files.
-        if (session.getUri().equals("/sync_clock.html")) {
-            content = String.valueOf(sync_clock_received_timestamp) + " " + String.valueOf(System.currentTimeMillis());
-        } else {
-            // files are in assets/guitaraokewebapp/
-            // except videos are in externalStorage. I will enable to manually download videos from urls.
-            String filepath = getFilePath(session.getUri());
-            mimeType = getMimeType(filepath);
+        // files are in assets/guitaraokewebapp/
+        // except videos are in externalStorage. I will enable to manually download videos from urls.
+        String filepath = getFilePath(session.getUri());
+        mimeType = getMimeType(filepath);
 
-            byte[] buffer;
-            InputStream is;
-            try {
-                if (filepath.startsWith("videos/")) {
-                    String path = main_activity.getExternalFilesDir("").getPath() + "/" + filepath;
-                    File file = new File(path);
-                    is = new FileInputStream(file);
-                } else {
-                    is = this.assetManager.open("guitaraokewebapp/" + filepath);
-                }
-                if (binaryResponse(mimeType)) {
-                    return newFixedLengthResponse(Response.Status.OK, mimeType, is, -1);
-                }
-                int size = is.available();
-                buffer = new byte[size];
-                int len = is.read(buffer);
-                if (len == -1) {
-                    printLine("len = -1");
-                }
-                is.close();
-                content = new String(buffer);
-
-                // modify static files with dynamic content
-                content = dynamic_content(filepath, content, session);
-
-            } catch (IOException e) {
-                printLine("IOException (at serve): " + e.getMessage());
-                mimeType = "text/html";
-                content = "<html><body><h1>IOException</h1>\n<p>" + e.getMessage() + "</p>\n<p>Serving " + session.getUri() + " !</p></body></html>\n";
+        byte[] buffer;
+        InputStream is;
+        try {
+            if (filepath.startsWith("videos/")) {
+                String path = main_activity.getExternalFilesDir("").getPath() + "/" + filepath;
+                File file = new File(path);
+                is = new FileInputStream(file);
+            } else {
+                is = this.assetManager.open("guitaraokewebapp/" + filepath);
             }
+            if (binaryResponse(mimeType)) {
+                return newFixedLengthResponse(Response.Status.OK, mimeType, is, -1);
+            }
+            int size = is.available();
+            buffer = new byte[size];
+            int len = is.read(buffer);
+            if (len == -1) {
+                printLine("len = -1");
+            }
+            is.close();
+            content = new String(buffer);
+
+            // modify static files with dynamic content
+            content = dynamic_content(filepath, content, session);
+
+        } catch (IOException e) {
+            printLine("IOException (at serve): " + e.getMessage());
+            mimeType = "text/html";
+            content = "<html><body><h1>IOException</h1>\n<p>" + e.getMessage() + "</p>\n<p>Serving " + session.getUri() + " !</p></body></html>\n";
         }
         return newFixedLengthResponse(Response.Status.OK, mimeType, content);
     }
@@ -199,7 +194,7 @@ public class WebServer extends NanoHTTPD {
     private String leader_html_list_of_songs(){
         StringBuilder new_html=new StringBuilder();
         for (File file:main_activity.getExternalVideosFolder().listFiles()){
-            String song_name = file.getName().replace(" - guitaraoke.mp4","");
+            String song_name = file.getName().replace(" - guitaraoke.mp4","").replace(".mp4","");
             new_html.append("<div class='class_song_name'>"+ Utils.escapeHtml(song_name)+"</div>\n");
         }
         return new_html.toString();

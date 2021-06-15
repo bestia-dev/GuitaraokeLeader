@@ -37,7 +37,7 @@ function connect_to_guitaraoke_server() {
         //console.log(`[message] : ${msg.data}`);
         if (msg.data.startsWith("song: ")) {
             let song_name = msg.data.substring(6);
-            state_transition_from_waiting_to_song_load(song_name);
+            state_transition_from_waiting_to_song_load(song_url);
         } else if (msg.data == "play!") {
             state_transition_from_song_load_to_play();
         } else if (msg.data == "stop!") {
@@ -70,9 +70,7 @@ function state_ui_waiting() {
     page_state = PageState.Waiting;
     cm.el("div_follower").hidden = false;
     cm.el("div_connection_lost").hidden = true;
-    video_video.pause();
-    video_video.src = "videos/Welcome to Guitaraoke Leader.mp4";
-    video_video.load();
+    song_load("videos/Welcome to Guitaraoke Leader.mp4");
 }
 
 function state_ui_song_load() {
@@ -100,10 +98,10 @@ function state_ui_connection_lost() {
 
 // region: state transition
 
-function state_transition_from_waiting_to_song_load(song_name) {
+function state_transition_from_waiting_to_song_load(song_url) {
     state_ui_song_load();
-    console.log("song_load: " + song_name);
-    cm.song_load(song_name);
+    console.log("song_load: " + song_url);
+    cm.song_load(song_url);
     video_video.poster = "Poster.jpg";
 }
 

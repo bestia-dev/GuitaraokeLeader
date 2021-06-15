@@ -38,9 +38,10 @@ export function connect_to_guitaraoke_server() {
     };
 }
 
-export function song_load(song_name) {
-    video_video.src = "videos/" + song_name + " - guitaraoke.mp4";
+export function song_load(song_url) {
+    video_video.src = song_url;
     video_video.load();
+    video_video.preload = "auto";
 }
 
 export function getRandomInt(min, max) {
