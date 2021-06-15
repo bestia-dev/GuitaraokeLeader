@@ -36,7 +36,8 @@ function connect_to_guitaraoke_server() {
         let msg = JSON.parse(event.data);
         //console.log(`[message] : ${msg.data}`);
         if (msg.data.startsWith("song: ")) {
-            let song_name = msg.data.substring(6);
+            console.log(msg.data);
+            let song_url = msg.data.substring(6);
             state_transition_from_waiting_to_song_load(song_url);
         } else if (msg.data == "play!") {
             state_transition_from_song_load_to_play();
@@ -70,7 +71,7 @@ function state_ui_waiting() {
     page_state = PageState.Waiting;
     cm.el("div_follower").hidden = false;
     cm.el("div_connection_lost").hidden = true;
-    song_load("videos/Welcome to Guitaraoke Leader.mp4");
+    cm.song_load("videos/Welcome to Guitaraoke Leader.mp4");
 }
 
 function state_ui_song_load() {

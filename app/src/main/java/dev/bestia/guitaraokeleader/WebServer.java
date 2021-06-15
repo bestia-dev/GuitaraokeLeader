@@ -194,8 +194,9 @@ public class WebServer extends NanoHTTPD {
     private String leader_html_list_of_songs(){
         StringBuilder new_html=new StringBuilder();
         for (File file:main_activity.getExternalVideosFolder().listFiles()){
+            String song_url = "videos/"+file.getName();
             String song_name = file.getName().replace(" - guitaraoke.mp4","").replace(".mp4","");
-            new_html.append("<div class='class_song_name'>"+ Utils.escapeHtml(song_name)+"</div>\n");
+            new_html.append("<div class='class_song_name' data-url=\""+ Utils.escapeHtml(song_url) +"\" >"+ Utils.escapeHtml(song_name)+"</div>\n");
         }
         return new_html.toString();
     }

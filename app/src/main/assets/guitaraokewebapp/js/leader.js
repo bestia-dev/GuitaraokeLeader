@@ -41,7 +41,7 @@ export function start_script() {
     cm.el("button_send_stop").addEventListener("click", () => { cm.send_message('stop!'); });
     // listener to all songs
     for (let x of document.getElementsByClassName("class_song_name")) {
-        x.addEventListener("click", send_song_name);
+        x.addEventListener("click", send_song_url);
     }
     video_video.addEventListener('ended', my_video_ended);
     // endregion: event listeners
@@ -126,9 +126,9 @@ function state_transition_to_song_list() {
     state_ui_song_list()
 }
 
-function state_transition_from_song_list_to_song_load(song_name) {
+function state_transition_from_song_list_to_song_load(song_url) {
     state_ui_song_load();
-    cm.song_load(song_name);
+    cm.song_load(song_url);
 }
 
 function state_transition_from_song_load_to_song_play() {
@@ -150,10 +150,10 @@ function button_download_song_on_click() {
     location = "https://bestia.dev/guitaraoke/songs.html";
 }
 
-function send_song_name(event) {
-    let song_name = event.currentTarget.innerText;
-    console.log("song_name: " + song_name)
-    cm.send_message("song: " + song_name);
+function send_song_url(event) {
+    let song_url = event.currentTarget.getAttribute("data-url");
+    console.log("song_url: " + song_url)
+    cm.send_message("song: " + song_url);
 }
 
 function my_video_ended() {
