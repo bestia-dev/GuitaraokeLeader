@@ -3,13 +3,13 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 30
     defaultConfig {
-        applicationId "dev.bestia.guitaraokeserver"
+        applicationId "dev.bestia.guitaraokeleader"
         minSdkVersion 22
         targetSdkVersion 30
         versionCode 1
         versionName '1.8'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        archivesBaseName = "GuitaraokeServer"
+        archivesBaseName = "GuitaraokeLeader"
     }
     buildTypes {
         release {

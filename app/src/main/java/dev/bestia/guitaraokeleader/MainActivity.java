@@ -1,4 +1,4 @@
-package dev.bestia.guitaraokeserver;
+package dev.bestia.guitaraokeleader;
 import android.annotation.SuppressLint;
 
 import androidx.appcompat.app.AlertDialog;
@@ -209,9 +209,9 @@ public class MainActivity extends AppCompatActivity {
     public void copyOnceWelcomeVideoToExternalStorage() {
         // check if the file exists in External storage
         File videos_folder = getExternalVideosFolder();
-        File welcome_external_file = new File(videos_folder, "Welcome - guitaraoke.mp4");
+        File welcome_external_file = new File(videos_folder, "Welcome to Guitaraoke Leader.mp4");
         if (!welcome_external_file.exists()) {
-            String welcome_asset = "guitaraoke_client/videos/Welcome - guitaraoke.mp4";
+            String welcome_asset = "guitaraoke_client/videos/Welcome to Guitaraoke Leader.mp4";
             AssetManager assetManager = getAssets();
             InputStream in = null;
             OutputStream out = null;

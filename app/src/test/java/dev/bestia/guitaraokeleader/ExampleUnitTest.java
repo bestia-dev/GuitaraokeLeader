@@ -1,4 +1,4 @@
-package dev.bestia.guitaraokeserver;
+package dev.bestia.GuitaraokeLeader;
 
 import org.junit.jupiter.api.Test;
 

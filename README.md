@@ -1,9 +1,9 @@
-# Guitaraoke
+# Guitaraoke Leader for Android
 
 ***Play guitar and sing with your friends***  
-***On any smartphone read the lyrics and chords in sync with the song***  
+***Read the lyrics and chords in sync with the Leader on any smartphone***  
 
-I never liked karaoke. A single "performer" in front of a non-interested crowd.  
+I never liked karaoke. A single "performer" in front of a uninterested crowd.  
 But I like to play guitar and optionally sing along. And I found a buddy guitarist and we can play and sing together.  
 I even found some more friends that like to sing along (mostly when drunk).  
 And now we have a problem. Nobody remembers the lyrics and the chords.  
@@ -11,28 +11,32 @@ I am a programmer and every problem looks like it has a software solutions.
 Enter `Guitaraoke`: it is like karaoke but with added guitar chords.  
 The are 2 roles in this game. The `Leader` will lead the way for many `Followers`.  
 
-## guitaraoke videos
+## Guitaraoke videos
 
-First I created the videos. In the video editor `ShotCut` for Win10, I put together the audio of the song and copied the lyrics and chords I found on the internet. I try to show the lyrics and chords a little bit earlier so we can prepare to sing-along and play-along guitar. It is great that I can now modify the chords and the lyrics if I like it different.  
+First I created some videos. In the video editor `ShotCut` for Win10, I put together the audio of the song and copied the lyrics and chords I found on the internet. I try to show the lyrics and chords a little bit earlier so we can prepare to sing-along and play-along guitar.  
+It is great that I can now modify the chords and the lyrics if I like it different.  
+There is a lot of Guitaraoke videos already on the internet. Just google it.  
+The `Guitaraoke Leader` app can use any mp4 video you can download to your android.  
 TODO: I will make a video tutorial how to create Guitaraoke mp4 files. It is easy.  
+TODO: put some reference on others Guitaraoke videos.  
 
 ## only mobile
 
 When we have a party often we don't have a big TV for everybody to see the lyrics. But everybody have a smartphone.  
-I would like that everybody easily opens the guitaraoke mp4 and very important that all the smartphones play it in sync.  
+I would like that everybody easily opens the Guitaraoke mp4 and very important that all the smartphones play it in sync.  
 
 ## ideas
 
-My first idea was to have a web server (on the internet somewhere) with the songs. But the party is sometimes in the woods or mountains without a good or any internet connection. Even in places with a mobile-data internet connection it can cost money to play videos on some cell phone plans.  Let avoid this.  
+My first idea was to have a web server (on the internet somewhere) with the songRs. But the party is sometimes in the woods or mountains without a good or any internet connection. Even in places with a mobile-data internet connection it can cost money to play videos on some cell phone plans.  Let avoid this.  
 When we sing/play we are always near to each other. We can make a local wifi network using the smartphone wifi hot-spot. The smartphones can then see each other and the connection is very fast and costs nothing.  
 My second idea was to have a web server on my android smartphone. There are some ready made apps in the Google Play Store, but I wanted a web server I can program with some more functionality like having all smartphones in sync. I don't want to make a native android app. I just try to avoid it. You must use the Android Studio, a language I don't know (java or kotlin) and a IDE user interface that is strange to me.  
 My third idea was to use Termux a "Linux terminal" for android. Then make a CLI program in Rust (for the web-server), compile it for the target armv7-linux-androideabi. But it was complicated and other users will not like to use it.  
 My forth idea was to use webrtc for peer-to-peer communication. But it must have some sort of signaling server. So we are back on the "server on Android" problem.  
 
-## GuitaraokeServer
+## Android app
 
 My final solution is to make a Web + WebSocket server for Android. Exactly what I wanted to avoid. Eh, ironic.  
-I don't plan to publish it on Google Play, but I will create an APK for die-hard fans of Guitaraoke.  
+I don't plan to publish it on Google Play, but I will create an APK for die-hard fans of Guitaraoke Leader.  
 The client will be a simple html/css/javascript project for any browser. No installation whatsoever.
 
 ## Based on WebSocketChat
@@ -54,12 +58,13 @@ I use an old Lenovo tablet with Android 6.0 (API level 23) and a Samsung A50 And
 
 ## Local network
 
-This server will work only on a local network like `192.168.x.y`. My personal local network wi-fi uses hotspot from my smartphone. But it could be any wi-fi hotspot. I have my Lenovo Win10 + WSL2 notebook and a lenovo tablet connected to my wifi local network for testing.  
+This server will work only on a local network like `192.168.x.y`. My personal local network wi-fi uses the hotspot from my smartphone. But it could be any wi-fi hotspot. I have my Lenovo Win10 + WSL2 notebook and a lenovo tablet connected to my wifi local network for testing.  
 
-## Guitaraoke Client
+## Guitaraoke Follower
 
-The client project is inside the server project in  `GuitaraokeServer\app\src\main\assets\guitaraoke_client\`.  
-I can use VisualStudioCode to edit this, because I like it more than the android studio for html/css/javascript.  
+The webapp project is inside the android project in  `GuitaraokeLeader\app\src\main\assets\guitaraokewebapp\`.  
+It is just a web page for the Guitaraoke Follower. Simple html/css/javascript.  
+I can use Visual Studio Code to edit this, because I like it more than the android studio for html/css/javascript.  
 This `assets` folder is distributed with the server installation.  
 
 ## icons
@@ -69,17 +74,15 @@ In Android Studio right click on `app - src - main - res` and open `New - Image 
 ## android assets and ExternalStorage
 
 Files that are distributed with the server are called assets. They are read-only and accessible with the object AssetManager.  
-I want the video files to be downloadable. The `Leader` can download any  
-`xxx - guitaraoke.mp4`  
-file from the internet. It will be saved in the ExternalStorage. I used the DownLoadManager object for that.  
+I want the video files to be downloadable. The `Leader` can download any `mp4` file from the internet. It will be saved in the ExternalStorage. I used the DownLoadManager object for that.  
 This is still a "private" storage only for this app and it does not need any special permission.  
 
-## Leader installs the GuitaraokeServer app
+## Guitaraoke Leader app
 
-Only the `Leader` needs to install the GuitaraokeServer on his smartphone.  
+Only the `Leader` needs to install the `Guitaraoke Leader` on his android device.  
 The super short instructions are here: <https://bestia.dev/guitaraoke>.  
 The instruction goes like this:  
-He downloads the latest signed APK from Github : <https://github.com/LucianoBestia/GuitaraokeServer/releases>.  
+He downloads the latest signed APK from Github : <https://github.com/LucianoBestia/GuitaraokeLeader/releases>.  
 The smartphone must have enabled `Settings - Security - Unknown Sources`. Read more here:  
 <https://www.thegeeksclub.com/how-to-install-third-party-apk-on-android/>  
   
@@ -89,22 +92,17 @@ When the Leader starts the app it starts simultaneously a web server, a websocke
 
 ## The Download songs page
 
-After the installation there is only one video file available: `Welcome - guitaraoke.mp4`.  Other songs videos need to be downloaded.  
-My guitaraoke.mp4 files are listed here: <https://bestia.dev/guitaraoke/>. I hope eventually to see more Guitaraoke files from other people. That will be so much fun.  
-Click on the button `Download new songs`.  
-Copy the url of the `xxx - guitaraoke.mp4` file and press `Start download`.  
-For example `https://www.dropbox.com/s/hn0r9on24dxkhfh/4%20Non%20Blondes%20-%20What%27s%20Up%20-%20guitaraoke.mp4?dl=1`  
-It will download in the background, slowly, but surely.  
-If you want to download multiple songs at once, copy more song's urls one per line. On my `Guitaraoke song page` you can just copy+paste more lines at once.  
-Finally click on the button `Back to Guitaraoke Leader page`.  
-The songs are saved in the device folder: `/storage/emulated/0/Android/data/dev.bestia.guitaraokeserver/files/videos/`.  
+After the installation there is only one video file available: `Welcome to Guitaraoke Leader`.  Other songs videos need to be downloaded.  
+My guitaraoke mp4 files are listed here: <https://bestia.dev/guitaraoke/>. There are also other similar videos on the internet. If you can download the `mp4` file, you can add it to `Guitaraoke Leader`.  
+The songs are saved in the device folder: `/storage/emulated/0/Android/data/dev.bestia.GuitaraokeLeader/files/videos/`.  
+You can also just copy your `mp4` files into this folder using other tools.  
 
 ## Easy instructions
 
 1. Only the leader must install the android APK on his phone.  
-2. Connect all the smartphones from the leader and followers to the same local wifi network. A smartphone hotspot is also ok.  
-3. The leader opens the GuitaraokeServer app.  
-4. The leader shows the `Follower page` url (address) to the followers. They can scan the QR code or just type the numbers. It is short and easy.  
+2. Connect all the smartphones from the leader and followers to the same local wifi network. If there is no other wi-fi network, the Leader can share his internet and create a wi-fi hotspot on his smartphone. He can disable `mobile data` to avoid costly internet traffic.  
+3. The leader opens the `Guitaraoke Leader` app.  
+4. The leader shows the `Follower page` url address to the followers. They can scan the QR code or just type the numbers. It is short and easy.  
 5. Followers must click on `Full screen` because javascript needs a user gesture. Nothing else to do for the follower.  
 6. The leader clicks on the song name. It broadcasts a msg to all connected followers to load the song.
 7. The leader clicks `Play`. It sends a msg to all connected followers to start playing he song.  
@@ -136,7 +134,7 @@ It is difficult to make the same video on different devices to play in sync. Thi
 ### internal clock correction
 
 First I wanted to have the same exact time on all devices. I am surprised how much the devices internal clock can differ. How can they sync anything on the internet or use the GPS? I was sure the device sync the time with some atomic clock on the network. But it looks it is so much more complicated than I though. I cannot use any internet atomic clock because we will sing and play in the mountains without any internet connection.  
-Ok, I need to do some rudimentary clock correction. The GuitaraokeServer will be our clock of reference for all other devices. Every follower requests the time from the web server. I tried with websockets but it was wildly inaccurate. The follower requests 5 times in interval of 1 second and calculates the average. There are 4 points in time to remember:  
+Ok, I need to do some rudimentary clock correction. The GuitaraokeLeader will be our clock of reference for all other devices. Every follower requests the time from the web server. I tried with websockets but it was wildly inaccurate. The follower requests 5 times in interval of 1 second and calculates the average. There are 4 points in time to remember:  
 a. sent request  
 b. received request  
 c. sent response  
@@ -166,19 +164,11 @@ Having separate app for the server and open Chrome for the Leader page didn't wo
 
 ## TODO
 
-https://bestia.dev/guitaraoke/ is the starting point.
-Explain step by step how to use it
-
-Add song should be easier
-public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-    //Do something with this URL (like queue a download)
-}
-
-leader page can create QRcode with Follower page  
-make a video tutorial  
-Playlist: songs and play order  
-
-songs not working:
-you really got me
-devojko mala
-
+1. name Guitaraoke is too broad. `Guitaraoke Leader` for Android sounds good.
+    guitaraoke_client -> guitaraoke_web_app, guitaraoke_client.css -> guitaraoke.css
+    mp4 does not need to finish in ` - guitaraoke`
+2. better colors, fonts, visuals
+3. leader page can create QR-code with Follower page
+4. https://bestia.dev/guitaraoke/ is the starting point. make it for portrait.
+5. Explain step by step how to use it. Screenshots. make a video tutorial.
+  

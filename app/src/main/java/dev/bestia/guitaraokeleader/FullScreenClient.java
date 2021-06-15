@@ -1,4 +1,4 @@
-package dev.bestia.guitaraokeserver;
+package dev.bestia.guitaraokeleader;
 
 import android.view.View;
 import android.view.ViewGroup;

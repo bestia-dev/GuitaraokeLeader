@@ -71,7 +71,7 @@ function state_ui_waiting() {
     cm.el("div_follower").hidden = false;
     cm.el("div_connection_lost").hidden = true;
     video_video.pause();
-    video_video.src = "videos/Welcome - guitaraoke.mp4";
+    video_video.src = "videos/Welcome to Guitaraoke Leader.mp4";
     video_video.load();
 }
 

@@ -1,4 +1,4 @@
-package dev.bestia.guitaraokeserver;
+package dev.bestia.guitaraokeleader;
 
 import android.content.res.AssetManager;
 import android.util.Log;
@@ -45,7 +45,7 @@ public class WebServer extends NanoHTTPD {
             try {
                 String filename_from_uri = uri.substring(5);
                 Log.i("","fileExists: "+filename_from_uri);
-                boolean fileExists = Arrays.asList(this.assetManager.list("guitaraoke_client/css")).contains(filename_from_uri);
+                boolean fileExists = Arrays.asList(this.assetManager.list("guitaraokewebapp/css")).contains(filename_from_uri);
                 if (fileExists) {
                     return "css/"+filename_from_uri;
                 }
@@ -56,7 +56,7 @@ public class WebServer extends NanoHTTPD {
         if (uri.startsWith("/js")) {
             try {
                 String filename_from_uri = uri.substring(4);
-                boolean fileExists = Arrays.asList(this.assetManager.list("guitaraoke_client/js")).contains(filename_from_uri);
+                boolean fileExists = Arrays.asList(this.assetManager.list("guitaraokewebapp/js")).contains(filename_from_uri);
                 if (fileExists) {
                     return "js/"+filename_from_uri;
                 }
@@ -65,7 +65,7 @@ public class WebServer extends NanoHTTPD {
             }
         }
         try {
-            boolean fileExists = Arrays.asList(this.assetManager.list("guitaraoke_client")).contains(uri.substring(1));
+            boolean fileExists = Arrays.asList(this.assetManager.list("guitaraokewebapp")).contains(uri.substring(1));
             if (fileExists) {
                 return uri.substring(1);
             }
@@ -147,7 +147,7 @@ public class WebServer extends NanoHTTPD {
         if (session.getUri().equals("/sync_clock.html")) {
             content = String.valueOf(sync_clock_received_timestamp) + " " + String.valueOf(System.currentTimeMillis());
         } else {
-            // files are in assets/guitaraoke_client/
+            // files are in assets/guitaraokewebapp/
             // except videos are in externalStorage. I will enable to manually download videos from urls.
             String filepath = getFilePath(session.getUri());
             mimeType = getMimeType(filepath);
@@ -160,7 +160,7 @@ public class WebServer extends NanoHTTPD {
                     File file = new File(path);
                     is = new FileInputStream(file);
                 } else {
-                    is = this.assetManager.open("guitaraoke_client/" + filepath);
+                    is = this.assetManager.open("guitaraokewebapp/" + filepath);
                 }
                 if (binaryResponse(mimeType)) {
                     return newFixedLengthResponse(Response.Status.OK, mimeType, is, -1);
