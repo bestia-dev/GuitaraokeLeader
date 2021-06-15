@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
             // finish will call onDestroy where is stop servers
             finish();
         });
-        TextView button_show_log =  findViewById(R.id.button_show);
-        button_show_log.setOnClickListener(view -> {
+        TextView button_debug =  findViewById(R.id.button_debug);
+        button_debug.setOnClickListener(view -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             // size of dialog 90% of screen
             int width = (int)(getResources().getDisplayMetrics().widthPixels*0.90);

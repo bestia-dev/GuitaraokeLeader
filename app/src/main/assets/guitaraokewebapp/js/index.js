@@ -78,7 +78,6 @@ function state_ui_song_load() {
     page_state = PageState.SongLoad;
     cm.el("div_follower").hidden = false;
     cm.el("div_connection_lost").hidden = true;
-    video_video.muted = true;
 }
 
 function state_ui_play() {
