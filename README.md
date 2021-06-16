@@ -3,13 +3,20 @@
 ***Play guitar and sing with your friends***  
 ***Read the lyrics and chords in sync with the Leader on any smartphone***  
 
+## Instructions
+
+To play the game, go to <https://bestia.dev/guitaraoke> and follow the short instructions.
+
+## Guitaraoke
+
 I never liked karaoke. A single "performer" in front of a uninterested crowd.  
 But I like to play guitar and optionally sing along. And I found a buddy guitarist and we can play and sing together.  
 I even found some more friends that like to sing along (mostly when drunk).  
 And now we have a problem. Nobody remembers the lyrics and the chords.  
 I am a programmer and every problem looks like it has a software solutions.  
 Enter `Guitaraoke`: it is like karaoke but with added guitar chords.  
-The are 2 roles in this game. The `Leader` will lead the way for many `Followers`.  
+It is not a new or original idea. A lot of guitarists came to the same solution. But now we have smartphones!  
+There are 2 roles in this game. The `Leader` will lead the way for many `Followers`.  
 
 ## Guitaraoke videos
 
@@ -20,12 +27,12 @@ The `Guitaraoke Leader` app can use any mp4 video you can download to your andro
 TODO: I will make a video tutorial how to create Guitaraoke mp4 files. It is easy.  
 TODO: put some reference on others Guitaraoke videos.  
 
-## only mobile
+## Mobile first
 
 When we have a party often we don't have a big TV for everybody to see the lyrics. But everybody have a smartphone.  
 I would like that everybody easily opens the Guitaraoke mp4 and very important that all the smartphones play it in sync.  
 
-## ideas
+## Ideas
 
 My first idea was to have a web server (on the internet somewhere) with the songRs. But the party is sometimes in the woods or mountains without a good or any internet connection. Even in places with a mobile-data internet connection it can cost money to play videos on some cell phone plans.  Let avoid this.  
 When we sing/play we are always near to each other. We can make a local wifi network using the smartphone wifi hot-spot. The smartphones can then see each other and the connection is very fast and costs nothing.  
@@ -67,11 +74,11 @@ It is just a web page for the Guitaraoke Follower. Simple html/css/javascript.
 I can use Visual Studio Code to edit this, because I like it more than the android studio for html/css/javascript.  
 This `assets` folder is distributed with the server installation.  
 
-## icons
+## Icons
 
 In Android Studio right click on `app - src - main - res` and open `New - Image Asset`. This opens the `Asset Studio` where the icons are edited and exported into different files.  
 
-## android assets and ExternalStorage
+## Android assets and ExternalStorage
 
 Files that are distributed with the server are called assets. They are read-only and accessible with the object AssetManager.  
 I want the video files to be downloadable. The `Leader` can download any `mp4` file from the internet. It will be saved in the ExternalStorage. I used the DownLoadManager object for that.  
@@ -81,14 +88,7 @@ This is still a "private" storage only for this app and it does not need any spe
 
 Only the `Leader` needs to install the `Guitaraoke Leader` on his android device.  
 The super short instructions are here: <https://bestia.dev/guitaraoke>.  
-The instruction goes like this:  
-He downloads the latest signed APK from Github : <https://github.com/LucianoBestia/GuitaraokeLeader/releases>.  
-The smartphone must have enabled `Settings - Security - Unknown Sources`. Read more here:  
-<https://www.thegeeksclub.com/how-to-install-third-party-apk-on-android/>  
-  
-SECURITY: This app does not need any special permissions from your Android OS. It cannot read/write everywhere on the local disk, it does not have access to any important pieces of information (contacts, photos, documents, passwords, private keys, keyboard,...). The app cannot access these functions without explicit permission from the OS and you. This means this app is safe to install and use.
-  
-When the Leader starts the app it starts simultaneously a web server, a websocket server and a browser inside the app with WebView.  
+This app is safe: <https://github.com/LucianoBestia/GuitaraokeLeader/releases/tag/v2.0">.
 
 ## The Download songs page
 
@@ -96,18 +96,6 @@ After the installation there is only one video file available: `Welcome to Guita
 My guitaraoke mp4 files are listed here: <https://bestia.dev/guitaraoke/>. There are also other similar videos on the internet. If you can download the `mp4` file, you can add it to `Guitaraoke Leader`.  
 The songs are saved in the device folder: `/storage/emulated/0/Android/data/dev.bestia.GuitaraokeLeader/files/videos/`.  
 You can also just copy your `mp4` files into this folder using other tools.  
-
-## Easy instructions
-
-1. Only the leader must install the android APK on his phone.  
-2. Connect all the smartphones from the leader and followers to the same local wifi network. If there is no other wi-fi network, the Leader can share his internet and create a wi-fi hotspot on his smartphone. He can disable `mobile data` to avoid costly internet traffic.  
-3. The leader opens the `Guitaraoke Leader` app.  
-4. The leader shows the `Follower page` url address to the followers. They can scan the QR code or just type the numbers. It is short and easy.  
-5. Followers must click on `Full screen` because javascript needs a user gesture. Nothing else to do for the follower.  
-6. The leader clicks on the song name. It broadcasts a msg to all connected followers to load the song.
-7. The leader clicks `Play`. It sends a msg to all connected followers to start playing he song.  
-8. The follower page is muted because the sound can be disturbingly out-of-sync.  
-9. Finally the Leader clicks on `Fullscreen lyrics` to see the lyrics and chords in full screen.  
 
 ## Javascript ES2020
 
@@ -121,17 +109,17 @@ If a variable is not declared, I get an error in runtime. Before you must write 
 `<script type="module" >import * as j from './js/index.js';j.start_script();</script>` is better than other ways to import or include scripts. Having an alias for the module exported functions is very precise: `j.send_msg();`.  
 I think I will eventually start to use Typescript instead of javascript for projects of any size, even the smallest one.  
 
-## state and state_transition
+## State and state_transition
 
 It is much easier to think about a page with the concept of `states`.  
 One page can be in different clearly defined `states`. One state defines slightly different user interface, some elements are hidden, others are visible. There is a limited number of states, this is what makes it easy to grasp and understand.  
 The transition from one state to the other defines the actions to be done.  
 
-## sync playback
+## Sync playback
 
 It is difficult to make the same video on different devices to play in sync. This is my take.  
 
-### internal clock correction
+### Internal clock correction
 
 First I wanted to have the same exact time on all devices. I am surprised how much the devices internal clock can differ. How can they sync anything on the internet or use the GPS? I was sure the device sync the time with some atomic clock on the network. But it looks it is so much more complicated than I though. I cannot use any internet atomic clock because we will sing and play in the mountains without any internet connection.  
 Ok, I need to do some rudimentary clock correction. The GuitaraokeLeader will be our clock of reference for all other devices. Every follower requests the time from the web server. I tried with websockets but it was wildly inaccurate. The follower requests 5 times in interval of 1 second and calculates the average. There are 4 points in time to remember:  
@@ -144,7 +132,7 @@ We can calculate the average time that the packets travel between the client and
 We than choose the fastest of repetitions as reference.  
 Then we calculate the difference of device clocks in milliseconds. This becomes the `globalThis.sync_clock_correction`. We cannot change the internal clock of the device (for security reasons). We will just correct it for our calculations.  
 
-### video sync
+### Video sync
 
 I tried to set the `currentTime` property of the `video` element, but it didn't work. I decided than to change the playback speed. It is called `video.playbackRate`.  
 I put buttons on the screen for faster and slower `playbackRate`. But manually adjusting is tedious.  
@@ -153,7 +141,7 @@ When the video starts to play the `follower` sends a websocket msg to the `leade
 This way we achieved very similar `video.currentTime`. But sometimes it is not perfect. And users must do the fine adjustment manually.  
 If all this is too much for the follower, he can just mute the sound. The only mandatory sound comes from the Leader.  
 
-### capitulation
+### Capitulation
 
 I give up. Perfectly sync video playback on many devices is not possible. The sound is the problem, we can hear the smallest out-of-sync. The solution is simple. Mute the sound by default.  
 The Followers need only to see the lyrics. The sound will come only from the Leader. Probably he will use a loud bluetooth speaker connected to his phone. Done! Full capitulation :-(  
