@@ -3,9 +3,13 @@
 ***Play guitar and sing with your friends***  
 ***Read the lyrics and chords in sync with the Leader on any smartphone***  
 
+[![Licence](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LucianoBestia/new_date_time_units_and_formats/blob/master/LICENSE) 
+
 ## Instructions
 
 To play the game, go to <https://bestia.dev/guitaraoke> and follow the short instructions.
+
+![screenshot](https://github.com/LucianoBestia/GuitaraokeLeader/blob/main/app/src/main/assets/guitaraokewebapp/Poster.png?raw=true)
 
 ## Guitaraoke
 
@@ -152,10 +156,7 @@ Having separate app for the server and open Chrome for the Leader page didn't wo
 
 ## TODO
 
-1. name Guitaraoke is too broad. `Guitaraoke Leader` for Android sounds good.    
-    mp4 does not need to finish in ` - guitaraoke`
-2. better colors, fonts, visuals
-3. leader page can create QR-code with Follower page
-4. https://bestia.dev/guitaraoke/ is the starting point. make it for portrait.
-5. Explain step by step how to use it. Screenshots. make a video tutorial.
+1. better colors, fonts, visuals
+2. leader page can create QR-code with Follower page
+3. make a video tutorial.
   
