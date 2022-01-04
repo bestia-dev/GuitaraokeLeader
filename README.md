@@ -1,7 +1,7 @@
 # Guitaraoke Leader for Android
 
 ***Play guitar and sing with your friends***  
-***Read the lyrics and chords in sync with the Leader on any smartphone***  
+***The lyrics and chords show in sync with the "Leader" on any smartphone, tablet, computer or smart TV.***  
 
 [![Licence](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LucianoBestia/new_date_time_units_and_formats/blob/master/LICENSE) 
 
@@ -69,7 +69,13 @@ I use an old Lenovo tablet with Android 6.0 (API level 23) and a Samsung A50 And
 
 ## Local network
 
-This server will work only on a local network like `192.168.x.y`. My personal local network wi-fi uses the hotspot from my smartphone. But it could be any wi-fi hotspot. I have my Lenovo Win10 + WSL2 notebook and a lenovo tablet connected to my wifi local network for testing.  
+This server will work only on a local network like `192.168.x.y`.  
+The Leader will create a "mobile hotspot" wi-fi network on his smartphone. All other phones will connect to this network.
+I will try to create a QR code to make that easy.
+To avoid having heavy internet traffic from all the connected phone it is wise to limit the bandwidth of the outside internet.  
+This is easily done: change the "Mobile networks - Network mode" to "2G only".  
+This is so slow that even if the smartphones start to download a massive update, it will be very little traffic.
+Don't forget to return the "Network mode" to LTE, after using the Karaoke Leader.    
 
 ## Guitaraoke Follower
 
@@ -85,14 +91,15 @@ In Android Studio right click on `app - src - main - res` and open `New - Image 
 ## Android assets and ExternalStorage
 
 Files that are distributed with the server are called assets. They are read-only and accessible with the object AssetManager.  
-I want the video files to be downloadable. The `Leader` can download any `mp4` file from the internet. It will be saved in the ExternalStorage. I used the DownLoadManager object for that.  
+I want the video files to be downloadable. The `Leader` can download any `mp4` file from the internet. It will be saved in the ExternalStorage.  
+I used the DownLoadManager object for that.  
 This is still a "private" storage only for this app and it does not need any special permission.  
 
 ## Guitaraoke Leader app
 
 Only the `Leader` needs to install the `Guitaraoke Leader` on his android device.  
 The super short instructions are here: <https://bestia.dev/guitaraoke>.  
-This app is safe: <https://github.com/LucianoBestia/GuitaraokeLeader/releases/tag/v2.0">.
+This app is safe: <https://github.com/LucianoBestia/GuitaraokeLeader/releases/tag/v2.1">.
 
 ## The Download songs page
 
@@ -116,7 +123,8 @@ I think I will eventually start to use Typescript instead of javascript for proj
 ## State and state_transition
 
 It is much easier to think about a page with the concept of `states`.  
-One page can be in different clearly defined `states`. One state defines slightly different user interface, some elements are hidden, others are visible. There is a limited number of states, this is what makes it easy to grasp and understand.  
+One page can be in different clearly defined `states`. One state defines slightly different user interface, 
+some elements are hidden, others are visible. There is a limited number of states, this is what makes it easy to grasp and understand.  
 The transition from one state to the other defines the actions to be done.  
 
 ## Sync playback
@@ -152,11 +160,25 @@ The Followers need only to see the lyrics. The sound will come only from the Lea
 
 ## WebView
 
-Having separate app for the server and open Chrome for the Leader page didn't work out, because the server went to sleep when there was no user interaction. I added a WebView in the app and now the Leader page is inside the app. The server text for debugging is now accessible with the button `Show log`.  
+Having separate app for the server and open Chrome for the Leader page didn't work out, because the server went to sleep when there was no user interaction. 
+I added a WebView in the app and now the Leader page is inside the app. The server text for debugging is now accessible with the 
+button `Show log`.  
 
 ## TODO
 
-1. better colors, fonts, visuals
-2. leader page can create QR-code with Follower page
-3. make a video tutorial.
+leader page can have the QR-code for wi-fi network password
+on my Samsung A50 in "Mobile hotspot" I have the possibility to create a QR code and save it as image.
+Then this image can be shown on the Guitaraoke Leader program. Other phones just read it and boom, they are connected. Easy!
+It is wise to change the wi-fi password to "guitaraoke" just for use with Guitaraoke leader, 
+and then revert it back to the original wi-fi password for normal use.
+Also the follower page can show this QR-code so new followers can use other followers phones, not just the Leader phone.
+
+Leader page can have a QR-code for the URL. It can be created inside the Leader program and shown on the Leader smartphone.
+Followers read the QR code with their smartphone and boom, they opened the browser on this url.
+Also the follower page can show this QR-code so new followers can use other followers phones, not just the Leader phone.
+
+The storage I use now deletes the files after some time. I need a storage that has permanent files.
   
+make a video tutorial.
+  
+download from any URL

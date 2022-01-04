@@ -31,12 +31,12 @@ public class WebServer extends NanoHTTPD {
         // All files are in Assets, except /videos are in ExternalStorage.
         if (uri.startsWith("/videos")) {
             String filename_from_uri = uri.substring(8);
-            boolean fileExists = Arrays.asList(main_activity.getExternalVideosFolder().list()).contains(filename_from_uri);
+            boolean fileExists = Arrays.asList(main_activity.getGuitaraokeFolder().list()).contains(filename_from_uri);
             if (fileExists) {
                 return "videos/"+filename_from_uri;
             }
             else{
-                for (File file : main_activity.getExternalVideosFolder().listFiles()){
+                for (File file : main_activity.getGuitaraokeFolder().listFiles()){
                     printLine("file: "+file.getName());
                 }
             }
@@ -142,7 +142,7 @@ public class WebServer extends NanoHTTPD {
     public Response serve(IHTTPSession session) {
         sync_clock_received_timestamp = System.currentTimeMillis();
         String content;
-        String mimeType="text/html";
+        String mimeType;
         // files are in assets/guitaraokewebapp/
         // except videos are in externalStorage. I will enable to manually download videos from urls.
         String filepath = getFilePath(session.getUri());
@@ -171,7 +171,7 @@ public class WebServer extends NanoHTTPD {
             content = new String(buffer);
 
             // modify static files with dynamic content
-            content = dynamic_content(filepath, content, session);
+            content = dynamic_content(filepath, content);
 
         } catch (IOException e) {
             printLine("IOException (at serve): " + e.getMessage());
@@ -184,7 +184,7 @@ public class WebServer extends NanoHTTPD {
         this.main_activity.printLine(string);
     }
     // region: processing dynamic content
-    private String dynamic_content(String filepath, String content,IHTTPSession session){
+    private String dynamic_content(String filepath, String content){
         if (filepath.equals("leader.html")) {
             String new_html = leader_html_list_of_songs();
             content = content.replace("<!--list_of_files_in_folder_videos-->", new_html);
@@ -193,10 +193,14 @@ public class WebServer extends NanoHTTPD {
     }
     private String leader_html_list_of_songs(){
         StringBuilder new_html=new StringBuilder();
-        for (File file:main_activity.getExternalVideosFolder().listFiles()){
+        for (File file:main_activity.getGuitaraokeFolder().listFiles()){
             String song_url = "videos/"+file.getName();
             String song_name = file.getName().replace(" - guitaraoke.mp4","").replace(".mp4","");
-            new_html.append("<div class='class_song_name' data-url=\""+ Utils.escapeHtml(song_url) +"\" >"+ Utils.escapeHtml(song_name)+"</div>\n");
+            new_html.append("<div class='class_song_name' data-url=\"")
+                    .append(Utils.escapeHtml(song_url))
+                    .append("\" >")
+                    .append(Utils.escapeHtml(song_name))
+                    .append("</div>\n");
         }
         return new_html.toString();
     }
