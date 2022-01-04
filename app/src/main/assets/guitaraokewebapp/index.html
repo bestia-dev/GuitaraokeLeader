@@ -12,14 +12,14 @@
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/guitaraoke.css">
     <meta name="google" content="notranslate">
+    <script src="js/qrcode.js"></script>
     <!-- ES2020 import. The code is deferred and run after the html is loaded -->
     <script type="module">import * as j from './js/index.js';j.start_script();</script>
 </head>
 
 <body>
     <div id="div_follower">
-        <div class="fixed_header">Welcome to Guitaraoke! Click
-            <button id="button_full_screen">Full screen</button> and enjoy!
+        <div class="fixed_header">Welcome to Guitaraoke! <button id="button_full_screen">Full screen</button> <button id="button_qrcode">QRCode</button>
         </div>
         <div class="dummy_for_fixed_header">.</div>
         <div class="center">
@@ -28,11 +28,11 @@
         <div id="div_debug" class="debug_text"></div>
     </div>
     <div id="div_connection_lost" class="center">
-        <div>Connection to the Guitaraoke Server is lost.</div>
+        <div>Connection to the GuitaraokeLeader is lost.</div>
         <p>
-            <button id="button_reload">Connect to Guitaraoke server</button>
+            <button id="button_reload">Connect to GuitaraokeLeader</button>
         </p>
-        <div>Thank you for using Guitaraoke.</div>
+        <div>Thank you for using GuitaraokeLeader.</div>
         <div>
             <p class="small">© Luciano Bestia 2021, MIT Licence</p>
             <p class="small">Open source repository on
@@ -40,6 +40,25 @@
             </p>
         </div>
     </div>
+    <div id="div_qrcode">
+        <div class="w3_modal" >
+            <div class="w3_modal_content" style="display: grid;grid-template-columns: 40fr 20fr 40fr;" >
+                <div id="wifi_qrcode"><img src="/videos/wifi_qrcode.jpg" style="width:198px;height:198px;" /> </div>
+                <div></div>
+                <div id="url_qrcode"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+const qrcode = new QRCode(document.getElementById('url_qrcode'), {
+  text: window.location.href.replace("leader.html","index.html"),
+  width: 198,
+  height: 198,
+  colorDark : '#000',
+  colorLight : '#fff',
+  correctLevel : QRCode.CorrectLevel.H
+});
+</script>
 </body>
 
 </html>

@@ -173,6 +173,7 @@ public class WebServer extends NanoHTTPD {
     private String leader_html_list_of_songs(){
         StringBuilder new_html=new StringBuilder();
         for (DocumentFile file:chosen_folder.listFiles()){
+            if (file.getName().endsWith(".mp4")){
             String song_url = "videos/"+file.getName();
             String song_name = Objects.requireNonNull(file.getName()).replace(" - guitaraoke.mp4","").replace(".mp4","");
             new_html.append("<div class='class_song_name' data-url=\"")
@@ -180,6 +181,7 @@ public class WebServer extends NanoHTTPD {
                     .append("\" >")
                     .append(Utils.escapeHtml(song_name))
                     .append("</div>\n");
+        }
         }
         return new_html.toString();
     }

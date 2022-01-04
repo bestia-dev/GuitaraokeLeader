@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/normalize.css" />
     <link rel="stylesheet" href="css/guitaraoke.css" />
     <meta name="google" content="notranslate" />
+    <script src="js/qrcode.js"></script>
     <!-- ES2020 import. The code is deferred and run after the html is loaded -->
     <script type="module">import * as j from './js/leader.js';j.start_script();</script>
 </head>
@@ -24,8 +25,8 @@
         <button id="button_send_play">Play</button>
         <button id="button_fullscreen">FullScreen lyrics</button>
         <button id="button_send_stop">Stop</button>
+        <button id="button_qrcode">QRCode</button>
     </div>
-    <div class="dummy_for_fixed_header">.</div>
     <div>
         <div id="div_start" class="center">
             <!--list_of_files_in_folder_videos-->
@@ -34,7 +35,26 @@
             <video id="video_video" poster="Poster.jpg" height="90%" width="100%"><source type="video/mp4"></video>
         </div>
         <div id="div_debug" class="debug_text"></div>
+        <div id="div_qrcode">
+            <div class="w3_modal" >
+                <div class="w3_modal_content" style="display: grid;grid-template-columns: 40fr 20fr 40fr;" >
+                    <div id="wifi_qrcode"><img src="/videos/wifi_qrcode.jpg" style="width:198px;height:198px;" /> </div>
+                    <div></div>
+                    <div id="url_qrcode"></div>
+                </div>
+            </div>
+        </div>
     </div>
+<script>
+const qrcode = new QRCode(document.getElementById('url_qrcode'), {
+  text: window.location.href.replace("leader.html","index.html"),
+  width: 198,
+  height: 198,
+  colorDark : '#000',
+  colorLight : '#fff',
+  correctLevel : QRCode.CorrectLevel.H
+});
+</script>
 </body>
 
 </html>

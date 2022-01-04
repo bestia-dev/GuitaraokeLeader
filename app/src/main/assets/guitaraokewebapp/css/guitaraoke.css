@@ -116,3 +116,33 @@ button:disabled {
     align-items: center;
     text-align: center;
 }
+ /* region: modal window */
+
+        .w3_modal {
+            /* grey opacity over the whole display */
+            z-index: 3;
+            display: block;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            /* opacity:80% would be inherited by the child. defined inside a rgba is not inherited. Trick! */
+            background-color: rgba(0, 0, 0, 0.8);
+            color: var(--f_color_body);
+        }
+
+        .w3_modal_content {
+            top: 19%;
+            width: 90%;
+            margin: auto;
+            background-color: #fff;
+            color: var(--f_color_body);
+            border: 2px solid #000;
+            position: relative;
+            padding: 2%;
+            outline: 0;
+            text-align: center;
+        }
+        /* endregion: modal window */

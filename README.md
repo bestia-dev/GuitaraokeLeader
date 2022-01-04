@@ -69,14 +69,16 @@ Finally it shows in Android Studio in the Toolbar in `Running devices` before th
 I use a Samsung A50 Android 11.0 (API level 30).  
 
 ## Local network
-
-This server will work only on a local network like `192.168.x.y`.  
+ 
+Only the Leader have to work a little to prepare the connection to the application:
+This server will work only on a local network like `192.168.x.y`.
 The Leader will create a "mobile hotspot" wi-fi network on his smartphone. All other phones will connect to this network.
-I will try to create a QR code to make that easy.
-To avoid having heavy internet traffic from all the connected phone it is wise to limit the bandwidth of the outside internet.  
+Most smartphone can generate a QRcode do other smartphone can read the QRcode and easily connect to the wi-fi. 
+Copy this jpg image into the folder where the guitaraoke files are. The name of the image must be `wifi_qrcode.jpg`, size around 200x200px.   
+To avoid having heavy internet traffic from all the connected phone it is wise to limit the bandwidth of the outside internet before launching the application.  
 This is easily done: change the "Mobile networks - Network mode" to "2G only".  
-This is so slow that even if the smartphones start to download a massive update, it will be very little traffic.
-Don't forget to return the "Network mode" to LTE, after using the Karaoke Leader.    
+This internet connection is so slow, that even if the smartphones start to download a massive update, it will be very little traffic.
+Don't forget to return the "Network mode" to LTE, after using the GuitaraokeLeader.    
 
 ## Guitaraoke Follower
 
@@ -167,19 +169,5 @@ button `Show log`.
 
 ## TODO
 
-leader page can have the QR-code for wi-fi network password
-on my Samsung A50 in "Mobile hotspot" I have the possibility to create a QR code and save it as image.
-Then this image can be shown on the Guitaraoke Leader program. Other phones just read it and boom, they are connected. Easy!
-It is wise to change the wi-fi password to "guitaraoke" just for use with Guitaraoke leader, 
-and then revert it back to the original wi-fi password for normal use.
-Also the follower page can show this QR-code so new followers can use other followers phones, not just the Leader phone.
-
-Leader page can have a QR-code for the URL. It can be created inside the Leader program and shown on the Leader smartphone.
-Followers read the QR code with their smartphone and boom, they opened the browser on this url.
-Also the follower page can show this QR-code so new followers can use other followers phones, not just the Leader phone.
-
-The storage I use now deletes the files after some time. I need a storage that has permanent files.
-  
 make a video tutorial.
-  
 download from any URL

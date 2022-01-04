@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
     /// Every time the app starts it asks for a folder
     /// So the user can have multiple folders with different kind of music
-    /// Ideally it will be /Movies/GuitaraokeLeader/romantic or /Movies/GuitaraokeLeader/rock
+    /// Ideally it will be /Music/GuitaraokeLeader/romantic or /Music/GuitaraokeLeader/rock
     public void chooseFolderOnEveryStart(){
         ActivityResultLauncher<Intent> launchChooseFolderFromStart = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -297,12 +297,12 @@ public class MainActivity extends AppCompatActivity {
             // download manager cannot download to the folder I want
             // first I will download to an intermediate folder
             // and then I will move the file to the chosen folder
-            File dir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+            File dir = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
             File file = new File(dir,file_name);
             if(file.exists() ){
                 file.delete();
             }
-            request.setDestinationInExternalFilesDir(this, Environment.DIRECTORY_MOVIES,file_name);
+            request.setDestinationInExternalFilesDir(this, Environment.DIRECTORY_MUSIC,file_name);
             request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);  // Tell on which network you want to download file.
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);  // This will show notification on top when downloading the file.
             request.setTitle("Downloading song: "+ file_name); // Title for notification.
@@ -328,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
                 long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
                 // move downloaded file
                 String file_name = preferenceManager.getString("DOWNLOAD_ID_"+downloadId,"");
-                File dir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+                File dir = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
                 File from_file = new File(dir,file_name);
                 if(from_file.exists() ){
                     DocumentFile to_file = chosenFolder().createFile("video/mp4",file_name);
