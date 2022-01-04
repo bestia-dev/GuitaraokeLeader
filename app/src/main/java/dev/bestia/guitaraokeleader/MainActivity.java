@@ -21,6 +21,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.FileUtils;
 import android.preference.PreferenceManager;
 import android.provider.DocumentsContract;
@@ -64,32 +65,27 @@ public class MainActivity extends AppCompatActivity {
 
     final String strPref_Download_ID = "PREF_DOWNLOAD_ID";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         preferenceManager = getSharedPreferences(this.getPackageName(), Context.MODE_PRIVATE);
-        guitaraokeFolderUri = preferenceManager.getString("guitaraokeFolderUri",MediaStore.Video.Media.EXTERNAL_CONTENT_URI.toString());
+        download_manager = (DownloadManager) this.getSystemService  (Context.DOWNLOAD_SERVICE);
+        // try with new approach
+        ip = getIpAddress();
+        //old function: ip = utils.getIP(this);
+        if (ip == null) {
+            printLine("Error: Please connect to wifi.");
+            return;
+        }
 
-        // region: on click for buttons
-        ActivityResultLauncher<Intent> launchChooseFolderFromButton = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if (result.getResultCode() == Activity.RESULT_OK) {
-                            Intent data = result.getData();
-                            assert data != null;
-                            guitaraokeFolderUri = data.toUri(0);
-                            preferenceManager.edit().putString("guitaraokeFolderUri", guitaraokeFolderUri);
+        chooseFolderOnEveryStart();
+    }
 
-                        }
-                    }
-                });
-        // header_title will have on click later, after the web server started
-        // With button_folder the user will choose the shared folder.
-        // Ideally it will be /Movies/Guitaraoke, but he/she has to create it manually
+    /// Every time the app starts it asks for a folder
+    /// So the user can have multiple folders with different kind of music
+    /// Ideally it will be /Movies/GuitaraokeLeader/romantic or /Movies/GuitaraokeLeader/rock
+    public void chooseFolderOnEveryStart(){
         ActivityResultLauncher<Intent> launchChooseFolderFromStart = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -99,30 +95,27 @@ public class MainActivity extends AppCompatActivity {
                             Intent data = result.getData();
                             assert data != null;
                             guitaraokeFolderUri = data.toUri(0);
-                            preferenceManager.edit().putString("guitaraokeFolderUri", guitaraokeFolderUri);
-                            afterFolderChoice(launchChooseFolderFromButton);
+                            afterFolderChoice();
                         }
                     }
                 });
-
-        //TODO: just for test ask for folder every time, because it does not store in preferences
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, guitaraokeFolderUri);
+        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, getVideoDirFromAppStorage("GuitaraokeLeader"));
         launchChooseFolderFromStart.launch(intent);
-
     }
 
-    public void afterFolderChoice(ActivityResultLauncher<Intent> launchChooseFolderFromButton ){
+    /// the OnCreate continues after the Folder choice
+    public void afterFolderChoice(){
+        web_view_1 =  findViewById(R.id.web_view_1);
 
         // buttons in the header
         TextView header_title = findViewById(R.id.header_title);
-        TextView button_folder =  findViewById(R.id.button_folder);
         TextView button_debug =  findViewById(R.id.button_debug);
         TextView header_ip_port = findViewById(R.id.header_ip_port);
-        button_folder.setOnClickListener(view -> {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, guitaraokeFolderUri);
-            launchChooseFolderFromButton.launch(intent);
+
+        header_title.setOnClickListener(view -> {
+            // restart the webview
+            web_view_1.loadUrl(ip+":"+  WEB_SERVER_TCP_PORT + "/leader.html");
         });
 
         button_debug.setOnClickListener(view -> {
@@ -137,19 +130,15 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.getWindow().setLayout(width, height);
         });
 
-        download_manager = (DownloadManager) this.getSystemService  (Context.DOWNLOAD_SERVICE);
+        header_ip_port.setOnClickListener(view -> {
+            // show QRCode for wi-fi access and IP Url
+        });
+
         copyOnceWelcomeVideoToExternalStorage();
         // Main function
         printLine("Initializing server...");
         // Init server
         Utils utils = new Utils(getApplicationContext());
-        // try with new approach
-        ip = getIpAddress();
-        //old function: ip = utils.getIP(this);
-        if (ip == null) {
-            printLine("Error: Please connect to wifi.");
-            return;
-        }
         webserver = new WebServer(WEB_SERVER_TCP_PORT, getAssets(),this);
         websocketserver = new WebsocketServer(WEB_SOCKET_TCP_PORT, this);
         try {
@@ -159,10 +148,9 @@ public class MainActivity extends AppCompatActivity {
             printLine("Listening on " + ip + ":"+ WEB_SERVER_TCP_PORT);
             Resources res = getResources();
             String text = String.format(res.getString(R.string.print_ip_address_and_port),ip, WEB_SERVER_TCP_PORT);
-            header_ip_port.setText( text);
+            header_ip_port.setText(text);
 
             // WebView: open browser for leader inside a webview to avoid app sleep
-            web_view_1 =  findViewById(R.id.web_view_1);
             LinearLayout linearLayout =  findViewById(R.id.linearLayout);
             RelativeLayout contentLayout =  findViewById(R.id.contentLayout);
             // fullscreen is a long story in android web view
@@ -191,10 +179,7 @@ public class MainActivity extends AppCompatActivity {
             web_view_settings.setJavaScriptEnabled(true);
             web_view_1.loadUrl(ip+":"+  WEB_SERVER_TCP_PORT + "/leader.html");
 
-            header_title.setOnClickListener(view -> {
-                // restart the webview
-                web_view_1.loadUrl(ip+":"+  WEB_SERVER_TCP_PORT + "/leader.html");
-            });
+
 
         }catch (IOException e) {
             Toast.makeText(getApplicationContext(), "IOException: " +  e.getMessage(), Toast.LENGTH_LONG).show();
@@ -260,31 +245,31 @@ public class MainActivity extends AppCompatActivity {
         return new File(Uri.parse(guitaraokeFolderUri).getPath());
     }
 
+    public File getVideoDirFromAppStorage(String dirName ) {
+        MainActivity context = MainActivity.this;
+        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_MOVIES), dirName);
+        return file;
+    }
+
     public void copyOnceWelcomeVideoToExternalStorage() {
         MainActivity context = MainActivity.this;
-        ContentResolver content = context.getContentResolver();
-        Uri folder_uri =Uri.parse(guitaraokeFolderUri);
-        DocumentsContract.findDocumentPath()
-
-        Uri childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(
-                folder_uri, DocumentsContract.getTreeDocumentId(folder_uri));
-        childrenUri.
-        // check if the file exists in External storage
-
-        DocumentFile folder = DocumentFile.fromSingleUri(context, folder_uri);
-        folder.
-
-        Uri welcome_external_uri = Uri.parse(guitaraokeFolderUri+"/Welcome to Guitaraoke Leader.mp4");
-        DocumentFile welcome_external_file = DocumentFile.fromSingleUri(context, welcome_external_uri);
-        if (!welcome_external_file.exists()) {
+        ContentResolver content_resolver = context.getContentResolver();
+        Uri folder_tree_uri = Uri.parse(guitaraokeFolderUri);
+        DocumentFile df = DocumentFile.fromTreeUri(context, folder_tree_uri);
+        assert df != null;
+        String display_name = "Welcome to Guitaraoke Leader.mp4";
+        DocumentFile found_file = df.findFile(display_name);
+        if (found_file == null) {
             Log.w("w","!welcome_external_file.exists()");
-            String welcome_asset = "guitaraokewebapp/videos/Welcome to Guitaraoke Leader.mp4";
+            String welcome_asset = "guitaraokewebapp/videos/"+display_name;
             AssetManager assetManager = getAssets();
             InputStream in = null;
             BufferedOutputStream out = null;
             try {
                 in = assetManager.open(welcome_asset);
-                out = new BufferedOutputStream( content.openOutputStream(welcome_external_uri));
+                DocumentFile new_file = df.createFile("video/mp4", display_name);
+                Uri new_file_uri = new_file.getUri();
+                out = new BufferedOutputStream( content_resolver.openOutputStream(new_file_uri));
                 FileUtils.copy(in, out);
             } catch (IOException e) {
                 printLine("Failed to copy asset file: " + welcome_asset + " " + e.toString());
@@ -306,8 +291,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-
 
     private void download_song(String song_url, String file_name){
         try {

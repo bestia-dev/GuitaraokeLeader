@@ -49,6 +49,7 @@ My forth idea was to use webrtc for peer-to-peer communication. But it must have
 My final solution is to make a Web + WebSocket server for Android. Exactly what I wanted to avoid. Eh, ironic.  
 I don't plan to publish it on Google Play, but I will create an APK for die-hard fans of Guitaraoke Leader.  
 The client will be a simple html/css/javascript project for any browser. No installation whatsoever.
+The targeted Android version is 11.0 (API level 30). It will probably not work for older androids.
 
 ## Based on WebSocketChat
 
@@ -65,7 +66,7 @@ For debugging purposes I will print on the server app messages and debugging inf
 There is no escape to use Android Studio for Android development. I use it on Win10.  
 I attached my Lenovo tablet over USB. On the tablet in `Settings`-`About tablet` I clicked 7 times on the `Build number`. That enables the `Developer options`. Then in `Developer Options` I enabled `Stay awake` and `USB debugging`. I needed to try with different USB cables to make it work.  
 Finally it shows in Android Studio in the Toolbar in `Running devices` before the `Run` button.  
-I use an old Lenovo tablet with Android 6.0 (API level 23) and a Samsung A50 Android 11.0 (API level 30).  
+I use a Samsung A50 Android 11.0 (API level 30).  
 
 ## Local network
 
