@@ -9,23 +9,20 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.documentfile.provider.DocumentFile;
-
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.FileUtils;
-import android.preference.PreferenceManager;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -34,13 +31,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -62,8 +57,6 @@ public class MainActivity extends AppCompatActivity {
     WebView web_view_1;
     SharedPreferences preferenceManager;
     DownloadManager download_manager;
-
-    final String strPref_Download_ID = "PREF_DOWNLOAD_ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, getVideoDirFromAppStorage("GuitaraokeLeader"));
         launchChooseFolderFromStart.launch(intent);
     }
 
@@ -142,6 +134,8 @@ public class MainActivity extends AppCompatActivity {
         webserver = new WebServer(WEB_SERVER_TCP_PORT, getAssets(),this);
         websocketserver = new WebsocketServer(WEB_SOCKET_TCP_PORT, this);
         try {
+            webserver.chosen_folder=chosenFolder();
+            webserver.content_resolver=contentResolver();
             webserver.start();
             websocketserver.setReuseAddr(true);
             websocketserver.start();
@@ -155,6 +149,8 @@ public class MainActivity extends AppCompatActivity {
             RelativeLayout contentLayout =  findViewById(R.id.contentLayout);
             // fullscreen is a long story in android web view
             web_view_1.setWebChromeClient(new FullScreenClient(linearLayout, contentLayout));
+            web_view_1.clearCache(true);
+            web_view_1.clearHistory();
             // without this, any change in url opens the browser.
             web_view_1.setWebViewClient(new WebViewClient() {
                 @Override
@@ -165,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
             });
             web_view_1.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
                 Log.w("w",contentDisposition);
-                String file_name_url = contentDisposition.split("filename\\*=UTF-8''")[1];
+                String file_name_url = url.substring(url.lastIndexOf("/")+1);
                 String file_name = null;
                 try {
                     file_name = URLDecoder.decode(file_name_url, "UTF-8");
@@ -240,25 +236,22 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    //folder inside Android/data/data/your_package/
-    public File getGuitaraokeFolder() {
-        return new File(Uri.parse(guitaraokeFolderUri).getPath());
-    }
-
-    public File getVideoDirFromAppStorage(String dirName ) {
+    /// chosen folder as DocumentFile
+    public DocumentFile chosenFolder() {
         MainActivity context = MainActivity.this;
-        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_MOVIES), dirName);
-        return file;
-    }
-
-    public void copyOnceWelcomeVideoToExternalStorage() {
-        MainActivity context = MainActivity.this;
-        ContentResolver content_resolver = context.getContentResolver();
         Uri folder_tree_uri = Uri.parse(guitaraokeFolderUri);
         DocumentFile df = DocumentFile.fromTreeUri(context, folder_tree_uri);
         assert df != null;
+        return df;
+    }
+    public ContentResolver contentResolver(){
+        MainActivity context = MainActivity.this;
+        ContentResolver content_resolver = context.getContentResolver();
+        return content_resolver;
+    }
+    public void copyOnceWelcomeVideoToExternalStorage() {
         String display_name = "Welcome to Guitaraoke Leader.mp4";
-        DocumentFile found_file = df.findFile(display_name);
+        DocumentFile found_file = chosenFolder().findFile(display_name);
         if (found_file == null) {
             Log.w("w","!welcome_external_file.exists()");
             String welcome_asset = "guitaraokewebapp/videos/"+display_name;
@@ -267,9 +260,9 @@ public class MainActivity extends AppCompatActivity {
             BufferedOutputStream out = null;
             try {
                 in = assetManager.open(welcome_asset);
-                DocumentFile new_file = df.createFile("video/mp4", display_name);
+                DocumentFile new_file = chosenFolder().createFile("video/mp4", display_name);
                 Uri new_file_uri = new_file.getUri();
-                out = new BufferedOutputStream( content_resolver.openOutputStream(new_file_uri));
+                out = new BufferedOutputStream( contentResolver().openOutputStream(new_file_uri));
                 FileUtils.copy(in, out);
             } catch (IOException e) {
                 printLine("Failed to copy asset file: " + welcome_asset + " " + e.toString());
@@ -294,25 +287,32 @@ public class MainActivity extends AppCompatActivity {
 
     private void download_song(String song_url, String file_name){
         try {
+            MainActivity context = MainActivity.this;
             Uri uri = Uri.parse(song_url);
             DownloadManager.Request request = new DownloadManager.Request(uri);
+            context.registerReceiver(attachmentDownloadCompleteReceive, new IntentFilter(
+                    DownloadManager.ACTION_DOWNLOAD_COMPLETE));
             printLine("download song_url: " + song_url);
             printLine("download file_name: " + file_name);
-            File old_file = new File(this.getGuitaraokeFolder() + "/"+ file_name);
-            if(old_file.exists()){
-                old_file.delete();
+            // download manager cannot download to the folder I want
+            // first I will download to an intermediate folder
+            // and then I will move the file to the chosen folder
+            File dir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+            File file = new File(dir,file_name);
+            if(file.exists() ){
+                file.delete();
             }
-            request.setDestinationInExternalFilesDir(this,"videos",file_name);
+            request.setDestinationInExternalFilesDir(this, Environment.DIRECTORY_MOVIES,file_name);
             request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);  // Tell on which network you want to download file.
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);  // This will show notification on top when downloading the file.
             request.setTitle("Downloading song: "+ file_name); // Title for notification.
             request.setDescription("Download guitaraoke song.");
 
-            long id = download_manager.enqueue(request);
+            long downloadId = download_manager.enqueue(request);
 
-            //Save the request id
+            //Save the request downloadId, edit() + commit()
             SharedPreferences.Editor PrefEdit = preferenceManager.edit();
-            PrefEdit.putLong(strPref_Download_ID, id);
+            PrefEdit.putString("DOWNLOAD_ID_"+downloadId, file_name);
             PrefEdit.commit();
         }
         catch (Exception e) {
@@ -320,95 +320,52 @@ public class MainActivity extends AppCompatActivity {
             Log.e("e","error in download_song: " + e.getMessage());
         }
     }
-
-    private void CheckDownloadStatus(){
-        DownloadManager.Query query = new DownloadManager.Query();
-        long id = preferenceManager.getLong(strPref_Download_ID, 0);
-        query.setFilterById(id);
-        Cursor cursor = download_manager.query(query);
-        if(cursor.moveToFirst()){
-            int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
-            int status = cursor.getInt(columnIndex);
-            int columnReason = cursor.getColumnIndex(DownloadManager.COLUMN_REASON);
-            int reason = cursor.getInt(columnReason);
-
-            switch(status){
-                case DownloadManager.STATUS_FAILED:
-                    String failedReason = "";
-                    switch(reason){
-                        case DownloadManager.ERROR_CANNOT_RESUME:
-                            failedReason = "ERROR_CANNOT_RESUME";
-                            break;
-                        case DownloadManager.ERROR_DEVICE_NOT_FOUND:
-                            failedReason = "ERROR_DEVICE_NOT_FOUND";
-                            break;
-                        case DownloadManager.ERROR_FILE_ALREADY_EXISTS:
-                            failedReason = "ERROR_FILE_ALREADY_EXISTS";
-                            break;
-                        case DownloadManager.ERROR_FILE_ERROR:
-                            failedReason = "ERROR_FILE_ERROR";
-                            break;
-                        case DownloadManager.ERROR_HTTP_DATA_ERROR:
-                            failedReason = "ERROR_HTTP_DATA_ERROR";
-                            break;
-                        case DownloadManager.ERROR_INSUFFICIENT_SPACE:
-                            failedReason = "ERROR_INSUFFICIENT_SPACE";
-                            break;
-                        case DownloadManager.ERROR_TOO_MANY_REDIRECTS:
-                            failedReason = "ERROR_TOO_MANY_REDIRECTS";
-                            break;
-                        case DownloadManager.ERROR_UNHANDLED_HTTP_CODE:
-                            failedReason = "ERROR_UNHANDLED_HTTP_CODE";
-                            break;
-                        case DownloadManager.ERROR_UNKNOWN:
-                            failedReason = "ERROR_UNKNOWN";
-                            break;
-                    }
-
-                    Toast.makeText(MainActivity.this,
-                            "FAILED: " + failedReason,
-                            Toast.LENGTH_LONG).show();
-                    break;
-                case DownloadManager.STATUS_PAUSED:
-                    String pausedReason = "";
-
-                    switch(reason){
-                        case DownloadManager.PAUSED_QUEUED_FOR_WIFI:
-                            pausedReason = "PAUSED_QUEUED_FOR_WIFI";
-                            break;
-                        case DownloadManager.PAUSED_UNKNOWN:
-                            pausedReason = "PAUSED_UNKNOWN";
-                            break;
-                        case DownloadManager.PAUSED_WAITING_FOR_NETWORK:
-                            pausedReason = "PAUSED_WAITING_FOR_NETWORK";
-                            break;
-                        case DownloadManager.PAUSED_WAITING_TO_RETRY:
-                            pausedReason = "PAUSED_WAITING_TO_RETRY";
-                            break;
-                    }
-
-                    Toast.makeText(MainActivity.this,
-                            "PAUSED: " + pausedReason,
-                            Toast.LENGTH_LONG).show();
-                    break;
-                case DownloadManager.STATUS_PENDING:
-                    Toast.makeText(MainActivity.this,
-                            "PENDING",
-                            Toast.LENGTH_LONG).show();
-                    break;
-                case DownloadManager.STATUS_RUNNING:
-                    Toast.makeText(MainActivity.this,
-                            "RUNNING",
-                            Toast.LENGTH_LONG).show();
-                    break;
-                case DownloadManager.STATUS_SUCCESSFUL:
-
-                    Toast.makeText(MainActivity.this,
-                            "SUCCESSFUL",
-                            Toast.LENGTH_LONG).show();
-                    break;
+    BroadcastReceiver attachmentDownloadCompleteReceive = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+                long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+                // move downloaded file
+                String file_name = preferenceManager.getString("DOWNLOAD_ID_"+downloadId,"");
+                File dir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+                File from_file = new File(dir,file_name);
+                if(from_file.exists() ){
+                    DocumentFile to_file = chosenFolder().createFile("video/mp4",file_name);
+                    moveDownloadedFile(from_file, to_file);
+                }
             }
         }
-    }
-}
+    };
+    /// only mp4
+    public void moveDownloadedFile(File from_file, DocumentFile to_file) {
+            InputStream in = null;
+            BufferedOutputStream out = null;
+            try {
+                in = new FileInputStream(from_file);
+                Uri new_file_uri = to_file.getUri();
+                out = new BufferedOutputStream( contentResolver().openOutputStream(new_file_uri));
+                FileUtils.copy(in, out);
+            } catch (IOException e) {
+                printLine("Failed to copy mp4 file: " + from_file.getName() + " " + e.toString());
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                        // delete cached file
+                        from_file.delete();
+                    } catch (IOException e) {
+                        // NOOP
+                    }
+                }
+                if (out != null) {
+                    try {
+                        out.close();
+                    } catch (IOException e) {
+                        // NOOP
+                    }
+                }
+            }
+        }
 
+}
