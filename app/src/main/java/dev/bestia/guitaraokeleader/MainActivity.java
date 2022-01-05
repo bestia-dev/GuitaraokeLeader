@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.FileUtils;
 import android.util.Log;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -154,8 +155,9 @@ public class MainActivity extends AppCompatActivity {
             // without this, any change in url opens the browser.
             web_view_1.setWebViewClient(new WebViewClient() {
                 @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    view.loadUrl(url);
+                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                    final Uri uri = request.getUrl();
+                    view.loadUrl(uri.toString());
                     return false;
                 }
             });

@@ -28,8 +28,7 @@ First I created some videos. In the video editor `ShotCut` for Win10, I put toge
 It is great that I can now modify the chords and the lyrics if I like it different.  
 There is a lot of Guitaraoke videos already on the internet. Just google it.  
 The `Guitaraoke Leader` app can use any mp4 video you can download to your android.  
-TODO: I will make a video tutorial how to create Guitaraoke mp4 files. It is easy.  
-TODO: put some reference on others Guitaraoke videos.  
+TODO: I will make a video tutorial how to create Guitaraoke mp4 files. It is easy.   
 
 ## Mobile first
 
@@ -73,7 +72,7 @@ I use a Samsung A50 Android 11.0 (API level 30).
 Only the Leader have to work a little to prepare the connection to the application:
 This server will work only on a local network like `192.168.x.y`.
 The Leader will create a "mobile hotspot" wi-fi network on his smartphone. All other phones will connect to this network.
-Most smartphone can generate a QRcode do other smartphone can read the QRcode and easily connect to the wi-fi. 
+Most smartphone can generate a QRCode do other smartphone can read the QRCode and easily connect to the wi-fi. 
 Copy this jpg image into the folder where the guitaraoke files are. The name of the image must be `wifi_qrcode.jpg`, size around 200x200px.   
 To avoid having heavy internet traffic from all the connected phone it is wise to limit the bandwidth of the outside internet before launching the application.  
 This is easily done: change the "Mobile networks - Network mode" to "2G only".  
@@ -107,9 +106,8 @@ This app is safe: <https://github.com/LucianoBestia/GuitaraokeLeader/releases/ta
 ## The Download songs page
 
 After the installation there is only one video file available: `Welcome to Guitaraoke Leader`.  Other songs videos need to be downloaded.  
-My guitaraoke mp4 files are listed here: <https://bestia.dev/guitaraoke/>. There are also other similar videos on the internet. If you can download the `mp4` file, you can add it to `Guitaraoke Leader`.  
-The songs are saved in the device folder: `/storage/emulated/0/Android/data/dev.bestia.GuitaraokeLeader/files/videos/`.  
-You can also just copy your `mp4` files into this folder using other tools.  
+My guitaraoke mp4 files are listed here: <https://bestia.dev/guitaraoke/>. There are also other similar videos on the internet.
+You can also just copy your `mp4` files into your Guitaraoke folder using the android file manager.  
 
 ## Javascript ES2020
 
@@ -167,7 +165,11 @@ Having separate app for the server and open Chrome for the Leader page didn't wo
 I added a WebView in the app and now the Leader page is inside the app. The server text for debugging is now accessible with the 
 button `Show log`.  
 
+## APK build
+
+In Android Studio Build-Generate Signed APK, use the KeyStore in C:\Users\xxx\AndroidStudioProjects\AndroidKeyStore.jks with the password you saved somewhere to not forget it.
+
 ## TODO
 
 make a video tutorial.
-download from any URL
+iphone little problems
