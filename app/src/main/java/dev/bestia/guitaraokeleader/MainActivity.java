@@ -78,19 +78,16 @@ public class MainActivity extends AppCompatActivity {
 
     /// Every time the app starts it asks for a folder
     /// So the user can have multiple folders with different kind of music
-    /// Ideally it will be /Music/GuitaraokeLeader/romantic or /Music/GuitaraokeLeader/rock
+    /// Ideally it will be /Music/Guitaraoke/romantic or /Music/Guitaraoke/rock
     public void chooseFolderOnEveryStart(){
         ActivityResultLauncher<Intent> launchChooseFolderFromStart = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if (result.getResultCode() == Activity.RESULT_OK) {
-                            Intent data = result.getData();
-                            assert data != null;
-                            guitaraokeFolderUri = data.toUri(0);
-                            afterFolderChoice();
-                        }
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        assert data != null;
+                        guitaraokeFolderUri = data.toUri(0);
+                        afterFolderChoice();
                     }
                 });
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
@@ -98,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /// the OnCreate continues after the Folder choice
+    @SuppressLint("SetJavaScriptEnabled")
     public void afterFolderChoice(){
         web_view_1 =  findViewById(R.id.web_view_1);
 
@@ -123,11 +121,8 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.getWindow().setLayout(width, height);
         });
 
-        header_ip_port.setOnClickListener(view -> {
-            // show QRCode for wi-fi access and IP Url
-        });
-
         copyOnceWelcomeVideoToExternalStorage();
+
         // Main function
         printLine("Initializing server...");
         // Init server
@@ -248,26 +243,27 @@ public class MainActivity extends AppCompatActivity {
     }
     public ContentResolver contentResolver(){
         MainActivity context = MainActivity.this;
-        ContentResolver content_resolver = context.getContentResolver();
-        return content_resolver;
+        return context.getContentResolver();
     }
+
     public void copyOnceWelcomeVideoToExternalStorage() {
-        String display_name = "Welcome to Guitaraoke Leader.mp4";
+        String display_name = "Welcome to GuitaraokeLeader.mp4";
         DocumentFile found_file = chosenFolder().findFile(display_name);
         if (found_file == null) {
             Log.w("w","!welcome_external_file.exists()");
-            String welcome_asset = "guitaraokewebapp/videos/"+display_name;
+            String file_asset = "guitaraokewebapp/videos/"+display_name;
             AssetManager assetManager = getAssets();
             InputStream in = null;
             BufferedOutputStream out = null;
             try {
-                in = assetManager.open(welcome_asset);
+                in = assetManager.open(file_asset);
                 DocumentFile new_file = chosenFolder().createFile("video/mp4", display_name);
+                assert new_file != null;
                 Uri new_file_uri = new_file.getUri();
                 out = new BufferedOutputStream( contentResolver().openOutputStream(new_file_uri));
                 FileUtils.copy(in, out);
             } catch (IOException e) {
-                printLine("Failed to copy asset file: " + welcome_asset + " " + e.toString());
+                printLine("Failed to copy asset file: " + file_asset + " " + e.toString());
             } finally {
                 if (in != null) {
                     try {
@@ -302,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
             File dir = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
             File file = new File(dir,file_name);
             if(file.exists() ){
-                file.delete();
+                file.delete()
             }
             request.setDestinationInExternalFilesDir(this, Environment.DIRECTORY_MUSIC,file_name);
             request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);  // Tell on which network you want to download file.
@@ -315,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
             //Save the request downloadId, edit() + commit()
             SharedPreferences.Editor PrefEdit = preferenceManager.edit();
             PrefEdit.putString("DOWNLOAD_ID_"+downloadId, file_name);
-            PrefEdit.commit();
+            PrefEdit.apply();
         }
         catch (Exception e) {
             printLine("error in download_song: " + e.getMessage());
@@ -334,6 +330,7 @@ public class MainActivity extends AppCompatActivity {
                 File from_file = new File(dir,file_name);
                 if(from_file.exists() ){
                     DocumentFile to_file = chosenFolder().createFile("video/mp4",file_name);
+                    assert to_file != null;
                     moveDownloadedFile(from_file, to_file);
                 }
             }
@@ -355,7 +352,7 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         in.close();
                         // delete cached file
-                        from_file.delete();
+                        final boolean delete = from_file.delete();
                     } catch (IOException e) {
                         // NOOP
                     }

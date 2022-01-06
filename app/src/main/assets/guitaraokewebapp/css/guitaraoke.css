@@ -55,7 +55,6 @@ body {
     line-height: 1.8;
 }
 
-
 /* no special color for links, but special class for links */
 
 a:link,
@@ -78,7 +77,6 @@ button {
     padding: 5px 12px;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
     font-size: 20px;
     border-radius: 8px;
 }
@@ -88,6 +86,19 @@ button:disabled {
     opacity: 0.5;
 }
 
+/* Ripple effect */
+.ripple {
+  background-position: center;
+  transition: background 1.3s;
+}
+.ripple:hover {
+  background: var(--b_color_title) radial-gradient(circle, transparent 1%, var(--b_color_title) 1%) center/15000%;
+}
+.ripple:active {
+  background-color: #C24A8B;
+  background-size: 100%;
+  transition: background 0s;
+}
 
 /* region: fixed header */
 

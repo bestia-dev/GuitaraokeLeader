@@ -75,7 +75,7 @@ function state_ui_waiting() {
     cm.el("div_connection_lost").hidden = true;
     cm.el("button_qrcode").hidden = true;
     cm.el("div_qrcode").hidden = true;
-    cm.song_load("videos/Welcome to Guitaraoke Leader.mp4");
+    cm.song_load("videos/Welcome to GuitaraokeLeader.mp4");
 }
 
 function state_ui_song_load() {
