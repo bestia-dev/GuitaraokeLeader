@@ -17,6 +17,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -97,6 +99,15 @@ public class MainActivity extends AppCompatActivity {
     /// the OnCreate continues after the Folder choice
     @SuppressLint("SetJavaScriptEnabled")
     public void afterFolderChoice(){
+        try {
+            MainActivity context = MainActivity.this;
+            PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            String version = pInfo.versionName;
+            printLine("GuitaraokeLeader ver. "+ version);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
         web_view_1 =  findViewById(R.id.web_view_1);
 
         // buttons in the header
@@ -298,7 +309,7 @@ public class MainActivity extends AppCompatActivity {
             File dir = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
             File file = new File(dir,file_name);
             if(file.exists() ){
-                file.delete()
+                boolean del = file.delete();
             }
             request.setDestinationInExternalFilesDir(this, Environment.DIRECTORY_MUSIC,file_name);
             request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);  // Tell on which network you want to download file.
