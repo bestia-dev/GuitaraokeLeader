@@ -339,7 +339,13 @@ public class MainActivity extends AppCompatActivity {
                 String file_name = preferenceManager.getString("DOWNLOAD_ID_"+downloadId,"");
                 File dir = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
                 File from_file = new File(dir,file_name);
-                if(from_file.exists() ){
+                if (!from_file.getName().endsWith("guitaraoke.mp4")) {
+                    final boolean delete = from_file.delete();
+                } else{
+                    DocumentFile check_file = chosenFolder().findFile(file_name);
+                    if(check_file != null){
+                        boolean deleted = check_file.delete();
+                    }
                     DocumentFile to_file = chosenFolder().createFile("video/mp4",file_name);
                     assert to_file != null;
                     moveDownloadedFile(from_file, to_file);
@@ -347,14 +353,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-    /// only mp4
+    /// only files ending with xxx - guitaraoke.mp4
     public void moveDownloadedFile(File from_file, DocumentFile to_file) {
             InputStream in = null;
             BufferedOutputStream out = null;
             try {
                 in = new FileInputStream(from_file);
                 Uri new_file_uri = to_file.getUri();
-                out = new BufferedOutputStream( contentResolver().openOutputStream(new_file_uri));
+                out = new BufferedOutputStream(contentResolver().openOutputStream(new_file_uri));
                 FileUtils.copy(in, out);
             } catch (IOException e) {
                 printLine("Failed to copy mp4 file: " + from_file.getName() + " " + e.toString());
@@ -363,10 +369,10 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         in.close();
                         // delete cached file
-                        final boolean delete = from_file.delete();
                     } catch (IOException e) {
                         // NOOP
                     }
+                    final boolean delete = from_file.delete();
                 }
                 if (out != null) {
                     try {
@@ -377,5 +383,4 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-
 }
