@@ -1,7 +1,7 @@
 # Guitaraoke Leader for Android
 
 ***Play guitar and sing with your friends***  
-***Read the lyrics and chords in sync with the Leader on any smartphone***  
+***The lyrics and chords show in sync with the "Leader" on any smartphone, tablet, computer or smart TV.***  
 
 [![Licence](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LucianoBestia/new_date_time_units_and_formats/blob/master/LICENSE) 
 
@@ -92,7 +92,7 @@ This is still a "private" storage only for this app and it does not need any spe
 
 Only the `Leader` needs to install the `Guitaraoke Leader` on his android device.  
 The super short instructions are here: <https://bestia.dev/guitaraoke>.  
-This app is safe: <https://github.com/LucianoBestia/GuitaraokeLeader/releases/tag/v2.0">.
+This app is safe: <https://github.com/LucianoBestia/GuitaraokeLeader/releases/tag/v2.1">.
 
 ## The Download songs page
 

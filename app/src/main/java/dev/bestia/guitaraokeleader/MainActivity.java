@@ -6,21 +6,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DownloadManager;
 import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
-import android.webkit.DownloadListener;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,12 +33,8 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
-
-import fi.iki.elonen.NanoHTTPD;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
     int WEB_SOCKET_TCP_PORT = 3000;
     StringBuilder server_text = new StringBuilder();
     WebView web_view_1;
+    SharedPreferences preferenceManager;
+    DownloadManager download_manager;
+
+    final String strPref_Download_ID = "PREF_DOWNLOAD_ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +56,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         TextView button_stop_server =  findViewById(R.id.button_stop);
         button_stop_server.setOnClickListener(view -> {
+            CheckDownloadStatus();
             // finish will call onDestroy where is stop servers
-            finish();
+            //finish();
         });
         TextView button_debug =  findViewById(R.id.button_debug);
         button_debug.setOnClickListener(view -> {
@@ -76,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
 
         TextView header_ip_port = findViewById(R.id.header_ip_port);
         TextView header_title = findViewById(R.id.header_title);
-
+        download_manager = (DownloadManager) this.getSystemService  (Context.DOWNLOAD_SERVICE);
+        preferenceManager = getSharedPreferences(   this.getPackageName(), Context.MODE_PRIVATE);
         copyOnceWelcomeVideoToExternalStorage();
         // Main function
         printLine("Initializing server...");
@@ -114,20 +114,16 @@ public class MainActivity extends AppCompatActivity {
                         return false;
                     }
                 });
-                web_view_1.setDownloadListener(new DownloadListener()
-                {
-                    public void onDownloadStart(String url, String userAgent,String contentDisposition, String mimetype,long contentLength)
-                    {
-                        Log.w("w",contentDisposition);
-                        String file_name_url = contentDisposition.split("filename\\*=UTF-8''")[1];
-                        String file_name = null;
-                        try {
-                            file_name = URLDecoder.decode(file_name_url, "UTF-8");
-                        } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
-                        }
-                        download_song(url, file_name);
+                web_view_1.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
+                    Log.w("w",contentDisposition);
+                    String file_name_url = contentDisposition.split("filename\\*=UTF-8''")[1];
+                    String file_name = null;
+                    try {
+                        file_name = URLDecoder.decode(file_name_url, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
                     }
+                    download_song(url, file_name);
                 });
 
                 WebSettings web_view_settings = web_view_1.getSettings();
@@ -173,9 +169,7 @@ public class MainActivity extends AppCompatActivity {
     public void printMessage(String username, Date timestamp, String data) {
         @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
         String showDate = sdf.format(timestamp);
-        runOnUiThread(() -> {
-            server_text.append(username + " " + showDate + " " + data + "\n");
-        });
+        runOnUiThread(() -> server_text.append(username).append(" ").append(showDate).append(" ").append(data).append("\n"));
     }
 
     public void printLine(String content) {
@@ -245,20 +239,120 @@ public class MainActivity extends AppCompatActivity {
 
     private void download_song(String song_url, String file_name){
         try {
-            DownloadManager download_manager = (DownloadManager) this.getSystemService  (Context.DOWNLOAD_SERVICE);
             Uri uri = Uri.parse(song_url);
             DownloadManager.Request request = new DownloadManager.Request(uri);
+            printLine("download song_url: " + song_url);
             printLine("download file_name: " + file_name);
             File old_file = new File(this.getExternalVideosFolder() + "/"+ file_name);
             if(old_file.exists()){
                 old_file.delete();
             }
             request.setDestinationInExternalFilesDir(this,"videos",file_name);
-            download_manager.enqueue(request);
+            request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);  // Tell on which network you want to download file.
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);  // This will show notification on top when downloading the file.
+            request.setTitle("Downloading song: "+ file_name); // Title for notification.
+            request.setDescription("Download guitaraoke song.");
+
+            long id = download_manager.enqueue(request);
+
+            //Save the request id
+            SharedPreferences.Editor PrefEdit = preferenceManager.edit();
+            PrefEdit.putLong(strPref_Download_ID, id);
+            PrefEdit.commit();
         }
         catch (Exception e) {
             printLine("error in download_song: " + e.getMessage());
             Log.e("e","error in download_song: " + e.getMessage());
+        }
+    }
+
+    private void CheckDownloadStatus(){
+        DownloadManager.Query query = new DownloadManager.Query();
+        long id = preferenceManager.getLong(strPref_Download_ID, 0);
+        query.setFilterById(id);
+        Cursor cursor = download_manager.query(query);
+        if(cursor.moveToFirst()){
+            int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
+            int status = cursor.getInt(columnIndex);
+            int columnReason = cursor.getColumnIndex(DownloadManager.COLUMN_REASON);
+            int reason = cursor.getInt(columnReason);
+
+            switch(status){
+                case DownloadManager.STATUS_FAILED:
+                    String failedReason = "";
+                    switch(reason){
+                        case DownloadManager.ERROR_CANNOT_RESUME:
+                            failedReason = "ERROR_CANNOT_RESUME";
+                            break;
+                        case DownloadManager.ERROR_DEVICE_NOT_FOUND:
+                            failedReason = "ERROR_DEVICE_NOT_FOUND";
+                            break;
+                        case DownloadManager.ERROR_FILE_ALREADY_EXISTS:
+                            failedReason = "ERROR_FILE_ALREADY_EXISTS";
+                            break;
+                        case DownloadManager.ERROR_FILE_ERROR:
+                            failedReason = "ERROR_FILE_ERROR";
+                            break;
+                        case DownloadManager.ERROR_HTTP_DATA_ERROR:
+                            failedReason = "ERROR_HTTP_DATA_ERROR";
+                            break;
+                        case DownloadManager.ERROR_INSUFFICIENT_SPACE:
+                            failedReason = "ERROR_INSUFFICIENT_SPACE";
+                            break;
+                        case DownloadManager.ERROR_TOO_MANY_REDIRECTS:
+                            failedReason = "ERROR_TOO_MANY_REDIRECTS";
+                            break;
+                        case DownloadManager.ERROR_UNHANDLED_HTTP_CODE:
+                            failedReason = "ERROR_UNHANDLED_HTTP_CODE";
+                            break;
+                        case DownloadManager.ERROR_UNKNOWN:
+                            failedReason = "ERROR_UNKNOWN";
+                            break;
+                    }
+
+                    Toast.makeText(MainActivity.this,
+                            "FAILED: " + failedReason,
+                            Toast.LENGTH_LONG).show();
+                    break;
+                case DownloadManager.STATUS_PAUSED:
+                    String pausedReason = "";
+
+                    switch(reason){
+                        case DownloadManager.PAUSED_QUEUED_FOR_WIFI:
+                            pausedReason = "PAUSED_QUEUED_FOR_WIFI";
+                            break;
+                        case DownloadManager.PAUSED_UNKNOWN:
+                            pausedReason = "PAUSED_UNKNOWN";
+                            break;
+                        case DownloadManager.PAUSED_WAITING_FOR_NETWORK:
+                            pausedReason = "PAUSED_WAITING_FOR_NETWORK";
+                            break;
+                        case DownloadManager.PAUSED_WAITING_TO_RETRY:
+                            pausedReason = "PAUSED_WAITING_TO_RETRY";
+                            break;
+                    }
+
+                    Toast.makeText(MainActivity.this,
+                            "PAUSED: " + pausedReason,
+                            Toast.LENGTH_LONG).show();
+                    break;
+                case DownloadManager.STATUS_PENDING:
+                    Toast.makeText(MainActivity.this,
+                            "PENDING",
+                            Toast.LENGTH_LONG).show();
+                    break;
+                case DownloadManager.STATUS_RUNNING:
+                    Toast.makeText(MainActivity.this,
+                            "RUNNING",
+                            Toast.LENGTH_LONG).show();
+                    break;
+                case DownloadManager.STATUS_SUCCESSFUL:
+
+                    Toast.makeText(MainActivity.this,
+                            "SUCCESSFUL",
+                            Toast.LENGTH_LONG).show();
+                    break;
+            }
         }
     }
 }
