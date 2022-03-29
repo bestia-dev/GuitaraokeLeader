@@ -1,10 +1,9 @@
 <resources>
-    <string name="app_name">Guitaraoke Leader</string>
+    <string name="app_name">GuitaraokeLeader</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="header_ip_port">header_ip_port</string>
     <string name="name_date_msg">name date msg</string>
     <string name="print_ip_address_and_port">%1$s:%2$d</string>
-    <string name="stop_server">Stop server</string>
     <string name="button_debug">Debug</string>
     <string name="close">close</string>
 </resources>

@@ -19,7 +19,7 @@
                 android:layout_alignParentTop="true"
                 android:background="#5b39c6"
                 android:orientation="horizontal"
-                android:weightSum="4">
+                android:weightSum="3">
 
                 <TextView
                     android:id="@+id/header_title"
@@ -49,20 +49,6 @@
                     android:textAlignment="center"
                     android:textColor="#ff7f00" />
 
-                <TextView
-                    android:id="@+id/button_stop"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_weight="1"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:text="@string/stop_server"
-                    android:textAlignment="center"
-                    android:textColor="#ff7f00" />
 
                 <TextView
                     android:id="@+id/header_ip_port"

@@ -24,6 +24,7 @@ export function start_script() {
     // region: event listeners    
     cm.el("button_reload").addEventListener("click", () => { state_ui_start(); });
     cm.el("button_full_screen").addEventListener("click", () => { button_fullscreen_on_click(); });
+    cm.el("button_qrcode").addEventListener("click", () => { button_qrcode_on_click(); });
     // endregion: event listeners
 
     state_ui_start();
@@ -64,27 +65,33 @@ function state_ui_start() {
     connect_to_guitaraoke_server();
     cm.el("div_follower").hidden = false;
     cm.el("div_connection_lost").hidden = true;
-    //cm.el("div_debug").hidden = true;
+    cm.el("button_qrcode").hidden = false;
+    cm.el("div_qrcode").hidden = true;
 }
 
 function state_ui_waiting() {
     page_state = PageState.Waiting;
     cm.el("div_follower").hidden = false;
     cm.el("div_connection_lost").hidden = true;
-    cm.song_load("videos/Welcome to Guitaraoke Leader.mp4");
+    cm.el("button_qrcode").hidden = true;
+    cm.el("div_qrcode").hidden = true;
+    cm.song_load("videos/Welcome to GuitaraokeLeader.mp4");
 }
 
 function state_ui_song_load() {
     page_state = PageState.SongLoad;
     cm.el("div_follower").hidden = false;
     cm.el("div_connection_lost").hidden = true;
+    cm.el("button_qrcode").hidden = true;
+    cm.el("div_qrcode").hidden = true;
 }
 
 function state_ui_play() {
     page_state = PageState.SongPlay;
     cm.el("div_follower").hidden = false;
     cm.el("div_connection_lost").hidden = true;
-    //cm.el("div_debug").hidden = false;
+    cm.el("button_qrcode").hidden = true;
+    cm.el("div_qrcode").hidden = true;
 }
 
 function state_ui_connection_lost() {
@@ -92,6 +99,8 @@ function state_ui_connection_lost() {
     cm.exit_full_screen();
     cm.el("div_follower").hidden = true;
     cm.el("div_connection_lost").hidden = false;
+    cm.el("button_qrcode").hidden = true;
+    cm.el("div_qrcode").hidden = true;
 }
 
 // endregion: state UI transformation
@@ -122,4 +131,16 @@ function button_fullscreen_on_click() {
     } else if (video_video.mozRequestFullScreen) {
         video_video.mozRequestFullScreen();
     }
+}
+
+function button_qrcode_on_click() {
+    if (isHidden(cm.el("div_qrcode"))) {
+        cm.el("div_qrcode").hidden = false;
+    }else{
+        cm.el("div_qrcode").hidden = true;
+    }
+}
+
+function isHidden(el) {
+    return (el.offsetParent === null)
 }

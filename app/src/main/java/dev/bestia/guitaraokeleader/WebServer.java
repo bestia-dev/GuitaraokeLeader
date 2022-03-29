@@ -1,14 +1,17 @@
 package dev.bestia.guitaraokeleader;
 
+import android.content.ContentResolver;
 import android.content.res.AssetManager;
+import android.net.Uri;
 import android.util.Log;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
+
+import androidx.documentfile.provider.DocumentFile;
+
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Objects;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -20,6 +23,8 @@ public class WebServer extends NanoHTTPD {
     private final AssetManager assetManager;
     private final MainActivity main_activity;
     long sync_clock_received_timestamp;
+    DocumentFile chosen_folder;
+    ContentResolver content_resolver;
 
     public WebServer(int port, AssetManager assetManager,MainActivity activity) {
         super(port);
@@ -31,14 +36,9 @@ public class WebServer extends NanoHTTPD {
         // All files are in Assets, except /videos are in ExternalStorage.
         if (uri.startsWith("/videos")) {
             String filename_from_uri = uri.substring(8);
-            boolean fileExists = Arrays.asList(main_activity.getExternalVideosFolder().list()).contains(filename_from_uri);
-            if (fileExists) {
+            DocumentFile found_file = chosen_folder.findFile(filename_from_uri);
+            if (found_file != null) {
                 return "videos/"+filename_from_uri;
-            }
-            else{
-                for (File file : main_activity.getExternalVideosFolder().listFiles()){
-                    printLine("file: "+file.getName());
-                }
             }
         }
         if (uri.startsWith("/css")) {
@@ -115,34 +115,11 @@ public class WebServer extends NanoHTTPD {
         return true;
     }
 
-    public byte[] getBytes(InputStream is) throws IOException {
-
-        int len;
-        int size = 1024;
-        byte[] buf;
-
-        if (is instanceof ByteArrayInputStream) {
-            size = is.available();
-            buf = new byte[size];
-            len = is.read(buf, 0, size);
-            if (len == -1){
-                printLine("len is -1");
-            }
-        } else {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            buf = new byte[size];
-            while ((len = is.read(buf, 0, size)) != -1)
-                bos.write(buf, 0, len);
-            buf = bos.toByteArray();
-        }
-        return buf;
-    }
-
     @Override
     public Response serve(IHTTPSession session) {
         sync_clock_received_timestamp = System.currentTimeMillis();
         String content;
-        String mimeType="text/html";
+        String mimeType;
         // files are in assets/guitaraokewebapp/
         // except videos are in externalStorage. I will enable to manually download videos from urls.
         String filepath = getFilePath(session.getUri());
@@ -152,9 +129,11 @@ public class WebServer extends NanoHTTPD {
         InputStream is;
         try {
             if (filepath.startsWith("videos/")) {
-                String path = main_activity.getExternalFilesDir("").getPath() + "/" + filepath;
-                File file = new File(path);
-                is = new FileInputStream(file);
+                String display_name = filepath.substring(7);
+                DocumentFile found_file = chosen_folder.findFile(display_name);
+                assert found_file != null;
+                Uri found_file_uri = found_file.getUri();
+                is = new BufferedInputStream(content_resolver.openInputStream(found_file_uri));
             } else {
                 is = this.assetManager.open("guitaraokewebapp/" + filepath);
             }
@@ -171,7 +150,7 @@ public class WebServer extends NanoHTTPD {
             content = new String(buffer);
 
             // modify static files with dynamic content
-            content = dynamic_content(filepath, content, session);
+            content = dynamic_content(filepath, content);
 
         } catch (IOException e) {
             printLine("IOException (at serve): " + e.getMessage());
@@ -184,7 +163,7 @@ public class WebServer extends NanoHTTPD {
         this.main_activity.printLine(string);
     }
     // region: processing dynamic content
-    private String dynamic_content(String filepath, String content,IHTTPSession session){
+    private String dynamic_content(String filepath, String content){
         if (filepath.equals("leader.html")) {
             String new_html = leader_html_list_of_songs();
             content = content.replace("<!--list_of_files_in_folder_videos-->", new_html);
@@ -193,10 +172,16 @@ public class WebServer extends NanoHTTPD {
     }
     private String leader_html_list_of_songs(){
         StringBuilder new_html=new StringBuilder();
-        for (File file:main_activity.getExternalVideosFolder().listFiles()){
+        for (DocumentFile file:chosen_folder.listFiles()){
+            if (file.getName().endsWith(".mp4")){
             String song_url = "videos/"+file.getName();
-            String song_name = file.getName().replace(" - guitaraoke.mp4","").replace(".mp4","");
-            new_html.append("<div class='class_song_name' data-url=\""+ Utils.escapeHtml(song_url) +"\" >"+ Utils.escapeHtml(song_name)+"</div>\n");
+            String song_name = Objects.requireNonNull(file.getName()).replace(" - guitaraoke.mp4","").replace(".mp4","");
+            new_html.append("<div class='class_song_name' data-url=\"")
+                    .append(Utils.escapeHtml(song_url))
+                    .append("\" >")
+                    .append(Utils.escapeHtml(song_name))
+                    .append("</div>\n");
+        }
         }
         return new_html.toString();
     }

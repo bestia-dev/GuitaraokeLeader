@@ -55,7 +55,6 @@ body {
     line-height: 1.8;
 }
 
-
 /* no special color for links, but special class for links */
 
 a:link,
@@ -78,7 +77,6 @@ button {
     padding: 5px 12px;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
     font-size: 20px;
     border-radius: 8px;
 }
@@ -88,6 +86,19 @@ button:disabled {
     opacity: 0.5;
 }
 
+/* Ripple effect */
+.ripple {
+  background-position: center;
+  transition: background 1.3s;
+}
+.ripple:hover {
+  background: var(--b_color_title) radial-gradient(circle, transparent 1%, var(--b_color_title) 1%) center/15000%;
+}
+.ripple:active {
+  background-color: #C24A8B;
+  background-size: 100%;
+  transition: background 0s;
+}
 
 /* region: fixed header */
 
@@ -116,3 +127,35 @@ button:disabled {
     align-items: center;
     text-align: center;
 }
+
+ /* region: modal window */
+
+        .w3_modal {
+            /* grey opacity over the whole display */
+            z-index: 3;
+            display: block;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            /* opacity:80% would be inherited by the child. defined inside a rgba is not inherited. Trick! */
+            background-color: rgba(0, 0, 0, 0.8);
+            color: var(--f_color_body);
+        }
+
+        .w3_modal_content {
+            top: 19%;
+            width: 90%;
+            margin: auto;
+            background-color: #fff;
+            color: var(--f_color_body);
+            border: 2px solid #000;
+            position: relative;
+            padding: 2%;
+            outline: 0;
+            text-align: center;
+        }
+        /* endregion: modal window */
+

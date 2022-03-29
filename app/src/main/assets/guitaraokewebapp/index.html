@@ -6,40 +6,67 @@
     <title>Guitaraoke Follower</title>
     <meta http-equiv="Content-type" content="text/html" />
     <meta name="Description" content="Guitaraoke Follower">
-    <meta name="author" content="https://github.com/LucianoBestia/GuitaraokeLeader">
+    <meta name="author" content="https://github.com/bestia-dev/GuitaraokeLeader">
 
     <meta name="viewport" content="width = device-width,initial-scale = 1.0" />
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/guitaraoke.css">
     <meta name="google" content="notranslate">
+    <script src="js/qrcode.js"></script>
     <!-- ES2020 import. The code is deferred and run after the html is loaded -->
     <script type="module">import * as j from './js/index.js';j.start_script();</script>
 </head>
 
 <body>
     <div id="div_follower">
-        <div class="fixed_header">Welcome to Guitaraoke! Click
-            <button id="button_full_screen">Full screen</button> and enjoy!
+        <div class="fixed_header">Welcome to Guitaraoke! <button id="button_full_screen" class="ripple">Full screen</button> <button id="button_qrcode" class="ripple">QRCode</button>
         </div>
         <div class="dummy_for_fixed_header">.</div>
         <div class="center">
-            <video id="video_video" preload="auto" poster="Poster.jpg" muted height="100%" width="100%"><source type="video/mp4" src="/videos/Welcome to Guitaraoke Leader.mp4" ></video>
+            <video id="video_video" preload="auto" poster="Poster.jpg" muted height="100%" width="100%"><source type="video/mp4" src="/videos/Welcome to GuitaraokeLeader.mp4" ></video>
         </div>
         <div id="div_debug" class="debug_text"></div>
     </div>
     <div id="div_connection_lost" class="center">
-        <div>Connection to the Guitaraoke Server is lost.</div>
+        <div>Connection to the GuitaraokeLeader is lost.</div>
         <p>
-            <button id="button_reload">Connect to Guitaraoke server</button>
+            <button id="button_reload" class="ripple">Connect to GuitaraokeLeader</button>
         </p>
-        <div>Thank you for using Guitaraoke.</div>
+        <div>Thank you for using GuitaraokeLeader.</div>
         <div>
-            <p class="small">© Luciano Bestia 2021, MIT Licence</p>
+            <p class="small">© bestia.dev 2021, MIT Licence</p>
             <p class="small">Open source repository on
-                <a class="small link" target="blank " href="https://github.com/LucianoBestia/GuitaraokeLeader">GitHub</a>
+                <a class="small link" target="blank " href="https://github.com/bestia-dev/GuitaraokeLeader">GitHub</a>
             </p>
         </div>
     </div>
+    <div id="div_qrcode">
+        <div class="w3_modal" >
+            <div class="w3_modal_content" style="display: flex;flex-flow: row wrap;gap: 30px;row-gap: 30px;column-gap: 30px; align-items: center;
+  justify-content: center;" >
+                <div id="wifi_qrcode"></div>
+                <div id="url_qrcode"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+const url_qrcode = new QRCode(document.getElementById('url_qrcode'), {
+  text: window.location.href.replace("leader.html","index.html"),
+  width: 198,
+  height: 198,
+  colorDark : '#000',
+  colorLight : '#fff',
+  correctLevel : QRCode.CorrectLevel.H
+});
+const wifi_qrcode = new QRCode(document.getElementById('wifi_qrcode'), {
+  text: "WIFI:S:GuitaraokeLeader;T:WPA;P:guitaraoke3;H:false",
+  width: 198,
+  height: 198,
+  colorDark : '#000',
+  colorLight : '#fff',
+  correctLevel : QRCode.CorrectLevel.H
+});
+</script>
 </body>
 
 </html>

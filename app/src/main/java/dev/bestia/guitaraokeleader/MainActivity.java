@@ -1,10 +1,18 @@
 package dev.bestia.guitaraokeleader;
+
 import android.annotation.SuppressLint;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
+import androidx.documentfile.provider.DocumentFile;
+import android.app.Activity;
 import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
@@ -21,12 +29,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -44,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     int WEB_SERVER_TCP_PORT = 8080;
     int WEB_SOCKET_TCP_PORT = 3000;
     StringBuilder server_text = new StringBuilder();
+    String guitaraokeFolderUri;
     WebView web_view_1;
     SharedPreferences preferenceManager;
     DownloadManager download_manager;
@@ -61,6 +69,13 @@ public class MainActivity extends AppCompatActivity {
             //finish();
         });
         TextView button_debug =  findViewById(R.id.button_debug);
+        TextView header_ip_port = findViewById(R.id.header_ip_port);
+
+        header_title.setOnClickListener(view -> {
+            // restart the webview
+            web_view_1.loadUrl(ip+":"+  WEB_SERVER_TCP_PORT + "/leader.html");
+        });
+
         button_debug.setOnClickListener(view -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             // size of dialog 90% of screen
@@ -78,27 +93,23 @@ public class MainActivity extends AppCompatActivity {
         download_manager = (DownloadManager) this.getSystemService  (Context.DOWNLOAD_SERVICE);
         preferenceManager = getSharedPreferences(   this.getPackageName(), Context.MODE_PRIVATE);
         copyOnceWelcomeVideoToExternalStorage();
+
         // Main function
         printLine("Initializing server...");
         // Init server
         Utils utils = new Utils(getApplicationContext());
-        // try with new approach
-        ip = getIpAddress();
-        //old function: ip = utils.getIP(this);
-        if (ip == null) {
-            printLine("Error: Please connect to wifi.");
-            return;
-        }
         webserver = new WebServer(WEB_SERVER_TCP_PORT, getAssets(),this);
-            websocketserver = new WebsocketServer(WEB_SOCKET_TCP_PORT, this);
-            try {
-                webserver.start();
-                websocketserver.setReuseAddr(true);
-                websocketserver.start();
-                printLine("Listening on " + ip + ":"+ WEB_SERVER_TCP_PORT);
-                Resources res = getResources();
-                String text = String.format(res.getString(R.string.print_ip_address_and_port),ip, WEB_SERVER_TCP_PORT);
-                header_ip_port.setText( text);
+        websocketserver = new WebsocketServer(WEB_SOCKET_TCP_PORT, this);
+        try {
+            webserver.chosen_folder=chosenFolder();
+            webserver.content_resolver=contentResolver();
+            webserver.start();
+            websocketserver.setReuseAddr(true);
+            websocketserver.start();
+            printLine("Listening on " + ip + ":"+ WEB_SERVER_TCP_PORT);
+            Resources res = getResources();
+            String text = String.format(res.getString(R.string.print_ip_address_and_port),ip, WEB_SERVER_TCP_PORT);
+            header_ip_port.setText(text);
 
                 // WebView: open browser for leader inside a webview to avoid app sleep
                 web_view_1 =  findViewById(R.id.web_view_1);
@@ -126,22 +137,18 @@ public class MainActivity extends AppCompatActivity {
                     download_song(url, file_name);
                 });
 
-                WebSettings web_view_settings = web_view_1.getSettings();
-                web_view_settings.setJavaScriptEnabled(true);
-                web_view_1.loadUrl(ip+":"+  WEB_SERVER_TCP_PORT + "/leader.html");
+            WebSettings web_view_settings = web_view_1.getSettings();
+            web_view_settings.setJavaScriptEnabled(true);
+            web_view_1.loadUrl(ip+":"+  WEB_SERVER_TCP_PORT + "/leader.html");
 
-                header_title.setOnClickListener(view -> {
-                    // restart the webview
-                    web_view_1.loadUrl(ip+":"+  WEB_SERVER_TCP_PORT + "/leader.html");
-                });
 
-            }catch (IOException e) {
-                Toast.makeText(getApplicationContext(), "IOException: " +  e.getMessage(), Toast.LENGTH_LONG).show();
-            }catch (Exception e) {
-                Toast.makeText(getApplicationContext(), "Exception: " +  e.getMessage(), Toast.LENGTH_LONG).show();
-            }
+
+        }catch (IOException e) {
+            Toast.makeText(getApplicationContext(), "IOException: " +  e.getMessage(), Toast.LENGTH_LONG).show();
+        }catch (Exception e) {
+            Toast.makeText(getApplicationContext(), "Exception: " +  e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
-
     // try to resolve the ip address also wen using the hotspot
     private String getIpAddress() {
         String ip = "";
@@ -195,29 +202,37 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    //folder inside Android/data/data/your_package/
-    public File getExternalVideosFolder() {
-        return getExternalFilesDir("videos");
+    /// chosen folder as DocumentFile
+    public DocumentFile chosenFolder() {
+        MainActivity context = MainActivity.this;
+        Uri folder_tree_uri = Uri.parse(guitaraokeFolderUri);
+        DocumentFile df = DocumentFile.fromTreeUri(context, folder_tree_uri);
+        assert df != null;
+        return df;
+    }
+    public ContentResolver contentResolver(){
+        MainActivity context = MainActivity.this;
+        return context.getContentResolver();
     }
 
     public void copyOnceWelcomeVideoToExternalStorage() {
-        // check if the file exists in External storage
-        File videos_folder = getExternalVideosFolder();
-        File welcome_external_file = new File(videos_folder, "Welcome to Guitaraoke Leader.mp4");
-        if (!welcome_external_file.exists()) {
+        String display_name = "Welcome to GuitaraokeLeader.mp4";
+        DocumentFile found_file = chosenFolder().findFile(display_name);
+        if (found_file == null) {
             Log.w("w","!welcome_external_file.exists()");
-            String welcome_asset = "guitaraokewebapp/videos/Welcome to Guitaraoke Leader.mp4";
+            String file_asset = "guitaraokewebapp/videos/"+display_name;
             AssetManager assetManager = getAssets();
             InputStream in = null;
-            OutputStream out = null;
+            BufferedOutputStream out = null;
             try {
-                in = assetManager.open(welcome_asset);
-                File outFile = welcome_external_file;
-                outFile.setReadable(true);
-                out = new FileOutputStream(outFile);
-                Utils.copyFile(in, out);
+                in = assetManager.open(file_asset);
+                DocumentFile new_file = chosenFolder().createFile("video/mp4", display_name);
+                assert new_file != null;
+                Uri new_file_uri = new_file.getUri();
+                out = new BufferedOutputStream( contentResolver().openOutputStream(new_file_uri));
+                FileUtils.copy(in, out);
             } catch (IOException e) {
-                printLine("Failed to copy asset file: " + welcome_asset + " " + e.toString());
+                printLine("Failed to copy asset file: " + file_asset + " " + e.toString());
             } finally {
                 if (in != null) {
                     try {
@@ -243,9 +258,13 @@ public class MainActivity extends AppCompatActivity {
             DownloadManager.Request request = new DownloadManager.Request(uri);
             printLine("download song_url: " + song_url);
             printLine("download file_name: " + file_name);
-            File old_file = new File(this.getExternalVideosFolder() + "/"+ file_name);
-            if(old_file.exists()){
-                old_file.delete();
+            // download manager cannot download to the folder I want
+            // first I will download to an intermediate folder
+            // and then I will move the file to the chosen folder
+            File dir = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
+            File file = new File(dir,file_name);
+            if(file.exists() ){
+                boolean del = file.delete();
             }
             request.setDestinationInExternalFilesDir(this,"videos",file_name);
             request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);  // Tell on which network you want to download file.
@@ -357,3 +376,4 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 
+}
