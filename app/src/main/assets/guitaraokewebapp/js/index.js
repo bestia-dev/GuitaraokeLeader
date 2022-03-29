@@ -21,10 +21,13 @@ let video_video = cm.el("video_video");
 // endregion: global variables
 
 export function start_script() {
-    // region: event listeners    
-    cm.el("button_reload").addEventListener("click", () => { state_ui_start(); });
-    cm.el("button_full_screen").addEventListener("click", () => { button_fullscreen_on_click(); });
-    cm.el("button_qrcode").addEventListener("click", () => { button_qrcode_on_click(); });
+    // region: event listeners
+    // must use event listener for everything. Must avoid inline events in HTML. But they are so handy.
+    // instead of click, I use transitionend. It waits for the transition to end.
+    // transitionend is fired multiple times for every transitioned css property. I must take in account only one single property. background-color.
+    cm.el("button_reload").addEventListener("transitionend", () => { if(event.propertyName !== 'background-color') return; state_ui_start(); });
+    cm.el("button_full_screen").addEventListener("transitionend", () => { if(event.propertyName !== 'background-color') return; button_fullscreen_on_click(); });
+    cm.el("button_qrcode").addEventListener("transitionend", () => { if(event.propertyName !== 'background-color') return; button_qrcode_on_click(); });
     // endregion: event listeners
 
     state_ui_start();

@@ -176,7 +176,7 @@ public class WebServer extends NanoHTTPD {
             if (file.getName().endsWith(".mp4")){
             String song_url = "videos/"+file.getName();
             String song_name = Objects.requireNonNull(file.getName()).replace(" - guitaraoke.mp4","").replace(".mp4","");
-            new_html.append("<div class='class_song_name' data-url=\"")
+            new_html.append("<div class='class_song_name ripple' data-url=\"")
                     .append(Utils.escapeHtml(song_url))
                     .append("\" >")
                     .append(Utils.escapeHtml(song_name))
