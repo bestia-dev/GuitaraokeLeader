@@ -4,10 +4,11 @@
 **The lyrics and chords show in sync with the "Leader" on any smartphone, tablet, computer or smart TV.**  
 ***version: 3.1 date: 2022-03-26 author: [bestia.dev](https://bestia.dev) repository: [GitHub](https://github.com/bestia-dev/GuitaraokeLeader)***  
 
-[![Licence](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bestia-dev/new_date_time_units_and_formats/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bestia-dev/new_date_time_units_and_formats/blob/master/LICENSE)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fbestia-dev%2FGuitaraokeLeader&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
-Hashtags: #java #android #server
+Hashtags: #java #android #server #tutorial  
+My projects on Github are more like a tutorial than a finished product: [bestia-dev tutorials](https://github.com/bestia-dev/tutorials_rust_wasm).
 
 ## Instructions
 
