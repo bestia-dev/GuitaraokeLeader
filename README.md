@@ -2,15 +2,19 @@
 
 **Play guitar and sing with your friends**  
 **The lyrics and chords show in sync with the "Leader" on any smartphone, tablet, computer or smart TV.**  
-***version: 3.1  date: 2022-01-02 author: [Dev_Bestia](https://bestia.dev) repository: [GitHub](https://github.com/LucianoBestia/GuitaraokeLeader)***
+***version: 3.1 date: 2022-03-26 author: [bestia.dev](https://bestia.dev) repository: [GitHub](https://github.com/bestia-dev/GuitaraokeLeader)***  
 
-[![Licence](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/LucianoBestia/new_date_time_units_and_formats/blob/master/LICENSE) 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bestia-dev/new_date_time_units_and_formats/blob/master/LICENSE)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fbestia-dev%2FGuitaraokeLeader&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
+
+Hashtags: #java #android #server #tutorial  
+My projects on Github are more like a tutorial than a finished product: [bestia-dev tutorials](https://github.com/bestia-dev/tutorials_rust_wasm).
 
 ## Instructions
 
 To play the game, go to <https://bestia.dev/guitaraoke> and follow the instructions.
 
-![screenshot](https://github.com/LucianoBestia/GuitaraokeLeader/blob/main/app/src/main/assets/guitaraokewebapp/Poster.png?raw=true)
+![screenshot](https://github.com/bestia-dev/GuitaraokeLeader/blob/main/app/src/main/assets/guitaraokewebapp/Poster.png?raw=true)
 
 ## Guitaraoke
 
@@ -29,7 +33,7 @@ First I created some videos. In the video editor `ShotCut` for Win10, I put toge
 It is great that I can later modify the chords and the lyrics if I like it different.  
 There is a lot of Guitaraoke videos already on the internet. Just google it.  
 The `GuitaraokeLeader` app can use any mp4 video you can download to your android.  
-TODO: I will make a video tutorial how to create Guitaraoke mp4 files. It is easy.   
+TODO: I will make a video tutorial how to create Guitaraoke mp4 files. It is easy.  
 
 ## Mobile first
 
@@ -85,7 +89,8 @@ The songs I personally prepared are downloadable. Click on the button `Download 
 
 ## GuitaraokeLeader app
 
-Only the `Leader` needs to install the `GuitaraokeLeader` APK to his android smartphone. The followers will just use their internet browser.  
+Only the `Leader` needs to install the `GuitaraokeLeader` APK to his android smartphone.  
+The followers will just use their internet browser.  
 All the instructions are here: <https://bestia.dev/guitaraoke>.  
 
 ## The Download songs page

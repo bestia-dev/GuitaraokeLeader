@@ -14,19 +14,14 @@ import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.FileUtils;
+import android.preference.PreferenceManager;
 import android.util.Log;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -61,57 +56,18 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences preferenceManager;
     DownloadManager download_manager;
 
+    final String strPref_Download_ID = "PREF_DOWNLOAD_ID";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        preferenceManager = getSharedPreferences(this.getPackageName(), Context.MODE_PRIVATE);
-        download_manager = (DownloadManager) this.getSystemService  (Context.DOWNLOAD_SERVICE);
-        // try with new approach
-        ip = getIpAddress();
-        //old function: ip = utils.getIP(this);
-        if (ip == null) {
-            printLine("Error: Please connect to wifi.");
-            return;
-        }
-
-        chooseFolderOnEveryStart();
-    }
-
-    /// Every time the app starts it asks for a folder
-    /// So the user can have multiple folders with different kind of music
-    /// Ideally it will be /Music/Guitaraoke/romantic or /Music/Guitaraoke/rock
-    public void chooseFolderOnEveryStart(){
-        ActivityResultLauncher<Intent> launchChooseFolderFromStart = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        Intent data = result.getData();
-                        assert data != null;
-                        guitaraokeFolderUri = data.toUri(0);
-                        afterFolderChoice();
-                    }
-                });
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-        launchChooseFolderFromStart.launch(intent);
-    }
-
-    /// the OnCreate continues after the Folder choice
-    @SuppressLint("SetJavaScriptEnabled")
-    public void afterFolderChoice(){
-        try {
-            MainActivity context = MainActivity.this;
-            PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            String version = pInfo.versionName;
-            printLine("GuitaraokeLeader ver. "+ version);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        web_view_1 =  findViewById(R.id.web_view_1);
-
-        // buttons in the header
-        TextView header_title = findViewById(R.id.header_title);
+        TextView button_stop_server =  findViewById(R.id.button_stop);
+        button_stop_server.setOnClickListener(view -> {
+            CheckDownloadStatus();
+            // finish will call onDestroy where is stop servers
+            //finish();
+        });
         TextView button_debug =  findViewById(R.id.button_debug);
         TextView header_ip_port = findViewById(R.id.header_ip_port);
 
@@ -132,6 +88,10 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.getWindow().setLayout(width, height);
         });
 
+        TextView header_ip_port = findViewById(R.id.header_ip_port);
+        TextView header_title = findViewById(R.id.header_title);
+        download_manager = (DownloadManager) this.getSystemService  (Context.DOWNLOAD_SERVICE);
+        preferenceManager = getSharedPreferences(   this.getPackageName(), Context.MODE_PRIVATE);
         copyOnceWelcomeVideoToExternalStorage();
 
         // Main function
@@ -151,33 +111,31 @@ public class MainActivity extends AppCompatActivity {
             String text = String.format(res.getString(R.string.print_ip_address_and_port),ip, WEB_SERVER_TCP_PORT);
             header_ip_port.setText(text);
 
-            // WebView: open browser for leader inside a webview to avoid app sleep
-            LinearLayout linearLayout =  findViewById(R.id.linearLayout);
-            RelativeLayout contentLayout =  findViewById(R.id.contentLayout);
-            // fullscreen is a long story in android web view
-            web_view_1.setWebChromeClient(new FullScreenClient(linearLayout, contentLayout));
-            web_view_1.clearCache(true);
-            web_view_1.clearHistory();
-            // without this, any change in url opens the browser.
-            web_view_1.setWebViewClient(new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                    final Uri uri = request.getUrl();
-                    view.loadUrl(uri.toString());
-                    return false;
-                }
-            });
-            web_view_1.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
-                Log.w("w",contentDisposition);
-                String file_name_url = url.substring(url.lastIndexOf("/")+1);
-                String file_name = null;
-                try {
-                    file_name = URLDecoder.decode(file_name_url, "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                download_song(url, file_name);
-            });
+                // WebView: open browser for leader inside a webview to avoid app sleep
+                web_view_1 =  findViewById(R.id.web_view_1);
+                LinearLayout linearLayout =  findViewById(R.id.linearLayout);
+                RelativeLayout contentLayout =  findViewById(R.id.contentLayout);
+                // fullscreen is a long story in android web view
+                web_view_1.setWebChromeClient(new FullScreenClient(linearLayout, contentLayout));
+                // without this, any change in url opens the browser.
+                web_view_1.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                        view.loadUrl(url);
+                        return false;
+                    }
+                });
+                web_view_1.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
+                    Log.w("w",contentDisposition);
+                    String file_name_url = contentDisposition.split("filename\\*=UTF-8''")[1];
+                    String file_name = null;
+                    try {
+                        file_name = URLDecoder.decode(file_name_url, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    download_song(url, file_name);
+                });
 
             WebSettings web_view_settings = web_view_1.getSettings();
             web_view_settings.setJavaScriptEnabled(true);
@@ -296,11 +254,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void download_song(String song_url, String file_name){
         try {
-            MainActivity context = MainActivity.this;
             Uri uri = Uri.parse(song_url);
             DownloadManager.Request request = new DownloadManager.Request(uri);
-            context.registerReceiver(attachmentDownloadCompleteReceive, new IntentFilter(
-                    DownloadManager.ACTION_DOWNLOAD_COMPLETE));
             printLine("download song_url: " + song_url);
             printLine("download file_name: " + file_name);
             // download manager cannot download to the folder I want
@@ -311,76 +266,114 @@ public class MainActivity extends AppCompatActivity {
             if(file.exists() ){
                 boolean del = file.delete();
             }
-            request.setDestinationInExternalFilesDir(this, Environment.DIRECTORY_MUSIC,file_name);
+            request.setDestinationInExternalFilesDir(this,"videos",file_name);
             request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);  // Tell on which network you want to download file.
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);  // This will show notification on top when downloading the file.
             request.setTitle("Downloading song: "+ file_name); // Title for notification.
             request.setDescription("Download guitaraoke song.");
 
-            long downloadId = download_manager.enqueue(request);
+            long id = download_manager.enqueue(request);
 
-            //Save the request downloadId, edit() + commit()
+            //Save the request id
             SharedPreferences.Editor PrefEdit = preferenceManager.edit();
-            PrefEdit.putString("DOWNLOAD_ID_"+downloadId, file_name);
-            PrefEdit.apply();
+            PrefEdit.putLong(strPref_Download_ID, id);
+            PrefEdit.commit();
         }
         catch (Exception e) {
             printLine("error in download_song: " + e.getMessage());
             Log.e("e","error in download_song: " + e.getMessage());
         }
     }
-    BroadcastReceiver attachmentDownloadCompleteReceive = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-                long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
-                // move downloaded file
-                String file_name = preferenceManager.getString("DOWNLOAD_ID_"+downloadId,"");
-                File dir = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
-                File from_file = new File(dir,file_name);
-                if (!from_file.getName().endsWith("guitaraoke.mp4")) {
-                    final boolean delete = from_file.delete();
-                } else{
-                    DocumentFile check_file = chosenFolder().findFile(file_name);
-                    if(check_file != null){
-                        boolean deleted = check_file.delete();
+
+    private void CheckDownloadStatus(){
+        DownloadManager.Query query = new DownloadManager.Query();
+        long id = preferenceManager.getLong(strPref_Download_ID, 0);
+        query.setFilterById(id);
+        Cursor cursor = download_manager.query(query);
+        if(cursor.moveToFirst()){
+            int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
+            int status = cursor.getInt(columnIndex);
+            int columnReason = cursor.getColumnIndex(DownloadManager.COLUMN_REASON);
+            int reason = cursor.getInt(columnReason);
+
+            switch(status){
+                case DownloadManager.STATUS_FAILED:
+                    String failedReason = "";
+                    switch(reason){
+                        case DownloadManager.ERROR_CANNOT_RESUME:
+                            failedReason = "ERROR_CANNOT_RESUME";
+                            break;
+                        case DownloadManager.ERROR_DEVICE_NOT_FOUND:
+                            failedReason = "ERROR_DEVICE_NOT_FOUND";
+                            break;
+                        case DownloadManager.ERROR_FILE_ALREADY_EXISTS:
+                            failedReason = "ERROR_FILE_ALREADY_EXISTS";
+                            break;
+                        case DownloadManager.ERROR_FILE_ERROR:
+                            failedReason = "ERROR_FILE_ERROR";
+                            break;
+                        case DownloadManager.ERROR_HTTP_DATA_ERROR:
+                            failedReason = "ERROR_HTTP_DATA_ERROR";
+                            break;
+                        case DownloadManager.ERROR_INSUFFICIENT_SPACE:
+                            failedReason = "ERROR_INSUFFICIENT_SPACE";
+                            break;
+                        case DownloadManager.ERROR_TOO_MANY_REDIRECTS:
+                            failedReason = "ERROR_TOO_MANY_REDIRECTS";
+                            break;
+                        case DownloadManager.ERROR_UNHANDLED_HTTP_CODE:
+                            failedReason = "ERROR_UNHANDLED_HTTP_CODE";
+                            break;
+                        case DownloadManager.ERROR_UNKNOWN:
+                            failedReason = "ERROR_UNKNOWN";
+                            break;
                     }
-                    DocumentFile to_file = chosenFolder().createFile("video/mp4",file_name);
-                    assert to_file != null;
-                    moveDownloadedFile(from_file, to_file);
-                }
+
+                    Toast.makeText(MainActivity.this,
+                            "FAILED: " + failedReason,
+                            Toast.LENGTH_LONG).show();
+                    break;
+                case DownloadManager.STATUS_PAUSED:
+                    String pausedReason = "";
+
+                    switch(reason){
+                        case DownloadManager.PAUSED_QUEUED_FOR_WIFI:
+                            pausedReason = "PAUSED_QUEUED_FOR_WIFI";
+                            break;
+                        case DownloadManager.PAUSED_UNKNOWN:
+                            pausedReason = "PAUSED_UNKNOWN";
+                            break;
+                        case DownloadManager.PAUSED_WAITING_FOR_NETWORK:
+                            pausedReason = "PAUSED_WAITING_FOR_NETWORK";
+                            break;
+                        case DownloadManager.PAUSED_WAITING_TO_RETRY:
+                            pausedReason = "PAUSED_WAITING_TO_RETRY";
+                            break;
+                    }
+
+                    Toast.makeText(MainActivity.this,
+                            "PAUSED: " + pausedReason,
+                            Toast.LENGTH_LONG).show();
+                    break;
+                case DownloadManager.STATUS_PENDING:
+                    Toast.makeText(MainActivity.this,
+                            "PENDING",
+                            Toast.LENGTH_LONG).show();
+                    break;
+                case DownloadManager.STATUS_RUNNING:
+                    Toast.makeText(MainActivity.this,
+                            "RUNNING",
+                            Toast.LENGTH_LONG).show();
+                    break;
+                case DownloadManager.STATUS_SUCCESSFUL:
+
+                    Toast.makeText(MainActivity.this,
+                            "SUCCESSFUL",
+                            Toast.LENGTH_LONG).show();
+                    break;
             }
         }
-    };
-    /// only files ending with xxx - guitaraoke.mp4
-    public void moveDownloadedFile(File from_file, DocumentFile to_file) {
-            InputStream in = null;
-            BufferedOutputStream out = null;
-            try {
-                in = new FileInputStream(from_file);
-                Uri new_file_uri = to_file.getUri();
-                out = new BufferedOutputStream(contentResolver().openOutputStream(new_file_uri));
-                FileUtils.copy(in, out);
-            } catch (IOException e) {
-                printLine("Failed to copy mp4 file: " + from_file.getName() + " " + e.toString());
-            } finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                        // delete cached file
-                    } catch (IOException e) {
-                        // NOOP
-                    }
-                    final boolean delete = from_file.delete();
-                }
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (IOException e) {
-                        // NOOP
-                    }
-                }
-            }
-        }
+    }
+}
+
 }
