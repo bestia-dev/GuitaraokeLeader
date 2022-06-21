@@ -79,7 +79,7 @@ function connect_to_guitaraoke_server() {
 // region: state UI transformation
 function state_ui_song_list() {
     page_state = PageState.SongList;
-    cm.el("div_start").hidden = false;
+    cm.el("div_song_list").hidden = false;
     cm.el("div_play_video").hidden = true;
     cm.el("div_qrcode").hidden = true;
 
@@ -93,7 +93,7 @@ function state_ui_song_list() {
 
 function state_ui_song_load() {
     page_state = PageState.SongLoad;
-    cm.el("div_start").hidden = true;
+    cm.el("div_song_list").hidden = true;
     cm.el("div_play_video").hidden = false;
     cm.el("div_qrcode").hidden = true;
 
@@ -107,7 +107,7 @@ function state_ui_song_load() {
 
 function state_ui_song_play() {
     page_state = PageState.SongPlay;
-    cm.el("div_start").hidden = true;
+    cm.el("div_song_list").hidden = true;
     cm.el("div_play_video").hidden = false;
     cm.el("div_qrcode").hidden = true;
 

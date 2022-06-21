@@ -8,9 +8,15 @@ import android.util.Log;
 import androidx.documentfile.provider.DocumentFile;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.Collator;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import fi.iki.elonen.NanoHTTPD;
@@ -172,16 +178,31 @@ public class WebServer extends NanoHTTPD {
     }
     private String leader_html_list_of_songs(){
         StringBuilder new_html=new StringBuilder();
-        for (DocumentFile file:chosen_folder.listFiles()){
-            if (file.getName().endsWith(".mp4")){
-            String song_url = "videos/"+file.getName();
-            String song_name = Objects.requireNonNull(file.getName()).replace(" - guitaraoke.mp4","").replace(".mp4","");
-            new_html.append("<div class='class_song_name ripple' data-url=\"")
-                    .append(Utils.escapeHtml(song_url))
-                    .append("\" >")
-                    .append(Utils.escapeHtml(song_name))
-                    .append("</div>\n");
+        final DocumentFile[] files  = chosen_folder.listFiles();
+        String[] names = new String[files.length];
+        for (int i = 0; i < files.length; i++) {
+            names[i] = files[i].getName();
         }
+        final List<String> strings = Arrays.asList(names);
+        Collator coll = Collator.getInstance(new Locale("sl", "SI"));
+        coll.setStrength(Collator.PRIMARY);
+        Collections.sort(strings, coll);
+
+        Integer rowNum = 1;
+        for (String fileName:strings){
+            if (fileName.endsWith(".mp4")){
+                String song_url = "videos/"+fileName;
+                String song_name = Objects.requireNonNull(fileName).replace(" - guitaraoke.mp4","").replace(".mp4","");
+                new_html.append("<div class='class_song_name ripple' data-url=\"")
+                        .append(Utils.escapeHtml(song_url))
+                        .append("\" >")
+                        .append(rowNum)
+                        .append("</div>\n");
+                new_html.append("<div class='class_song_name' >")
+                        .append(Utils.escapeHtml(song_name))
+                        .append("</div>\n");
+                rowNum++;
+            }
         }
         return new_html.toString();
     }
