@@ -2,8 +2,6 @@ package dev.bestia.guitaraokeleader;
 
 import android.annotation.SuppressLint;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
@@ -118,7 +116,8 @@ public class MainActivity extends AppCompatActivity {
 
         // buttons in the header
         TextView header_title = findViewById(R.id.header_title);
-        TextView button_debug =  findViewById(R.id.button_debug);
+        TextView header_debug =  findViewById(R.id.header_debug);
+        TextView header_exit =  findViewById(R.id.header_exit);
         TextView header_ip_port = findViewById(R.id.header_ip_port);
 
         header_title.setOnClickListener(view -> {
@@ -126,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
             web_view_1.loadUrl(ip+":"+  WEB_SERVER_TCP_PORT + "/leader.html");
         });
 
-        button_debug.setOnClickListener(view -> {
+        header_debug.setOnClickListener(view -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             // size of dialog 90% of screen
             int width = (int)(getResources().getDisplayMetrics().widthPixels*0.90);
@@ -137,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.show();
             alertDialog.getWindow().setLayout(width, height);
         });
+
+        header_exit.setOnClickListener(view -> finishAndRemoveTask());
 
         copyOnceWelcomeVideoToExternalStorage();
 

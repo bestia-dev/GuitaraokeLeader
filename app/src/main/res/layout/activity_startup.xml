@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:autofillHints="@string/button_continue_text"
     android:background="@drawable/poster"
+    android:labelFor="@id/button_continue"
     tools:context=".StartupActivity">
 
     <Button
@@ -14,20 +16,25 @@
         android:layout_marginStart="100dp"
         android:layout_marginEnd="100dp"
         android:layout_marginBottom="4dp"
+        android:hint="@string/button_continue_text"
+        android:labelFor="@id/button_continue"
         android:text="@string/button_continue_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/editTextTextMultiLine2"
+        android:id="@+id/editTextMultiLine"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:autofillHints="@string/welcome_text"
         android:background="#A8000000"
-        android:editable="false"
         android:ems="10"
         android:gravity="start|top"
-        android:inputType="textMultiLine"
+        android:hint="@string/button_continue_text"
+        android:imeActionLabel="@string/button_continue_text"
+        android:inputType="none"
+        android:labelFor="@id/button_continue"
         android:paddingHorizontal="20dp"
         android:paddingVertical="20dp"
         android:text="@string/welcome_text"

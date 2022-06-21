@@ -6,11 +6,13 @@
     <string name="print_ip_address_and_port">%1$s:%2$d</string>
     <string name="button_debug">Debug</string>
     <string name="close">close</string>
-    <string name="welcome_text">Welcome to GuitaraokeLeader!\n\n
+    <string name="welcome_text">Welcome to GuitaraokeLeader!\n
         1. You will share your WiFi hotspot. Be sure to change the mobile mode to *2G only* to avoid big internet bills.\n
-        2. Name your WiFi hotspot *GuitaraokeLeader* and set the password from the instructions.\n
+        2. Name your WiFi hotspot *GuitaraokeLeader* and set the password from the instructions on bestia.dev/guitaraoke.\n
         3. Show the QR codes to your followers.\n
-        This app can read and write only from the folder you will give it permission in the next step.
+        This app is safe, it can read and write only from the folder you will give it permission in the next step.\n
+        © bestia.dev 2022, MIT License
     </string>
     <string name="button_continue_text">Continue</string>
+    <string name="button_exit">Exit</string>
 </resources>

@@ -19,7 +19,7 @@
                 android:layout_alignParentTop="true"
                 android:background="#5b39c6"
                 android:orientation="horizontal"
-                android:weightSum="3">
+                android:weightSum="4">
 
                 <TextView
                     android:id="@+id/header_title"
@@ -38,7 +38,7 @@
                     android:clickable="true"/>
 
                 <TextView
-                    android:id="@+id/button_debug"
+                    android:id="@+id/header_debug"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
@@ -53,6 +53,21 @@
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"/>
 
+                <TextView
+                    android:id="@+id/header_exit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_weight="1"
+                    android:focusable="true"
+                    android:text="@string/button_exit"
+                    android:textAlignment="center"
+                    android:textColor="#ff7f00"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"/>
 
                 <TextView
                     android:id="@+id/header_ip_port"
