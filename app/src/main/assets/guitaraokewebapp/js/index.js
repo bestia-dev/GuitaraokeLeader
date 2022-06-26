@@ -127,10 +127,11 @@ function state_transition_from_song_load_to_play() {
 // click on video to fullscreen. It need a user gesture.
 function button_fullscreen_on_click() {
     console.log("button_fullscreen_on_click");
-    if (video_video.requestFullscreen) {
-        video_video.requestFullscreen();
-    } else if (video_video.webkitEnterFullScreen) {
+
+    if (video_video.webkitEnterFullScreen) {
         video_video.webkitEnterFullScreen();
+    } else if (video_video.requestFullscreen) {
+        video_video.requestFullscreen();
     } else if (video_video.mozRequestFullScreen) {
         video_video.mozRequestFullScreen();
     }

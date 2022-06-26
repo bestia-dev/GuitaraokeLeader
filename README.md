@@ -2,7 +2,7 @@
 
 **Play guitar and sing with your friends**  
 **The lyrics and chords show in sync with the "Leader" on any smartphone, tablet, computer or smart TV.**  
-***version: 3.3 date: 2022-06-21 author: [bestia.dev](https://bestia.dev) repository: [GitHub]
+***version: 3.4 date: 2022-06-21 author: [bestia.dev](https://bestia.dev) repository: [GitHub]
 (https://github.com/bestia-dev/GuitaraokeLeader)***  
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bestia-dev/new_date_time_units_and_formats/blob/master/LICENSE)
