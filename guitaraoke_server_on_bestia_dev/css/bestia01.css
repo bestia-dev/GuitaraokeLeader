@@ -94,3 +94,21 @@ h3 {
 .small {
     font-size: 80%;
 }
+
+.center {
+    align-items: center;
+    text-align: center;
+}
+
+body {
+  list-style-type: none;
+  counter-reset: css-counter 0; /* initializes counter to 0; use -1 for zero-based numbering */
+}
+
+.song {
+  counter-increment: css-counter 1; /* Increase the counter by 1. */
+}
+
+.song:before {
+  content: counter(css-counter) ". "; /* Apply counter before children's content. */
+}

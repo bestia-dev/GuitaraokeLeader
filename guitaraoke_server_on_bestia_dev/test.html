@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>test for iphone</title>
+    <meta http-equiv="Content-type" content="text/html" />
+    <meta name="Description" content="Guitaraoke Follower">
+    <meta name="author" content="https://github.com/bestia-dev/GuitaraokeLeader">
+
+    <meta name="viewport" content="width = device-width,initial-scale = 1.0" />
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/guitaraoke.css">
+    <meta name="google" content="notranslate">
+    <script>
+        function button_fullscreen_on_click() {
+            if (video_video.webkitEnterFullScreen) {
+                video_video.webkitEnterFullScreen();
+            } else if (video_video.requestFullscreen) {
+                video_video.requestFullscreen();
+            } else if (video_video.mozRequestFullScreen) {
+                video_video.mozRequestFullScreen();
+            }
+        }
+    </script>
+</head>
+
+<body>
+<div id="div_follower">
+    <div class="fixed_header">Guitaraoke
+        <button id="button_full_screen" class="ripple" onclick="button_fullscreen_on_click()" >FullScreen</button>
+        <button id="button_play" class="ripple" onclick="document.getElementById('video_video').play()" >Play</button></div>
+    <div class="dummy_for_fixed_header">.</div>
+    <div class="center">
+        <video id="video_video" preload="auto" poster="Poster.jpg" muted="" playsinline="" loop="" data-wf-ignore="true" data-object-fit="cover" width="100%"><source type="video/mp4" src="videos/Welcome%20to%20GuitaraokeLeader.mp4" data-wf-ignore="true" ></video>
+    </div>
+</div>
+
+
+</body>
+
+</html>

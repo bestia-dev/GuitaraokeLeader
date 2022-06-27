@@ -11,6 +11,10 @@ const PageState = {
     ConnectionLost: 'ConnectionLost'
 };
 
+if (typeof globalThis === 'undefined') {
+  var globalThis = Function('return this')();
+}
+
 let page_state = PageState.Start;
 let video_video = cm.el("video_video");
 // endregion: module scope variables
@@ -78,7 +82,7 @@ function state_ui_waiting() {
     cm.el("div_connection_lost").hidden = true;
     cm.el("button_qrcode").hidden = true;
     cm.el("div_qrcode").hidden = true;
-    cm.song_load("videos/Welcome to GuitaraokeLeader.mp4");
+    cm.song_load("videos/Welcome%20to%20GuitaraokeLeader.mp4");
 }
 
 function state_ui_song_load() {
@@ -126,7 +130,6 @@ function state_transition_from_song_load_to_play() {
 
 // click on video to fullscreen. It need a user gesture.
 function button_fullscreen_on_click() {
-    console.log("button_fullscreen_on_click");
 
     if (video_video.webkitEnterFullScreen) {
         video_video.webkitEnterFullScreen();

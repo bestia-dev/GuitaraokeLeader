@@ -144,8 +144,21 @@ public class WebServer extends NanoHTTPD {
                 is = this.assetManager.open("guitaraokewebapp/" + filepath);
             }
             if (binaryResponse(mimeType)) {
-                return newFixedLengthResponse(Response.Status.OK, mimeType, is, -1);
+                // this is for binary response.
+                Response resp = newFixedLengthResponse(Response.Status.OK, mimeType, is, is.available());
+
+                if (filepath.startsWith("videos/")) {
+                    // TODO: iPhone is criminally complicated
+                    // bytes 0-3497680/3497681
+                    resp.addHeader("Content-Range", "bytes 0-"+(is.available()-1)+"/"+ is.available());
+                    String etag = Integer.toHexString((filepath).hashCode());
+                    resp.addHeader("ETag", etag);
+                    resp.setStatus(Response.Status.PARTIAL_CONTENT);
+                }
+                return resp;
             }
+
+            // this is NOT binary, it means it is text. And must be converted to String
             int size = is.available();
             buffer = new byte[size];
             int len = is.read(buffer);
