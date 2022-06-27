@@ -50,6 +50,7 @@ function connect_to_guitaraoke_server() {
         } else if (msg.data == "play!") {
             state_transition_from_song_load_to_play();
         } else if (msg.data == "stop!") {
+            video_video.autoplay=true;
             state_ui_waiting();
         }
     };
@@ -69,6 +70,7 @@ function connect_to_guitaraoke_server() {
 // region: state UI transformation
 function state_ui_start() {
     page_state = PageState.Start;
+    video_video.autoplay=true;
     connect_to_guitaraoke_server();
     cm.el("div_follower").hidden = false;
     cm.el("div_connection_lost").hidden = true;
@@ -112,9 +114,11 @@ function state_ui_connection_lost() {
 
 // endregion: state UI transformation
 
+
 // region: state transition
 
 function state_transition_from_waiting_to_song_load(song_url) {
+    video_video.autoplay=false;
     state_ui_song_load();
     console.log("song_load: " + song_url);
     cm.song_load(song_url);

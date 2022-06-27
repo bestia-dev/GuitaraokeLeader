@@ -134,6 +134,47 @@ I added a WebView in the app and now the Leader page is inside the app. The serv
 
 In Android Studio `Build-Generate Signed APK`, use the `KeyStore` in `C:\Users\xxx\AndroidStudioProjects\AndroidKeyStore.jks` with the password you saved somewhere to not forget it.
 
+## Safari on iPhone
+
+Safari on iPhone is a special beast. If everything works fine on Chrome, Firefox, Android,... it 
+means nothing to Apple. Safari is the king and it has always something going on outside of the 
+standard. For example it does not know about `globalThis`. It needs a workaround:
+
+```javascript
+if (typeof globalThis === 'undefined') {
+  var globalThis = Function('return this')();
+}
+```
+
+Then the video play(). What a nightmare. Every year something different. Documentation sub-zero. No 
+other way to test how it works than having the physical device itself. A true catastrophe.
+Finally I found a blog among thousands of people having problems with video on iPhone that 
+addresses the `range request` problem. iPhone talks only to servers that can return video in 
+`ranges`. 
+Not all the servers can do that. Nginx can. I use java nanoHTTP and need to code it on my own.
+I hope to find something here:
+<https://blog.logrocket.com/streaming-video-in-safari/#:~:text=The%20status%20code%20varies
+%20depending,success%20status%20code%20of%20200.>
+<https://stackoverflow.com/questions/19359304/how-to-serve-a-file-on-sdcard-using-nanohttpd
+-inside-android>
+
+To test it I can use this curl command:
+
+```bash
+curl --silent -v --range 20-40 http://192.168.18.251:8080/videos/Welcome%20to%20GuitaraokeLeader.mp4
+```
+This returns 3497681. It does not understand ranges.
+This nginx server does understand:
+
+```bash
+ curl --silent -v --range 20-40 https://bestia.dev/guitaraoke/videos/Welcome%20to%20GuitaraokeLeader.mp4
+```
+
+It return 21. Correct answer.
+
+
+
+
 ## TODO
 
 make a video tutorial.

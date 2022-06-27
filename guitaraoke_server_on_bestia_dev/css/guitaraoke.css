@@ -1,0 +1,162 @@
+/* css variables */
+
+:root {
+    /* color palette */
+    /* use of variables: var(--color_tooltip_1); */
+    /* background color */
+    --b_color_html: #111111;
+    --b_color_body: #000000;
+    --b_color_title: #8BC24A;
+    /* front color */
+    --f_color_body: #eaec41;
+    --f_color_title: #000000;
+	--f_color_link:rgb(255, 208, 0);
+    /* width */
+    --body_width: 100vw;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+
+/* disable double-tap for zooming or pull-down for reload or pinch for zooming */
+
+* {
+    touch-action: manipulation;
+}
+
+@font-face {
+    font-family: "Roboto";
+    /* fonts are inside the css folder */
+    src: url("Roboto-Medium.woff2") format("woff2")
+}
+
+html {
+    background-color: var(--b_color_html);
+    font-family: 'Roboto';
+    font-weight: 400;
+    font-size: 25px;
+    color: var(--f_color_body);
+    /*margin auto means centered horizontally*/
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    border: 0;
+}
+
+body {
+    background-color: var(--b_color_body);
+    width: var(--body_width);
+    margin: 0;
+    padding: 0;
+    left: 0;
+    overscroll-behavior-y: none;
+    line-height: 1.8;
+}
+
+/* no special color for links, but special class for links */
+
+a:link,
+a:visited,
+a:hover,
+a:active {
+    cursor: pointer;
+    color: inherit;
+    text-decoration: none;
+}
+
+.link {
+    color: var(--f_color_link);
+}
+
+button {
+    background-color: var(--b_color_title);
+    border: none;
+    color: var(--f_color_title);
+    padding: 5px 12px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 20px;
+    border-radius: 8px;
+}
+
+button:disabled {
+    background-color: gray;
+    opacity: 0.5;
+}
+
+/* Ripple effect */
+.ripple {
+  background-position: center;
+  transition: background 0.6s;
+  transition-timing-function: linear;
+}
+.ripple:hover {
+  background: var(--b_color_title) radial-gradient(circle, transparent 1%, var(--b_color_title) 1%) center/15000%;
+}
+.ripple:active {
+  background-color: #C24A8B;
+  background-size: 100%;
+  transition: background 0s;
+}
+
+/* region: fixed header */
+
+.fixed_header {
+    position: fixed;
+    z-index: 10000;
+    top: 0;
+    padding: 3px 15px;
+    background-color: #282828;
+    width: 100%;
+}
+
+.fixed_header .dummy_for_fixed_header {
+    /* the fixed position is out of the document flow. To not overlap the next element I need a dummy with the same height.*/
+    height: 10vh;
+}
+
+
+/* endregion: fixed header */
+
+.debug_text {
+    color: rgb(165, 61, 61);
+}
+
+.center {
+    align-items: center;
+    text-align: center;
+}
+
+ /* region: modal window */
+
+        .w3_modal {
+            /* grey opacity over the whole display */
+            z-index: 3;
+            display: block;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            /* opacity:80% would be inherited by the child. defined inside a rgba is not inherited. Trick! */
+            background-color: rgba(0, 0, 0, 0.8);
+            color: var(--f_color_body);
+        }
+
+        .w3_modal_content {
+            top: 19%;
+            width: 90%;
+            margin: auto;
+            background-color: #fff;
+            color: var(--f_color_body);
+            border: 2px solid #000;
+            position: relative;
+            padding: 2%;
+            outline: 0;
+            text-align: center;
+        }
+        /* endregion: modal window */
+

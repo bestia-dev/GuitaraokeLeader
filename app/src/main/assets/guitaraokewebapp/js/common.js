@@ -41,7 +41,6 @@ export function connect_to_guitaraoke_server() {
 export function song_load(song_url) {
     video_video.src = song_url;
     video_video.load();
-    video_video.preload = "auto";
 }
 
 export function getRandomInt(min, max) {

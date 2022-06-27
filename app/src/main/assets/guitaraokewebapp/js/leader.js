@@ -28,7 +28,7 @@ export function start_script() {
     // transitionend is fired multiple times for every transitioned css property. I must take in account only one single property. background-color.
     cm.el("button_download_song").addEventListener("transitionend", () => {if(event.propertyName !== 'background-color') return; button_download_song_on_click(); });
     cm.el("button_back_to_list").addEventListener("transitionend", () => {if(event.propertyName !== 'background-color') return; cm.send_message('stop!'); });
-    cm.el("button_send_play").addEventListener("transitionend", () => {if(event.propertyName !== 'background-color') return; cm.send_message('play!'); });
+    cm.el("button_send_play").addEventListener("transitionend", () => {if(event.propertyName !== 'background-color') return; cm.send_message('play!');state_transition_from_song_load_to_song_play(); });
     cm.el("button_fullscreen").addEventListener("transitionend", () => {if(event.propertyName !== 'background-color') return; video_video.requestFullscreen(); });
     cm.el("button_send_stop").addEventListener("transitionend", () => {if(event.propertyName !== 'background-color') return; cm.send_message('stop!'); });
     cm.el("button_qrcode").addEventListener("transitionend", () => { if(event.propertyName !== 'background-color') return; button_qrcode_on_click(); });
@@ -55,7 +55,7 @@ function connect_to_guitaraoke_server() {
             let song_name = msg.data.substring(6);
             state_transition_from_song_list_to_song_load(song_name);
         } else if (msg.data == "play!") {
-            state_transition_from_song_load_to_song_play();
+            //state_transition_from_song_load_to_song_play();
         } else if (msg.data == "stop!") {
             state_transition_from_song_play_to_song_list();
         } else if (msg.data.startsWith("connections:")) {
@@ -133,8 +133,8 @@ function state_transition_from_song_list_to_song_load(song_url) {
 
 function state_transition_from_song_load_to_song_play() {
     state_ui_song_play();
-    // the leader will be late a little bit, so the followers can prepare
-    setTimeout(video_video.play(), 500);
+    video_video.requestFullscreen();
+    video_video.play();
 }
 
 function state_transition_from_song_play_to_song_list() {
