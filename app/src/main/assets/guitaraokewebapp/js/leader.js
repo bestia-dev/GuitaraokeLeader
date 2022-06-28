@@ -28,7 +28,7 @@ export function start_script() {
     // transitionend is fired multiple times for every transitioned css property. I must take in account only one single property. background-color.
     cm.el("button_download_song").addEventListener("transitionend", () => {if(event.propertyName !== 'background-color') return; button_download_song_on_click(); });
     cm.el("button_back_to_list").addEventListener("transitionend", () => {if(event.propertyName !== 'background-color') return; cm.send_message('stop!'); });
-    cm.el("button_send_play").addEventListener("transitionend", () => {if(event.propertyName !== 'background-color') return; cm.send_message('play!');state_transition_from_song_load_to_song_play(); });
+    cm.el("button_send_play").addEventListener("transitionend", () => {if(event.propertyName !== 'background-color') return; state_transition_from_song_load_to_song_play(); cm.send_message('play!'); });
     cm.el("button_fullscreen").addEventListener("transitionend", () => {if(event.propertyName !== 'background-color') return; video_video.requestFullscreen(); });
     cm.el("button_send_stop").addEventListener("transitionend", () => {if(event.propertyName !== 'background-color') return; cm.send_message('stop!'); });
     cm.el("button_qrcode").addEventListener("transitionend", () => { if(event.propertyName !== 'background-color') return; button_qrcode_on_click(); });
@@ -52,9 +52,11 @@ function connect_to_guitaraoke_server() {
         let msg = JSON.parse(event.data);
         //console.log(`[message] : ${msg.data}`);
         if (msg.data.startsWith("song: ")) {
-            let song_name = msg.data.substring(6);
-            state_transition_from_song_list_to_song_load(song_name);
+            // the next line is executed before send msg
+            //let song_url = msg.data.substring(6);
+            //state_transition_from_song_list_to_song_load(song_url);
         } else if (msg.data == "play!") {
+            // the next line is executed before send msg
             //state_transition_from_song_load_to_song_play();
         } else if (msg.data == "stop!") {
             state_transition_from_song_play_to_song_list();
@@ -153,6 +155,7 @@ function send_song_url(event) {
     let song_url = event.currentTarget.getAttribute("data-url");
     console.log("song_url: " + song_url)
     cm.send_message("song: " + song_url);
+    state_transition_from_song_list_to_song_load(song_url);
 }
 
 function my_video_ended() {

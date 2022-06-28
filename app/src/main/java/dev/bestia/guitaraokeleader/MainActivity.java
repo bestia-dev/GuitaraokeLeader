@@ -139,7 +139,8 @@ public class MainActivity extends AppCompatActivity {
 
         header_exit.setOnClickListener(view -> finishAndRemoveTask());
 
-        copyOnceWelcomeVideoToExternalStorage();
+        copyOnceWelcomeVideoToExternalStorage("Welcome to Guitaraoke Leader.mp4");
+        copyOnceWelcomeVideoToExternalStorage("Welcome to Guitaraoke Follower.mp4");
 
         // Main function
         printLine("Initializing server...");
@@ -264,8 +265,7 @@ public class MainActivity extends AppCompatActivity {
         return context.getContentResolver();
     }
 
-    public void copyOnceWelcomeVideoToExternalStorage() {
-        String display_name = "Welcome to GuitaraokeLeader.mp4";
+    public void copyOnceWelcomeVideoToExternalStorage(String display_name) {
         DocumentFile found_file = chosenFolder().findFile(display_name);
         if (found_file == null) {
             Log.w("w","!welcome_external_file.exists()");

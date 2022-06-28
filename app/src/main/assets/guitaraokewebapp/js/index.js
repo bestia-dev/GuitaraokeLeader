@@ -82,16 +82,16 @@ function state_ui_waiting() {
     page_state = PageState.Waiting;
     cm.el("div_follower").hidden = false;
     cm.el("div_connection_lost").hidden = true;
-    cm.el("button_qrcode").hidden = true;
+    cm.el("button_qrcode").hidden = false;
     cm.el("div_qrcode").hidden = true;
-    cm.song_load("videos/Welcome%20to%20GuitaraokeLeader.mp4");
+    cm.song_load("videos/Welcome to Guitaraoke Follower.mp4");
 }
 
 function state_ui_song_load() {
     page_state = PageState.SongLoad;
     cm.el("div_follower").hidden = false;
     cm.el("div_connection_lost").hidden = true;
-    cm.el("button_qrcode").hidden = true;
+    cm.el("button_qrcode").hidden = false;
     cm.el("div_qrcode").hidden = true;
 }
 
@@ -99,7 +99,7 @@ function state_ui_play() {
     page_state = PageState.SongPlay;
     cm.el("div_follower").hidden = false;
     cm.el("div_connection_lost").hidden = true;
-    cm.el("button_qrcode").hidden = true;
+    cm.el("button_qrcode").hidden = false;
     cm.el("div_qrcode").hidden = true;
 }
 
@@ -108,7 +108,7 @@ function state_ui_connection_lost() {
     cm.exit_full_screen();
     cm.el("div_follower").hidden = true;
     cm.el("div_connection_lost").hidden = false;
-    cm.el("button_qrcode").hidden = true;
+    cm.el("button_qrcode").hidden = false;
     cm.el("div_qrcode").hidden = true;
 }
 

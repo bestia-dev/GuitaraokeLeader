@@ -96,7 +96,8 @@ All the instructions are here: <https://bestia.dev/guitaraoke>.
 
 ## The Download songs page
 
-After the installation there is only one video file available: `Welcome to GuitaraokeLeader`.  Other songs videos can be downloaded from my web page when you click on `Download song`.  
+After the installation there is only one video file available: `Welcome to Guitaraoke Leader`.  
+Other songs videos can be downloaded from my web page when you click on `Download song`.  
 There are also find similar videos on the internet. Download them and then just copy the `mp4` files into your Guitaraoke folder using the android file manager.  
 
 ## Javascript ES2020
@@ -161,13 +162,13 @@ I hope to find something here:
 To test it I can use this curl command:
 
 ```bash
-curl --silent -v --range 20-40 http://192.168.18.251:8080/videos/Welcome%20to%20GuitaraokeLeader.mp4
+curl --silent -v --range 20-40 http://192.168.18.251:8080/videos/Welcome to Guitaraoke Leader.mp4
 ```
 This returns 3497681. It does not understand ranges.
 This nginx server does understand:
 
 ```bash
- curl --silent -v --range 20-40 https://bestia.dev/guitaraoke/videos/Welcome%20to%20GuitaraokeLeader.mp4
+ curl --silent -v --range 20-40 https://bestia.dev/guitaraoke/videos/Welcome to Guitaraoke Leader.mp4
 ```
 
 It return 21. Correct answer.
