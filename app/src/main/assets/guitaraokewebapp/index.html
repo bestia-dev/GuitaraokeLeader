@@ -22,7 +22,7 @@
         <div class="fixed_header">Guitaraoke <button id="button_full_screen" class="ripple" style="padding: 5px 6px;" >FullScreen</button> <button id="button_qrcode" class="ripple" style="padding: 5px 6px;">QRCode</button></div>
         <div class="dummy_for_fixed_header">.</div>
         <div class="center">
-            <video id="video_video" preload="auto" poster="Poster.jpg" autoplay="" muted="" playsinline="" loop="" data-object-fit="cover" width="100%"><source type="video/mp4" src="/videos/Welcome to Guitaraoke Follower.mp4" data-wf-ignore="true" ></video>
+            <video id="video_video" preload="auto" poster="Poster.jpg" autoplay="" muted="" playsinline="" loop="" controls="" data-object-fit="cover" width="100%"><source type="video/mp4" src="/videos/Welcome to Guitaraoke Follower.mp4" data-wf-ignore="true" ></video>
         </div>
         <div id="div_debug" class="debug_text"></div>
     </div>
@@ -41,14 +41,9 @@
     </div>
     <div id="div_qrcode">
         <div class="w3_modal" >
-            <div class="w3_modal_content" style="display: grid;grid-template-columns: 40fr 20fr 40fr;" >
-                <div id="wifi_qrcode" class="center" ></div>
-                <div></div>
-                <div id="url_qrcode" class="center"></div>
-                <!-- second row -->
-                <div>Access WiFi</div>
-                <div></div>
-                <div>Open WebPage</div>
+            <div class="w3_modal_content" style="top:50px; height:100%; width:100%; display: flex;justify-content: space-around;flex-wrap: wrap;" >
+                <div id="wifi_qrcode" class="center" style="text-align:center;" >Access WiFi</div>
+                <div id="url_qrcode" class="center" style="text-align:center;">Open WebPage</div>
             </div>
         </div>
     </div>

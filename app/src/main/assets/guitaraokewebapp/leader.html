@@ -20,7 +20,7 @@
 <body>
     <div class="fixed_header">
         Followers: <span id="followers">0</span>
-        <button id="button_download_song" class="ripple">Download new songs</button>
+        <button id="button_download_song" class="ripple">Dnload songs</button>
         <button id="button_back_to_list" hidden class="ripple">Back to song list</button>
         <button id="button_send_play" hidden class="ripple">Play</button>
         <button id="button_fullscreen" hidden class="ripple">FullScreen</button>
@@ -40,14 +40,9 @@
         <div id="div_debug" class="debug_text" hidden></div>
         <div id="div_qrcode" hidden>
             <div class="w3_modal" >
-                <div class="w3_modal_content" style="display: grid;grid-template-columns: 40fr 20fr 40fr;" >
-                    <div id="wifi_qrcode"></div>
-                    <div></div>
-                    <div id="url_qrcode"></div>
-<!-- second row -->
-                    <div>Access WiFi</div>
-                    <div></div>
-                    <div>Open WebPage</div>
+                <div class="w3_modal_content" style="top:50px; height:100%; width:100%; display: flex;justify-content: space-around;flex-wrap: wrap;" >
+                    <div id="wifi_qrcode" class="center" style="text-align:center;">Access WiFi</div>
+                    <div id="url_qrcode" class="center" style="text-align:center;">Open WebPage</div>
                 </div>
             </div>
         </div>

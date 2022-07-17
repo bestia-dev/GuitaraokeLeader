@@ -134,14 +134,14 @@ function state_transition_from_song_load_to_play() {
 
 // click on video to fullscreen. It need a user gesture.
 function button_fullscreen_on_click() {
-
-    if (video_video.webkitEnterFullScreen) {
-        video_video.webkitEnterFullScreen();
-    } else if (video_video.requestFullscreen) {
+video_video.play();
+    // TODO: FullScreen on iPhone does not work
+     if (video_video.requestFullscreen) {
         video_video.requestFullscreen();
-    } else if (video_video.mozRequestFullScreen) {
-        video_video.mozRequestFullScreen();
-    }
+    } else if (video_video.webkitRequestFullscreen) {
+      video_video.webkitRequestFullscreen();
+  }
+  video_video.play();
 }
 
 function button_qrcode_on_click() {

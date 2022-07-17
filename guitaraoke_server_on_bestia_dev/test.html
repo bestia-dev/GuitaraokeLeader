@@ -14,8 +14,8 @@
     <meta name="google" content="notranslate">
     <script>
         function button_fullscreen_on_click() {
-            if (video_video.webkitEnterFullScreen) {
-                video_video.webkitEnterFullScreen();
+            if (video_video.webkitRequestFullscreen) {
+                video_video.webkitRequestFullscreen();
             } else if (video_video.requestFullscreen) {
                 video_video.requestFullscreen();
             } else if (video_video.mozRequestFullScreen) {
