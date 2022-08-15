@@ -6,7 +6,7 @@
 (https://github.com/bestia-dev/GuitaraokeLeader)***  
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bestia-dev/new_date_time_units_and_formats/blob/master/LICENSE)
-![Hits](https://bestia.dev/webpage_hit_counter/get_svg_image/607422370)
+![Hits](https://bestia.dev/webpage_hit_counter/get_svg_image/607422370.svg)
 
 Hashtags: #java #android #server #tutorial  
 My projects on Github are more like a tutorial than a finished product: [bestia-dev tutorials](https://github.com/bestia-dev/tutorials_rust_wasm).
@@ -15,7 +15,7 @@ My projects on Github are more like a tutorial than a finished product: [bestia-
 
 To play the game, go to <https://bestia.dev/guitaraoke> and follow the instructions.
 
-![screenshot](https://github.com/bestia-dev/GuitaraokeLeader/blob/main/app/src/main/assets/guitaraokewebapp/Poster.png?raw=true)
+![screenshot](https://github.com/bestia-dev/GuitaraokeLeader/raw/main/app/src/main/assets/guitaraokewebapp/Poster.png)
 
 ## Guitaraoke
 
