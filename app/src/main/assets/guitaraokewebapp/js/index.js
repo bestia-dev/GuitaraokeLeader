@@ -11,17 +11,14 @@ const PageState = {
     ConnectionLost: 'ConnectionLost'
 };
 
-if (typeof globalThis === 'undefined') {
-  var globalThis = Function('return this')();
-}
-
 let page_state = PageState.Start;
 let video_video = cm.el("video_video");
 // endregion: module scope variables
 
 // region: global variables
-// globalThis.websocket
-// globalThis.user_name
+var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+// window.websocket
+// window.user_name
 // endregion: global variables
 
 export function start_script() {
@@ -29,9 +26,16 @@ export function start_script() {
     // must use event listener for everything. Must avoid inline events in HTML. But they are so handy.
     // instead of click, I use transitionend. It waits for the transition to end.
     // transitionend is fired multiple times for every transitioned css property. I must take in account only one single property. background-color.
-    cm.el("button_reload").addEventListener("transitionend", () => { if(event.propertyName !== 'background-color') return; state_ui_start(); });
-    cm.el("button_full_screen").addEventListener("transitionend", () => { if(event.propertyName !== 'background-color') return; button_fullscreen_on_click(); });
-    cm.el("button_qrcode").addEventListener("transitionend", () => { if(event.propertyName !== 'background-color') return; button_qrcode_on_click(); });
+    if (isSafari) {
+        cm.el("button_reload").addEventListener("click", () => { state_ui_start(); });
+        cm.el("button_full_screen").addEventListener("click", () => { button_fullscreen_on_click(); });
+        cm.el("button_qrcode").addEventListener("click", () => { button_qrcode_on_click(); });
+    }
+    else{
+        cm.el("button_reload").addEventListener("transitionend", () => { if(event.propertyName !== 'background-color') return; state_ui_start(); });
+        cm.el("button_full_screen").addEventListener("transitionend", () => { if(event.propertyName !== 'background-color') return; button_fullscreen_on_click(); });
+        cm.el("button_qrcode").addEventListener("transitionend", () => { if(event.propertyName !== 'background-color') return; button_qrcode_on_click(); });
+    }
     // endregion: event listeners
 
     state_ui_start();
@@ -40,7 +44,7 @@ export function start_script() {
 function connect_to_guitaraoke_server() {
     cm.connect_to_guitaraoke_server();
 
-    globalThis.websocket.onmessage = function(event) {
+    window.websocket.onmessage = function(event) {
         let msg = JSON.parse(event.data);
         //console.log(`[message] : ${msg.data}`);
         if (msg.data.startsWith("song: ")) {
@@ -55,7 +59,7 @@ function connect_to_guitaraoke_server() {
         }
     };
 
-    globalThis.websocket.onclose = function(event) {
+    window.websocket.onclose = function(event) {
         if (event.wasClean) {
             console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
         } else {
@@ -145,6 +149,7 @@ video_video.play();
 }
 
 function button_qrcode_on_click() {
+    console.log("button_qrcode_on_click");
     if (isHidden(cm.el("div_qrcode"))) {
         cm.el("div_qrcode").hidden = false;
     }else{

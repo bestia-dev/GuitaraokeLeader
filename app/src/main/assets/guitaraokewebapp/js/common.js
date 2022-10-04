@@ -5,8 +5,9 @@
 // endregion: module scope variables
 
 // region: global variables
-// globalThis.websocket
-// globalThis.user_name
+// use window  instead of globalThis (because of Safari)
+// window.websocket
+// window.user_name
 // endregion: global variables
 
 // shortcut for document.getElementById
@@ -19,7 +20,7 @@ export function debug_write(msg) {
 }
 
 export function connect_to_guitaraoke_server() {
-    globalThis.user_name = getRandomInt(0, 1000000);
+    window.user_name = getRandomInt(0, 1000000);
     let url = window.location.href;
     console.log(url);
     //TODO: this url is fixed only for developing
@@ -27,13 +28,13 @@ export function connect_to_guitaraoke_server() {
     //TODO: this url is needed in runtime
     let ws_url = url.replace("http://", "ws://").replace("8080", "3000");
     console.log(ws_url);
-    globalThis.websocket = new WebSocket(ws_url);
+    window.websocket = new WebSocket(ws_url);
 
-    globalThis.websocket.onopen = function(e) {
+    window.websocket.onopen = function(e) {
         console.log("[open] Connection established");
     };
 
-    globalThis.websocket.onerror = function(error) {
+    window.websocket.onerror = function(error) {
         console.log(`[error] ${error.message}`);
     };
 }
@@ -52,11 +53,11 @@ export function getRandomInt(min, max) {
 export function send_message(data) {
     // the message must be json{String username, String timestamp, String data}
     let msg = JSON.stringify({
-        "username": globalThis.user_name,
+        "username": window.user_name,
         "timestamp": Date.now(),
         "data": data
     });
-    globalThis.websocket.send(msg);
+    window.websocket.send(msg);
 }
 
 export function exit_full_screen() {

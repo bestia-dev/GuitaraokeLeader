@@ -15,8 +15,8 @@ let video_video = cm.el("video_video");
 // endregion: module scope variables
 
 // region: global variables
-// globalThis.websocket
-// globalThis.user_name
+// window.websocket
+// window.user_name
 // endregion: global variables
 
 export function start_script() {
@@ -48,7 +48,7 @@ export function start_script() {
 function connect_to_guitaraoke_server() {
     cm.connect_to_guitaraoke_server();
 
-    globalThis.websocket.onmessage = function(event) {
+    window.websocket.onmessage = function(event) {
         let msg = JSON.parse(event.data);
         //console.log(`[message] : ${msg.data}`);
         if (msg.data.startsWith("song: ")) {
@@ -67,7 +67,7 @@ function connect_to_guitaraoke_server() {
         }
     };
 
-    globalThis.websocket.onclose = function(event) {
+    window.websocket.onclose = function(event) {
         if (event.wasClean) {
             console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
         } else {

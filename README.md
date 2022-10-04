@@ -107,7 +107,7 @@ Maybe `modules` in 2020 will make it better. Eh, just a tiny bit.
 Separate files for `js` and `html`, that makes sense.  
 Inline event handlers are easy to use, but not recommended in `modern javascript`, so I must use `addEventListener()`.  
 `let` is better that `var`.  
-`globalThis` is better than `var` or `window`.  
+`globalThis` is better than `var` or `window`, but iPhone Safari does not use it.  
 If a variable is not declared, I get an error in runtime. Before you must write `use strict`, for modern  modules it is implicit. Good, better than before (silent declaration leading to incorrect execution), but still not enough for developer comfort.  
 `<script type="module" >import * as j from './js/index.js';j.start_script();</script>` is better than other ways to import or include scripts. Having an alias for the module exported functions is very precise: `j.send_msg();`.  
 I think I will eventually start to use Typescript instead of javascript for projects of any size, even the smallest one.  
@@ -139,13 +139,7 @@ In Android Studio `Build-Generate Signed APK`, use the `KeyStore` in `C:\Users\x
 
 Safari on iPhone is a special beast. If everything works fine on Chrome, Firefox, Android,... it 
 means nothing to Apple. Safari is the king and it has always something going on outside of the 
-standard. For example it does not know about `globalThis`. It needs a workaround:
-
-```javascript
-if (typeof globalThis === 'undefined') {
-  var globalThis = Function('return this')();
-}
-```
+standard. For example it does not know about `globalThis`. I must use the old `window` object.
 
 Then the video play(). What a nightmare. Every year something different. Documentation sub-zero. No 
 other way to test how it works than having the physical device itself. A true catastrophe.
