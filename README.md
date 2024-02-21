@@ -2,13 +2,12 @@
 
 **Play guitar and sing with your friends**  
 **The lyrics and chords show in sync with the "Leader" on any smartphone, tablet, computer or smart TV.**  
-***version: 3.4 date: 2022-06-21 author: [bestia.dev](https://bestia.dev) repository: [GitHub]
-(https://github.com/bestia-dev/GuitaraokeLeader)***  
+***version: 3.4 date: 2022-06-21 author: [bestia.dev](https://bestia.dev) repository: [GitHub](https://github.com/bestia-dev/GuitaraokeLeader)***  
 
-![status](https://img.shields.io/badge/maintained-green) 
-![status](https://img.shields.io/badge/ready_for_use-green) 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bestia-dev/new_date_time_units_and_formats/blob/master/LICENSE)
-![Hits](https://bestia.dev/webpage_hit_counter/get_svg_image/607422370.svg)
+ ![maintained](https://img.shields.io/badge/maintained-green)
+ ![ready_for_use](https://img.shields.io/badge/ready_for_use-green)
+ [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bestia-dev/GuitaraokeLeader/blob/master/LICENSE)
+ ![GuitaraokeLeader](https://bestia.dev/webpage_hit_counter/get_svg_image/136193070.svg)
 
 Hashtags: #java #android #server #tutorial  
 My projects on Github are more like a tutorial than a finished product: [bestia-dev tutorials](https://github.com/bestia-dev/tutorials_rust_wasm).
